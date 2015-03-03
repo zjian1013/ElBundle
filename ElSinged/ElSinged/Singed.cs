@@ -84,7 +84,7 @@ namespace ElSinged
                
             Ignite = Player.GetSpellSlot("summonerdot");
 
-            Notifications.AddNotification("ElSinged by jQuery v1.0.0.0", 10000);
+            Notifications.AddNotification("ElSinged by jQuery v1.0.0.1", 10000);
             spells[Spells.W].SetSkillshot(0.5f, 350, 700, false, SkillshotType.SkillshotCircle);
 
             ElSingedMenu.Initialize();
