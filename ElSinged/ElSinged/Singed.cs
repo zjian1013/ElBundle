@@ -158,7 +158,6 @@ namespace ElSinged
             if (target == null || !target.IsValidTarget())
                 return;
 
-
             var harassQ = ElSingedMenu._menu.Item("ElSinged.Harass.Q").GetValue<bool>();
             var harassW = ElSingedMenu._menu.Item("ElSinged.Harass.W").GetValue<bool>();
             var harassE = ElSingedMenu._menu.Item("ElSinged.Harass.E").GetValue<bool>();
