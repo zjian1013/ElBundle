@@ -1,6 +1,11 @@
 # ElBundle
 ElBundle
 
+Currently:
+
+- Singed
+- Varus
+
 Info: https://www.joduska.me/forum/topic/38911-elbundle-elsinged-im-pretty-much-out-of-gas
 
 Wanna donate? https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JGLU98425BH2U
