@@ -135,7 +135,7 @@ namespace ElSinged
                         spells[Spells.E].CastOnUnit(minion, true);
                     }
 
-                    if (spells[Spells.Q].IsReady() && clearQ)
+                    if(spells[Spells.Q].IsReady() && clearQ)
                     {
                         if (!PosionActivation && !PosionActive())
                         {
@@ -154,7 +154,6 @@ namespace ElSinged
 
         private static void Harass(Obj_AI_Hero target)
         {
-
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -187,8 +186,8 @@ namespace ElSinged
                 }
             }
         }
-        #endregion
 
+        #endregion
 
         #region Combo 
 

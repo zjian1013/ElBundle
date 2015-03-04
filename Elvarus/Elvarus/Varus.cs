@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using LeagueSharp.Common.Data;
+
 
 
 namespace Elvarus
@@ -31,6 +33,11 @@ namespace Elvarus
             { Spells.E, new Spell(SpellSlot.E, 925)},
             { Spells.R, new Spell(SpellSlot.R, 1100)}
         };
+
+        private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            args.Process = !spells[Spells.Q].IsCharging;
+        }
 
         #region hitchance
 
@@ -77,6 +84,7 @@ namespace Elvarus
             ElVarusMenu.Initialize();
             Game.OnGameUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
+            Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
         }
 
         #endregion
@@ -94,6 +102,7 @@ namespace Elvarus
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
+                    JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass(target);
@@ -130,19 +139,77 @@ namespace Elvarus
             }
         }
 
-        #region Harass
+        #region Laneclear
 
         private static void LaneClear()
-        {   
-            var minions = MinionManager.GetMinions(spells[Spells.Q].Range);
-            if (minions.Count >= 3)
-            {
-                var prediction = spells[Spells.E].GetCircularFarmLocation(minions);
-                spells[Spells.E].Cast(prediction.Position);
-                spells[Spells.Q].Cast(prediction.Position);
+        {
+            var useQ = ElVarusMenu._menu.Item("useQFarm").GetValue<bool>();
+            var useE = ElVarusMenu._menu.Item("useQFarm").GetValue<bool>();
+            var minmana = ElVarusMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spells[Spells.E].Range, MinionTypes.All);
+
+            if(Player.ManaPercentage() >= minmana)
+            {                    
+                foreach (var minion in minions)
+                {
+                    if (spells[Spells.Q].IsReady() && useQ)
+                    {
+                        if (spells[Spells.Q].IsCharging)
+                        {
+                            spells[Spells.Q].Cast(minion, true);
+                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                        }
+                        if (!spells[Spells.Q].IsCharging)
+                        {
+                            spells[Spells.Q].StartCharging();
+                            return;
+                        }
+                    }
+                    if (spells[Spells.E].IsReady() && useE)
+                    {
+                        spells[Spells.E].Cast(minion);
+                    }
+                }
             }
         }
-        
+
+        #endregion
+
+        #region jungle
+
+        private static void JungleClear()
+        {
+            var useQ = ElVarusMenu._menu.Item("useQFarmJungle").GetValue<bool>();
+            var useE = ElVarusMenu._menu.Item("useEFarmJungle").GetValue<bool>();
+            var minmana = ElVarusMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 700, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+
+            if (Player.ManaPercentage() >= minmana)
+            {
+                foreach (var minion in minions)
+                {
+                    if (spells[Spells.Q].IsReady() && useQ)
+                    {
+                        if (spells[Spells.Q].IsCharging)
+                        {
+                            spells[Spells.Q].Cast(minion, true);
+                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                        }
+                        if (!spells[Spells.Q].IsCharging)
+                        {
+                            spells[Spells.Q].StartCharging();
+                            return;
+                        }
+                    }
+
+                    if (spells[Spells.E].IsReady() && useE)
+                    {
+                        spells[Spells.E].CastOnUnit(minion);
+                    }
+                }    
+            }
+        }
+
         #endregion
 
         #region Harass
@@ -154,16 +221,75 @@ namespace Elvarus
 
             var harassQ = ElVarusMenu._menu.Item("ElVarus.Harass.Q").GetValue<bool>();
             var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
+            var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
-            if (harassE && spells[Spells.E].IsReady())
+            if (Player.ManaPercentage() >= minmana)
             {
-                spells[Spells.E].CastOnBestTarget();
+                if (harassE && spells[Spells.E].IsReady())
+                {
+                    spells[Spells.E].CastOnBestTarget();
+                }
+
+                if (harassQ && spells[Spells.Q].IsReady())
+                {
+                    CastQ(target);
+                }
+            }
+        }
+
+        #endregion
+
+        #region itemusage
+
+        private static void items(Obj_AI_Base target)
+        {
+            var botrk = ItemData.Blade_of_the_Ruined_King.GetItem();
+            var Ghost = ItemData.Youmuus_Ghostblade.GetItem();
+            var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
+
+            var useYoumuu = ElVarusMenu._menu.Item("ElVarus.Items.Youmuu").GetValue<bool>();
+            var useCutlass = ElVarusMenu._menu.Item("ElVarus.Items.Cutlass").GetValue<bool>();
+            var useBlade = ElVarusMenu._menu.Item("ElVarus.Items.Blade").GetValue<bool>();
+
+            var useBladeEhp = ElVarusMenu._menu.Item("ElVarus.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
+            var useBladeMhp = ElVarusMenu._menu.Item("ElVarus.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
+
+            if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
+            && target.HealthPercentage() <= useBladeEhp
+            && useBlade)
+
+                botrk.Cast(target);
+
+            if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
+                && Player.HealthPercentage() <= useBladeMhp
+                && useBlade)
+
+                botrk.Cast(target);
+
+            if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) &&
+                target.HealthPercentage() <= useBladeEhp
+                && useCutlass)
+                cutlass.Cast(target);
+
+            if (Ghost.IsReady() && Ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
+                && useYoumuu)
+                Ghost.Cast();
+        }
+
+        #endregion
+
+        #region GetComboDamage   
+
+        private static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            var damage = 0d;
+
+            if (spells[Spells.Q].IsReady())
+            {
+                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
             }
 
-            if (harassQ && spells[Spells.Q].IsReady())
-            {
-                CastQ(target);
-            }
+            return (float)damage;
         }
 
         #endregion
@@ -181,6 +307,8 @@ namespace Elvarus
             var comboE = ElVarusMenu._menu.Item("ElVarus.Combo.E").GetValue<bool>();
             var comboR = ElVarusMenu._menu.Item("ElVarus.Combo.R").GetValue<bool>();
 
+            items(target);
+
             if (comboE && spells[Spells.E].IsReady())
             {
                 spells[Spells.E].Cast(target);
@@ -188,10 +316,17 @@ namespace Elvarus
 
             if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
             {
-                spells[Spells.R].Cast(target);
+                spells[Spells.R].CastOnBestTarget();
             }
 
+            var prediction = spells[Spells.Q].GetPrediction(target);
+            var comboDamage = GetComboDamage(target);
+
             if (comboQ && GetStacksOn(target) >= stackCount && spells[Spells.Q].IsReady())
+            {
+                CastQ(target);
+            }
+            else if (comboDamage > target.Health)
             {
                 CastQ(target);
             }
