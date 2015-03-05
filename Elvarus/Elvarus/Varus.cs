@@ -331,13 +331,22 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsCharging)
             {
-                if (spells[Spells.Q].IsInRange(target))
-                {                                
-                    if (comboQ && spells[Spells.Q].IsReady())
+                // ReSharper disable once InvertIf
+                if (spells[Spells.Q].IsInRange(target) && (comboQ && spells[Spells.Q].IsReady()))
+                {
+                    if (spells[Spells.Q].Range == spells[Spells.Q].ChargedMaxRange)
                     {
-                        if (spells[Spells.Q].Range == spells[Spells.Q].ChargedMaxRange)
+                        CastQ(target);
+                    }
+                    else if(spells[Spells.Q].Range != spells[Spells.Q].ChargedMaxRange)
+                    {
+                        //Hellsing logic .. 
+                        var prediction = spells[Spells.Q].GetPrediction(target);
+                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                        if (distance < spells[Spells.Q].RangeSqr)
                         {
-                            CastQ(target);
+                            if (spells[Spells.Q].Cast(prediction.CastPosition))
+                                return;
                         }
                     }
                 }
