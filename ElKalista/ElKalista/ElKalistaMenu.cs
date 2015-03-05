@@ -70,7 +70,7 @@ namespace ElKalista
             _menu.AddSubMenu(lMenu);
 
             //ElSinged.Misc
-            var miscMenu = new Menu("Misc", "Misc");
+            var miscMenu = new Menu("Super Secret Settings", "Misc");
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.W", "Draw W").SetValue(new Circle()));
@@ -78,17 +78,19 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
+            miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
+            miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Use KS mode").SetValue(true));
 
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
             var credits = new Menu("Credits", "jQuery");
-            credits.AddItem(new MenuItem("ElSinged.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElSinged.Email", "info@zavox.nl"));
+            credits.AddItem(new MenuItem("ElKalista.Paypal", "if you would like to donate via paypal:"));
+            credits.AddItem(new MenuItem("ElKalista.Email", "info@zavox.nl"));
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.0"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.0"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

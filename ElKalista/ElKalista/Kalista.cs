@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.0", 10000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.0", 1000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -103,14 +103,30 @@ namespace ElKalista
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
-            if (save)
+            if(save)
             {
                 ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
                 if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
-                    spells[Spells.R].Cast();
+                   spells[Spells.R].Cast();
             }
+
+            KsMode();
         }
         #endregion
+
+        private static void KsMode()
+        {
+            var useKs = ElKalistaMenu._menu.Item("ElKalista.misc.ks").GetValue<bool>();
+            if (!useKs)
+                return;
+
+            var target = HeroManager.Enemies.FirstOrDefault(x => !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) && spells[Spells.E].CanCast(x) && (x.Health + (x.HPRegenRate / 2)) <= spells[Spells.E].GetDamage(x));
+
+            if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(target))
+            {
+                spells[Spells.E].Cast();
+            }
+        }
 
         #region itemusage
 
