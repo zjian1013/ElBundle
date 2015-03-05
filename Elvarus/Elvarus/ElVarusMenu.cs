@@ -37,6 +37,10 @@ namespace Elvarus
             cMenu.AddItem(new MenuItem("ElVarus.Combo.R.Count", "R when enemies >= ")).SetValue(new Slider(1, 1, 5));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.Stack.Count", "Q when stacks >= ")).SetValue(new Slider(3, 1, 3));
             cMenu.AddItem(new MenuItem("ElVarus.sssssssss", ""));
+            cMenu.AddItem(new MenuItem("ElVarus.SemiR", "Semi-manual cast R key").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
+
+            //cMenu.AddItem(new MenuItem("ElVarus.SemiR", "Semi-manual cast R key").SetValue(new KeyBind('t', KeyBindType.Press))); 
+            cMenu.AddItem(new MenuItem("ElVarus.ssssssssssss", ""));
             cMenu.AddItem(new MenuItem("ElVarus.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
             _menu.AddSubMenu(cMenu);
@@ -86,7 +90,7 @@ namespace Elvarus
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.3"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

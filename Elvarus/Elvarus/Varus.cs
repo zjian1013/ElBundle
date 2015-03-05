@@ -108,7 +108,14 @@ namespace Elvarus
                     Harass(target);
                     break;
             }
+
+            if (spells[Spells.R].IsReady() && target.IsValidTarget() && ElVarusMenu._menu.Item("ElVarus.SemiR").GetValue<KeyBind>().Active)
+            {
+                spells[Spells.R].CastOnUnit(target);
+            }
         }
+
+
         #endregion
 
         private static int GetStacksOn(Obj_AI_Base target)
