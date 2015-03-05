@@ -137,12 +137,13 @@ namespace ElKalista
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
-            if (ConnectedAlly != null)
-                return;
-
-            if(save)
+            if (ConnectedAlly == null)
             {
                 ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
+            }
+
+            if (save)
+            {
                 if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
                     spells[Spells.R].Cast();
             }
