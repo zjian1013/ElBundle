@@ -74,7 +74,7 @@ namespace Elvarus
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.0.1", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.0.2", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
@@ -319,19 +319,25 @@ namespace Elvarus
                 spells[Spells.R].CastOnBestTarget();
             }
 
-            var prediction = spells[Spells.Q].GetPrediction(target);
+           
             var comboDamage = GetComboDamage(target);
 
-            if (comboQ && GetStacksOn(target) >= stackCount && spells[Spells.Q].IsReady())
+            if (spells[Spells.Q].IsCharging)
             {
-                if (spells[Spells.Q].Range == spells[Spells.Q].ChargedMaxRange)
-                {
-                    CastQ(target);
+                if (spells[Spells.Q].IsInRange(target))
+                {                                
+                    if (comboQ && spells[Spells.Q].IsReady())
+                    {
+                        if (spells[Spells.Q].Range == spells[Spells.Q].ChargedMaxRange)
+                        {
+                            CastQ(target);
+                        }
+                    }
                 }
             }
-            else if (comboDamage > target.Health || Player.AttackRange < Player.Distance(target))
+            else if (comboDamage > target.Health || Player.AttackRange < Player.Distance(target) || GetStacksOn(target) >= stackCount)
             {
-                CastQ(target);
+                spells[Spells.Q].StartCharging();
             }
         }
         #endregion
