@@ -5,7 +5,7 @@ Currently:
 
 - Singed
 - Varus
-- Kalista WIP
+- Kalista
 
 Info: https://www.joduska.me/forum/topic/38911-elbundle-elsinged-im-pretty-much-out-of-gas
 
