@@ -74,7 +74,7 @@ namespace Elvarus
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.0.0", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.0.1", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
@@ -82,7 +82,7 @@ namespace Elvarus
             spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1600, 1.2f);
 
             ElVarusMenu.Initialize();
-            Game.OnGameUpdate += OnGameUpdate;
+            Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
             Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
         }
@@ -324,9 +324,12 @@ namespace Elvarus
 
             if (comboQ && GetStacksOn(target) >= stackCount && spells[Spells.Q].IsReady())
             {
-                CastQ(target);
+                if (spells[Spells.Q].Range == spells[Spells.Q].ChargedMaxRange)
+                {
+                    CastQ(target);
+                }
             }
-            else if (comboDamage > target.Health)
+            else if (comboDamage > target.Health || Player.AttackRange < Player.Distance(target))
             {
                 CastQ(target);
             }
