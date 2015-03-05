@@ -79,7 +79,8 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
-            miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Use KS mode").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
             _menu.AddSubMenu(miscMenu);
 
@@ -90,7 +91,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.0"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.1"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

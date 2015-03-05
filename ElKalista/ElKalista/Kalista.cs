@@ -100,19 +100,30 @@ namespace ElKalista
                     break;
             }
 
+            KsMode();
+            JungleStealMode();
+            SaveMode();
+        }
+        #endregion
+
+
+        #region SuperSeCrEtSeTtInGs
+        private static void SaveMode()
+        {
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
-            if(save)
+            if (ConnectedAlly == null)
+                return;
+
+            if (save)
             {
                 ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
+               
                 if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
-                   spells[Spells.R].Cast();
+                    spells[Spells.R].Cast();
             }
-
-            KsMode();
         }
-        #endregion
 
         private static void KsMode()
         {
@@ -127,6 +138,28 @@ namespace ElKalista
                 spells[Spells.E].Cast();
             }
         }
+
+        static void JungleStealMode()
+        {
+            var useJsm = ElKalistaMenu._menu.Item("ElKalista.misc.junglesteal").GetValue<bool>();
+
+            if (useJsm)
+                return;
+
+            var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health + (x.HPRegenRate / 2) <= spells[Spells.E].GetDamage(x));
+
+            if (spells[Spells.E].CanCast(jMob))
+                spells[Spells.E].Cast();
+
+            var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health <= spells[Spells.E].GetDamage(x) && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
+
+            if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(minion))
+            {
+                spells[Spells.E].Cast();
+            }
+        }
+
+        #endregion
 
         #region itemusage
 
