@@ -79,7 +79,7 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
-            miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
             _menu.AddSubMenu(miscMenu);
