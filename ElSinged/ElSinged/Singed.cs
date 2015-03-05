@@ -84,23 +84,23 @@ namespace ElSinged
                
             Ignite = Player.GetSpellSlot("summonerdot");
 
-            Notifications.AddNotification("ElSinged by jQuery v1.0.0.1", 10000);
+            Notifications.AddNotification("ElSinged by jQuery v1.0.0.2", 10000);
             spells[Spells.W].SetSkillshot(0.5f, 350, 700, false, SkillshotType.SkillshotCircle);
 
+
             ElSingedMenu.Initialize();
-            Game.OnGameUpdate += OnGameUpdate;
+            Game.OnUpdate += OnGameUpdate;
+            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
         }
 
         #endregion
-
 
         #region OnGameUpdate
 
         private static void OnGameUpdate(EventArgs args)
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
-
 
             switch (_orbwalker.ActiveMode)
             {
@@ -189,6 +189,14 @@ namespace ElSinged
 
         #endregion
 
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                args.Process = false;
+            }
+        }
+
         #region Combo 
 
         private static bool PosionActive()
@@ -204,17 +212,12 @@ namespace ElSinged
             if (target == null || !target.IsValidTarget())
                 return;
 
-            //Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Select(b => b.DisplayName)));
-            Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Where(b => b.Caster.NetworkId == Player.NetworkId).Select(b => b.DisplayName)));
-
-
             var comboQ = ElSingedMenu._menu.Item("ElSinged.Combo.Q").GetValue<bool>();
             var comboW = ElSingedMenu._menu.Item("ElSinged.Combo.W").GetValue<bool>();
             var comboE = ElSingedMenu._menu.Item("ElSinged.Combo.E").GetValue<bool>();
             var comboR = ElSingedMenu._menu.Item("ElSinged.Combo.R").GetValue<bool>();
             var comboCount = ElSingedMenu._menu.Item("ElSinged.Combo.R.Count").GetValue<Slider>().Value;
             var useIgnite = ElSingedMenu._menu.Item("ElSinged.Combo.Ignite").GetValue<bool>();
-
 
             if (comboQ && spells[Spells.Q].IsReady() && !PosionActivation && !PosionActive())
             {
@@ -224,14 +227,13 @@ namespace ElSinged
             }
 
             if (PosionActive())
-            {
-       
+            {      
                 if (target.HasBuff("Fling") && comboW && target.IsValidTarget() && spells[Spells.W].IsReady())
                 {
                     spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
                 }
-
-                if (Player.Distance(target) >= 500)
+         
+                if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) == false && comboW)
                 {
                     spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
                 }
