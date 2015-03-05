@@ -11,6 +11,7 @@ namespace ElKalista
 {
     internal class Drawings
     {
+
         public static void Drawing_OnDraw(EventArgs args)
         {
             var drawOff = ElKalistaMenu._menu.Item("ElKalista.Draw.off").GetValue<bool>();
@@ -19,6 +20,8 @@ namespace ElKalista
             var drawE = ElKalistaMenu._menu.Item("ElKalista.Draw.E").GetValue<Circle>();
             var drawR = ElKalistaMenu._menu.Item("ElKalista.Draw.E").GetValue<Circle>();
 
+            if (Kalista.Player.IsDead)
+                return;
 
             if (drawOff)
                 return;

@@ -35,13 +35,12 @@ namespace ElKalista
             cMenu.AddItem(new MenuItem("ElKalista.Combo.R", "Use R").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.sssssssss", ""));
             cMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
+            cMenu.AddItem(new MenuItem("ElKalista.SemiR", "Semi-manual R").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
             _menu.AddSubMenu(cMenu);
 
             var hMenu = new Menu("Harass", "Harass");
             hMenu.AddItem(new MenuItem("ElKalista.Harass.Q", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElKalista.Harass.E", "Use E").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElKalista.Harasssfsass.E", ""));
             hMenu.AddItem(new MenuItem("ElKalista.minmanaharass", "Mana need for harass ")).SetValue(new Slider(55));
             hMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             _menu.AddSubMenu(hMenu);
@@ -59,8 +58,9 @@ namespace ElKalista
 
             var lMenu = new Menu("Clear", "Clear");
             lMenu.AddItem(new MenuItem("useQFarm", "Use Q").SetValue(true));
-            lMenu.AddItem(new MenuItem("ElKalista.Count.Minions", "Minions for Q >=").SetValue(new Slider(3, 1, 5)));
+            lMenu.AddItem(new MenuItem("ElKalista.Count.Minions", "Killable minions with Q >=").SetValue(new Slider(2, 1, 5)));
             lMenu.AddItem(new MenuItem("useEFarm", "Use E").SetValue(true));
+            lMenu.AddItem(new MenuItem("ElKalista.Count.Minions.E", "Killable minions with E >=").SetValue(new Slider(2, 1, 5)));
             lMenu.AddItem(new MenuItem("useEFarmddsddaadsd", ""));
             lMenu.AddItem(new MenuItem("useQFarmJungle", "Use Q in jungle").SetValue(true));
             lMenu.AddItem(new MenuItem("useEFarmJungle", "Use E in jungle").SetValue(true));
@@ -82,6 +82,18 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
+            var dmgAfterComboItem = new MenuItem("ElKalista.DrawComboDamage", "Draw E damage").SetValue(true);
+            miscMenu.AddItem(dmgAfterComboItem);
+
+            Utility.HpBarDamageIndicator.DamageToUnit = Kalista.GetComboDamage;
+            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
+            Utility.HpBarDamageIndicator.Color = Color.Aqua;
+
+            dmgAfterComboItem.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
@@ -91,7 +103,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.1"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.2"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

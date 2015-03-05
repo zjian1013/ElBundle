@@ -84,6 +84,9 @@ namespace ElKalista
 
         private static void OnGameUpdate(EventArgs args)
         {
+            if (Player.IsDead)
+                return;
+
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
             switch (_orbwalker.ActiveMode)
@@ -103,11 +106,32 @@ namespace ElKalista
             KsMode();
             JungleStealMode();
             SaveMode();
+            SemiUltMode();
         }
         #endregion
 
+        public static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            float damage = 0;
+
+            if (spells[Spells.Q].IsReady())
+                damage += spells[Spells.Q].GetDamage(enemy);
+
+            return damage;
+        }
 
         #region SuperSeCrEtSeTtInGs
+
+        private static void SemiUltMode()
+        {
+            var manualUlt = ElKalistaMenu._menu.Item("ElKalista.SemiR").GetValue<KeyBind>().Active;
+            
+            if (spells[Spells.R].IsReady() && manualUlt)
+            {
+                spells[Spells.R].Cast();
+            }
+        }
+
         private static void SaveMode()
         {
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
@@ -208,7 +232,6 @@ namespace ElKalista
                 return;
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
-            var harassE = ElKalistaMenu._menu.Item("ElKalista.Harass.E").GetValue<bool>();
             var minmana = ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value;
 
             if (Player.ManaPercentage() < minmana)
@@ -218,18 +241,6 @@ namespace ElKalista
             {
                 if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance)
                     spells[Spells.Q].Cast(target);
-            }
-
-            if (harassE && spells[Spells.E].IsReady())
-            {
-                var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range).Where(x => x.Health <= spells[Spells.E].GetDamage(x)).OrderBy(x => x.Health).FirstOrDefault();
-                var Target = HeroManager.Enemies.Where(x => spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 && !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield)).OrderByDescending(x => spells[Spells.E].GetDamage(x)).FirstOrDefault();
-
-                if (Target != null && (Target.Health <= spells[Spells.E].GetDamage(Target) || (spells[Spells.E].CanCast(minion) && spells[Spells.E].CanCast(Target))))
-                    spells[Spells.E].Cast();
-
-                if (spells[Spells.E].CanCast(target) && spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
-                    spells[Spells.E].Cast(target);
             }
         }
 
@@ -261,7 +272,7 @@ namespace ElKalista
                 if (Target != null && (Target.Health <= spells[Spells.E].GetDamage(Target) || (spells[Spells.E].CanCast(minion) && spells[Spells.E].CanCast(Target))))
                     spells[Spells.E].Cast();
 
-                if (spells[Spells.E].CanCast(target) && spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
+                if (spells[Spells.E].CanCast(target) && spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsDashing() && !Player.IsWindingUp)
                     spells[Spells.E].Cast(target);
             }
         }
@@ -294,32 +305,70 @@ namespace ElKalista
             }
         }
 
+        //Credits to xcsoft
+        static List<Obj_AI_Base> Q_GetCollisionMinions(Obj_AI_Hero source, Vector3 targetposition)
+        {
+            var input = new PredictionInput
+            {
+                Unit = source,
+                Radius = spells[Spells.Q].Width,
+                Delay = spells[Spells.Q].Delay,
+                Speed = spells[Spells.Q].Speed,
+            };
+
+            input.CollisionObjects[0] = CollisionableObjects.Minions;
+
+            return Collision.GetCollision(new List<Vector3> { targetposition }, input).OrderBy(obj => obj.Distance(source, false)).ToList();
+        }
+        //End credits to xcsoft
+
+
         private static void LaneClear()
         {
             var useQ = ElKalistaMenu._menu.Item("useQFarm").GetValue<bool>();
             var useE = ElKalistaMenu._menu.Item("useQFarm").GetValue<bool>();
             var countMinions = ElKalistaMenu._menu.Item("ElKalista.Count.Minions").GetValue<Slider>().Value;
-
+            var countMinionsE = ElKalistaMenu._menu.Item("ElKalista.Count.Minions.E").GetValue<Slider>().Value;
             var minmana = ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth);
-
-            //var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.Enemy);
-
-            if (minions.Count == 0)
-                return;
 
             if (Player.ManaPercentage() < minmana)
+                return;
+               
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
+
+            if (minions.Count <= 0)
                 return;
 
             if (spells[Spells.Q].IsReady() && useQ)
             {
                 foreach (var minion in minions.Where(x => x.Health <= spells[Spells.Q].GetDamage(x)))
                 {
-                    spells[Spells.Q].Cast(minion);
+                    var killcount = 0;
+
+                    foreach (var colminion in Q_GetCollisionMinions(Player, Player.ServerPosition.Extend(minion.ServerPosition, spells[Spells.Q].Range)))
+                    {
+                        if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
+                            killcount++;
+                        else
+                            break;
+                    }
+
+                    if (killcount >= countMinions && (!Player.IsWindingUp && !Player.IsDashing()))
+                    {
+                        spells[Spells.Q].Cast(minion);
+                        break;
+                    }
                 }
             }
-        }
 
+            if (!useE || !spells[Spells.E].IsReady())
+                return;
+
+            var minionkillcount = minions.Count(x => spells[Spells.E].CanCast(x) && x.Health <= spells[Spells.E].GetDamage(x));
+
+            if (minionkillcount >= countMinionsE)
+                spells[Spells.E].Cast();
+        }
         #endregion
     }
 }
