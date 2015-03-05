@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ElKalista")]
-[assembly: AssemblyCopyright("Copyright © jQuery 2015")]
+[assembly: AssemblyCopyright("Copyright © jQuery L# 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

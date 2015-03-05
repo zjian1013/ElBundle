@@ -137,13 +137,13 @@ namespace ElKalista
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
-            if (ConnectedAlly == null)
+            if (ConnectedAlly != null)
                 return;
 
             if (save)
             {
                 ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
-               
+                Console.WriteLine(ConnectedAlly.HealthPercentage());
                 if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
                     spells[Spells.R].Cast();
             }
@@ -167,7 +167,7 @@ namespace ElKalista
         {
             var useJsm = ElKalistaMenu._menu.Item("ElKalista.misc.junglesteal").GetValue<bool>();
 
-            if (useJsm)
+            if (!useJsm)
                 return;
 
             var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health + (x.HPRegenRate / 2) <= spells[Spells.E].GetDamage(x));

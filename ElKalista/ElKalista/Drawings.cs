@@ -18,7 +18,7 @@ namespace ElKalista
             var drawQ = ElKalistaMenu._menu.Item("ElKalista.Draw.Q").GetValue<Circle>();
             var drawW = ElKalistaMenu._menu.Item("ElKalista.Draw.W").GetValue<Circle>();
             var drawE = ElKalistaMenu._menu.Item("ElKalista.Draw.E").GetValue<Circle>();
-            var drawR = ElKalistaMenu._menu.Item("ElKalista.Draw.E").GetValue<Circle>();
+            var drawR = ElKalistaMenu._menu.Item("ElKalista.Draw.R").GetValue<Circle>();
 
             if (Kalista.Player.IsDead)
                 return;
