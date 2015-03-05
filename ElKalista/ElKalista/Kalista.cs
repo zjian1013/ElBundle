@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.0", 1000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.2", 1000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -348,9 +348,13 @@ namespace ElKalista
                     foreach (var colminion in Q_GetCollisionMinions(Player, Player.ServerPosition.Extend(minion.ServerPosition, spells[Spells.Q].Range)))
                     {
                         if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
+                        {
                             killcount++;
+                        }
                         else
+                        {
                             break;
+                        } 
                     }
 
                     if (killcount >= countMinions && (!Player.IsWindingUp && !Player.IsDashing()))
