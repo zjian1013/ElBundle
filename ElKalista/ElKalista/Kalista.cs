@@ -140,10 +140,9 @@ namespace ElKalista
             if (ConnectedAlly != null)
                 return;
 
-            if (save)
+            if(save)
             {
                 ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
-                Console.WriteLine(ConnectedAlly.HealthPercentage());
                 if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
                     spells[Spells.R].Cast();
             }
