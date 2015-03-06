@@ -52,9 +52,7 @@ namespace ElKalista
             itemMenu.AddItem(new MenuItem("ElKalista.Harasssfsddass.E", ""));
             itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
             itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
-
             _menu.AddSubMenu(itemMenu);
-
 
             var lMenu = new Menu("Clear", "Clear");
             lMenu.AddItem(new MenuItem("useQFarm", "Use Q").SetValue(true));
@@ -83,6 +81,9 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
+
+            //miscMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
+            //miscMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(3, 1, 20)));
 
             var dmgAfterComboItem = new MenuItem("ElKalista.DrawComboDamage", "Draw E damage").SetValue(true);
             miscMenu.AddItem(dmgAfterComboItem);

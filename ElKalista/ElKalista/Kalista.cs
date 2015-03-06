@@ -107,6 +107,7 @@ namespace ElKalista
             JungleStealMode();
             SaveMode();
             SemiUltMode();
+            AutoCastEMode(target);
         }
         #endregion
 
@@ -121,6 +122,33 @@ namespace ElKalista
         }
 
         #region SuperSeCrEtSeTtInGs
+
+        private static void AutoCastEMode(Obj_AI_Base target)
+        {
+           /* if (target.HasBuff("KalistaExpungeMarker"))
+            {
+                Console.WriteLine("ye");
+            }*/
+
+            /*if (spells[Spells.E].IsInRange(target) &&
+                (target.IsRendKillable() || target.GetRendBuff().Count >= Config.SliderLinks["comboNumE"].Value.Value))
+            {
+                // Check if the target would die from E
+                if (target.IsRendKillable())
+                {
+                    spells[Spells.E].Cast(true);
+                }
+                else
+                {
+                    // Check if target is about to leave our E range or the buff is about to run out
+                    if (target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
+                        target.GetRendBuff().EndTime - Game.Time < 0.3)
+                    {
+                        spells[Spells.E].Cast(true);
+                    }
+                }
+            }*/
+        }
 
         private static void SemiUltMode()
         {
@@ -140,12 +168,18 @@ namespace ElKalista
             if (ConnectedAlly == null)
             {
                 ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
-            }
-
-            if (save)
-            {
-                if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
-                    spells[Spells.R].Cast();
+                if (ConnectedAlly != null)
+                {
+                    if (save)
+                    {
+                        if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
+                            spells[Spells.R].Cast();
+                    }
+                }
+                else
+                {
+                    return;
+                }
             }
         }
 
