@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.2", 1000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.3", 1000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -127,7 +127,31 @@ namespace ElKalista
         {
             if (target == null || !target.IsValidTarget())
                 return;
+           
+            var getEstacks = target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
 
+            if (getEstacks == null)
+                return;
+
+            var useE = ElKalistaMenu._menu.Item("ElKalista.E.Auto").GetValue<bool>();
+            var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
+
+            if (spells[Spells.E].IsReady() && useE && getEstacks.Count >= useEStacks)
+            {
+                if (spells[Spells.E].GetDamage(target) >= target.Health)
+                {
+                    spells[Spells.E].Cast(true);
+                }
+                else
+                {
+                    //Hellsing calculations..
+                    if (target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
+                        getEstacks.EndTime - Game.Time < 0.3)
+                    {
+                        spells[Spells.E].Cast(true);
+                    }
+                }    
+            }
         }
 
         private static void SemiUltMode()

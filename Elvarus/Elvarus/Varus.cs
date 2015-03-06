@@ -74,7 +74,7 @@ namespace Elvarus
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.0.2", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.0.3", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
