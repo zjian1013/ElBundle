@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Drawings.cs" />
+    <Compile Include="EDamage.cs" />
     <Compile Include="ElKalistaMenu.cs" />
     <Compile Include="Kalista.cs" />
     <Compile Include="Program.cs" />

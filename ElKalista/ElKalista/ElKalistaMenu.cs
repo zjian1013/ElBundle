@@ -19,12 +19,12 @@ namespace ElKalista
         {
             _menu = new Menu("ElKalista", "menu", true);
 
-            //ElSinged.Orbwalker
+            //ElKalista.Orbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Kalista._orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             _menu.AddSubMenu(orbwalkerMenu);
 
-            //ElSinged.TargetSelector
+            //ElKalista.TargetSelector
             var targetSelector = new Menu("Target Selector", "TargetSelector");
             TargetSelector.AddToMenu(targetSelector);
             _menu.AddSubMenu(targetSelector);
@@ -34,6 +34,10 @@ namespace ElKalista
             cMenu.AddItem(new MenuItem("ElKalista.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.Combo.R", "Use R").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.sssssssss", ""));
+            cMenu.AddItem(new MenuItem("ElKalista.ComboE.Auto", "Use stacked E").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElKalista.ComboE.Stacks", "Stacks for E usage >=").SetValue(new Slider(5, 1, 20)));
+            cMenu.AddItem(new MenuItem("ElKalista.ssssddsdssssss", ""));
+
             cMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             cMenu.AddItem(new MenuItem("ElKalista.SemiR", "Semi-manual R").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
@@ -41,8 +45,13 @@ namespace ElKalista
 
             var hMenu = new Menu("Harass", "Harass");
             hMenu.AddItem(new MenuItem("ElKalista.Harass.Q", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElKalista.minmanaharass", "Mana need for harass ")).SetValue(new Slider(55));
+            hMenu.AddItem(new MenuItem("ElKalista.minmanaharass", "Harass mana")).SetValue(new Slider(55));
             hMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
+
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElKalista.AutoHarass", "[Toggle] Auto harass", false).SetValue(new KeyBind("U".ToCharArray()[0], KeyBindType.Toggle)));
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElKalista.UseQAutoHarass", "Use Q").SetValue(true));
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElKalista.harass.mana", "Auto harass mana")).SetValue(new Slider(55));
+
             _menu.AddSubMenu(hMenu);
 
             var itemMenu = new Menu("Items", "Items");
@@ -67,13 +76,18 @@ namespace ElKalista
 
             _menu.AddSubMenu(lMenu);
 
-            //ElSinged.Misc
+            //ElKalista.Misc
             var miscMenu = new Menu("Super Secret Settings", "Misc");
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.R", "Draw R").SetValue(new Circle()));
+
+            var dmgAfterE = new MenuItem("ElKalista.DrawComboDamage", "Draw E damage").SetValue(true);
+            var drawFill = new MenuItem("ElKalista.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            miscMenu.AddItem(drawFill);
+            miscMenu.AddItem(dmgAfterE);
 
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
@@ -85,17 +99,20 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
-           
-            var dmgAfterComboItem = new MenuItem("ElKalista.DrawComboDamage", "Draw E damage").SetValue(true);
-            miscMenu.AddItem(dmgAfterComboItem);
+            EDamage.DamageToUnit = Kalista.GetComboDamage;
+            EDamage.Enabled = dmgAfterE.GetValue<bool>();
+            EDamage.Fill = drawFill.GetValue<Circle>().Active;
+            EDamage.FillColor = drawFill.GetValue<Circle>().Color;
 
-            Utility.HpBarDamageIndicator.DamageToUnit = Kalista.GetComboDamage;
-            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
-            Utility.HpBarDamageIndicator.Color = Color.Aqua;
-
-            dmgAfterComboItem.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            dmgAfterE.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
             {
-                Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                EDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                EDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                EDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
             };
 
             _menu.AddSubMenu(miscMenu);
@@ -107,7 +124,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.3"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.5"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

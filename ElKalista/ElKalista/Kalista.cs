@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.3", 1000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.5", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -108,6 +108,7 @@ namespace ElKalista
             SaveMode();
             SemiUltMode();
             AutoCastEMode(target);
+            AutoHarassMode(target);
         }
         #endregion
 
@@ -122,6 +123,26 @@ namespace ElKalista
         }
 
         #region SuperSeCrEtSeTtInGs
+
+        private static void AutoHarassMode(Obj_AI_Base target)
+        {
+            if (target == null || !target.IsValidTarget())
+                return;
+
+            if (ElKalistaMenu._menu.Item("ElKalista.AutoHarass").GetValue<KeyBind>().Active)
+            {
+                var q = ElKalistaMenu._menu.Item("ElKalista.UseQAutoHarass").GetValue<bool>();
+                var mana = ElKalistaMenu._menu.Item("ElKalista.harass.mana").GetValue<Slider>().Value;
+
+                if (Player.ManaPercentage() < mana)
+                    return;
+
+                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range)
+                {
+                    spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
+                }
+            }
+        }
 
         private static void AutoCastEMode(Obj_AI_Base target)
         {
@@ -302,16 +323,35 @@ namespace ElKalista
                     spells[Spells.Q].Cast(target);
             }
 
-            if (comboE && spells[Spells.E].IsReady())
+            var eTarget = HeroManager.Enemies.Where(x => spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 && !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield)).OrderByDescending(x => spells[Spells.E].GetDamage(x)).FirstOrDefault();
+
+            var getEstacks = target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
+
+            if (getEstacks == null)
+                return;
+
+            var useE = ElKalistaMenu._menu.Item("ElKalista.ComboE.Auto").GetValue<bool>();
+            var useEStacks = ElKalistaMenu._menu.Item("ElKalista.ComboE.Stacks").GetValue<Slider>().Value;
+
+            if (comboE && spells[Spells.E].IsReady() && eTarget.Health <= spells[Spells.E].GetDamage(eTarget) 
+                || target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) 
+                || getEstacks.EndTime - Game.Time < 0.3
+                || useE && getEstacks.Count >= useEStacks)
             {
-                var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range).Where(x => x.Health <= spells[Spells.E].GetDamage(x)).OrderBy(x => x.Health).FirstOrDefault();
-                var Target = HeroManager.Enemies.Where(x => spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 && !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield)).OrderByDescending(x => spells[Spells.E].GetDamage(x)).FirstOrDefault();
+                //var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range).Where(x => x.Health <= spells[Spells.E].GetDamage(x)).OrderBy(x => x.Health).FirstOrDefault();
 
-                if (Target != null && (Target.Health <= spells[Spells.E].GetDamage(Target) || (spells[Spells.E].CanCast(minion) && spells[Spells.E].CanCast(Target))))
+                if ((eTarget.Health <= spells[Spells.E].GetDamage(eTarget)))
+                {
                     spells[Spells.E].Cast();
+                }
 
-                if (spells[Spells.E].CanCast(target) && spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsDashing() && !Player.IsWindingUp)
+                if (spells[Spells.E].CanCast(target) &&
+                    spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsDashing() &&
+                    !Player.IsWindingUp)
+                {
                     spells[Spells.E].Cast(target);
+                }
+                    
             }
         }
         #endregion
