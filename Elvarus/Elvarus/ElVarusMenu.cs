@@ -90,7 +90,7 @@ namespace Elvarus
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.4"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.5"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

@@ -329,7 +329,22 @@ namespace Elvarus
            
             var comboDamage = GetComboDamage(target);
 
-            if (spells[Spells.Q].IsCharging)
+            if (spells[Spells.Q].IsReady() && comboQ)
+            {
+                if (spells[Spells.Q].IsCharging)
+                {
+                    spells[Spells.Q].Cast(target);
+                    return;
+                }
+                if (comboDamage > target.Health || !spells[Spells.Q].IsCharging && GetStacksOn(target) >= stackCount || !spells[Spells.Q].IsCharging && spells[Spells.W].Level == 0)
+                {
+                    spells[Spells.Q].StartCharging();
+                    return;
+                }
+            }
+
+
+            /*if (spells[Spells.Q].IsCharging)
             {
                 // ReSharper disable once InvertIf
                 if (spells[Spells.Q].IsInRange(target) && (comboQ && spells[Spells.Q].IsReady()))
@@ -354,7 +369,7 @@ namespace Elvarus
             else if (comboDamage > target.Health || Player.AttackRange < Player.Distance(target) || GetStacksOn(target) >= stackCount)
             {
                 spells[Spells.Q].StartCharging();
-            }
+            }*/
         }
         #endregion
     }
