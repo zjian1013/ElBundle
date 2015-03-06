@@ -152,18 +152,42 @@ namespace Elvarus
         {
             var useQ = ElVarusMenu._menu.Item("useQFarm").GetValue<bool>();
             var useE = ElVarusMenu._menu.Item("useQFarm").GetValue<bool>();
+            var countMinions = ElVarusMenu._menu.Item("ElVarus.Count.Minions").GetValue<Slider>().Value;
+            var countMinionsE = ElVarusMenu._menu.Item("ElVarus.Count.Minions.E").GetValue<Slider>().Value;
             var minmana = ElVarusMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spells[Spells.E].Range, MinionTypes.All);
+            //var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spells[Spells.E].Range, MinionTypes.All);
 
-            if(Player.ManaPercentage() >= minmana)
-            {                    
-                foreach (var minion in minions)
+            if (Player.ManaPercentage() < minmana)
+                return;
+
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
+
+            if (minions.Count <= 0)
+                return;
+
+            if (spells[Spells.Q].IsReady() && useQ)
+            {
+                foreach (var minion in minions.Where(x => x.Health <= spells[Spells.Q].GetDamage(x)))
                 {
-                    if (spells[Spells.Q].IsReady() && useQ)
+                    var killcount = 0;
+
+                    foreach (var colminion in minions)
+                    {
+                        if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
+                        {
+                            killcount++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (killcount >= countMinions)
                     {
                         if (spells[Spells.Q].IsCharging)
                         {
-                            spells[Spells.Q].Cast(minion, true);
+                            spells[Spells.Q].Cast(minion);
                             Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                         }
                         if (!spells[Spells.Q].IsCharging)
@@ -171,11 +195,22 @@ namespace Elvarus
                             spells[Spells.Q].StartCharging();
                             return;
                         }
+                        break;
                     }
-                    if (spells[Spells.E].IsReady() && useE)
-                    {
-                        spells[Spells.E].Cast(minion);
-                    }
+                }
+            }
+
+            if (!useE || !spells[Spells.E].IsReady())
+                return;
+
+            var minionkillcount =
+                minions.Count(x => spells[Spells.E].CanCast(x) && x.Health <= spells[Spells.E].GetDamage(x));
+
+            if (minionkillcount >= countMinionsE)
+            {
+                foreach (var minion in minions.Where(x => x.Health <= spells[Spells.E].GetDamage(x)))
+                {
+                    spells[Spells.E].Cast(minion);
                 }
             }
         }

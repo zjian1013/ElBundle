@@ -66,7 +66,9 @@ namespace Elvarus
 
             var lMenu = new Menu("Clear", "Clear");
             lMenu.AddItem(new MenuItem("useQFarm", "Use Q").SetValue(true));
+            lMenu.AddItem(new MenuItem("ElVarus.Count.Minions", "Killable minions with Q >=").SetValue(new Slider(2, 1, 5)));
             lMenu.AddItem(new MenuItem("useEFarm", "Use E").SetValue(true));
+            lMenu.AddItem(new MenuItem("ElVarus.Count.Minions.E", "Killable minions with E >=").SetValue(new Slider(2, 1, 5)));
             lMenu.AddItem(new MenuItem("useEFarmddsddaadsd", ""));
             lMenu.AddItem(new MenuItem("useQFarmJungle", "Use Q in jungle").SetValue(true));
             lMenu.AddItem(new MenuItem("useEFarmJungle", "Use E in jungle").SetValue(true));
@@ -90,7 +92,7 @@ namespace Elvarus
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.5"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.6"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
