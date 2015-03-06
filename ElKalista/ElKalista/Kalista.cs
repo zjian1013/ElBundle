@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.5", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.7", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -190,21 +190,23 @@ namespace ElKalista
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
+
             if (ConnectedAlly == null)
             {
-                ConnectedAlly = HeroManager.Allies.Find(h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
-                if (ConnectedAlly != null)
-                {
-                    if (save)
-                    {
-                        if (ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(spells[Spells.R].Range) > 0)
-                            spells[Spells.R].Cast();
-                    }
-                }
-                else
-                {
-                    return;
-                }
+                ConnectedAlly =
+                    HeroManager.Allies.Find(
+                        h => h.Buffs.Any(b => b.Caster.IsMe && b.Name.Contains("kalistacoopstrikeally")));
+                return;
+            }
+            
+            var allyhp2 = ConnectedAlly.HealthPercentage();
+            if (ConnectedAlly != null && save && allyhp2 < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0)
+            {
+                spells[Spells.R].Cast();
+            }
+            else
+            {
+                return;
             }
         }
 
