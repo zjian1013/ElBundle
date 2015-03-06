@@ -34,6 +34,8 @@ namespace ElSinged
             cMenu.AddItem(new MenuItem("ElSinged.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElSinged.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElSinged.Combo.R", "Use R").SetValue(true));
+            cMenu.AddItem(new MenuItem("exploit", "Exploit Enabled [RISKY]").SetValue(false));
+            cMenu.AddItem(new MenuItem("delayms", "Delay (MS)").SetValue(new Slider(150, 0, 1000)));
             cMenu.AddItem(new MenuItem("ElSinged.Coffasfsafsambo.R", ""));
             cMenu.AddItem(new MenuItem("ElSinged.Combo.R.Count", "Use R enemies >= ")).SetValue(new Slider(2, 1, 5));
             cMenu.AddItem(new MenuItem("ElSinged.Combo.Ignite", "Use Ignite").SetValue(true));
@@ -68,7 +70,7 @@ namespace ElSinged
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.3"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
