@@ -321,12 +321,6 @@ namespace Elvarus
                 spells[Spells.E].Cast(target);
             }
 
-            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
-            {
-                spells[Spells.R].CastOnBestTarget();
-            }
-
-           
             var comboDamage = GetComboDamage(target);
 
             if (spells[Spells.Q].IsReady() && comboQ)
@@ -343,7 +337,12 @@ namespace Elvarus
                 }
             }
 
+            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
+            {
+                spells[Spells.R].CastOnBestTarget();
+            }
 
+           
             /*if (spells[Spells.Q].IsCharging)
             {
                 // ReSharper disable once InvertIf
