@@ -125,29 +125,9 @@ namespace ElKalista
 
         private static void AutoCastEMode(Obj_AI_Base target)
         {
-           /* if (target.HasBuff("KalistaExpungeMarker"))
-            {
-                Console.WriteLine("ye");
-            }*/
+            if (target == null || !target.IsValidTarget())
+                return;
 
-            /*if (spells[Spells.E].IsInRange(target) &&
-                (target.IsRendKillable() || target.GetRendBuff().Count >= Config.SliderLinks["comboNumE"].Value.Value))
-            {
-                // Check if the target would die from E
-                if (target.IsRendKillable())
-                {
-                    spells[Spells.E].Cast(true);
-                }
-                else
-                {
-                    // Check if target is about to leave our E range or the buff is about to run out
-                    if (target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
-                        target.GetRendBuff().EndTime - Game.Time < 0.3)
-                    {
-                        spells[Spells.E].Cast(true);
-                    }
-                }
-            }*/
         }
 
         private static void SemiUltMode()
