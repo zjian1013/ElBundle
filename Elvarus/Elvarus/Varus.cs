@@ -374,7 +374,7 @@ namespace Elvarus
 
             if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
             {
-                spells[Spells.R].Cast(target);
+                spells[Spells.R].CastOnBestTarget();
             }
         }
         #endregion
