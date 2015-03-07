@@ -374,36 +374,8 @@ namespace Elvarus
 
             if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
             {
-                spells[Spells.R].CastOnBestTarget();
+                spells[Spells.R].Cast(target);
             }
-
-           
-            /*if (spells[Spells.Q].IsCharging)
-            {
-                // ReSharper disable once InvertIf
-                if (spells[Spells.Q].IsInRange(target) && (comboQ && spells[Spells.Q].IsReady()))
-                {
-                    if (spells[Spells.Q].Range == spells[Spells.Q].ChargedMaxRange)
-                    {
-                        CastQ(target);
-                    }
-                    else if(spells[Spells.Q].Range != spells[Spells.Q].ChargedMaxRange)
-                    {
-                        //Hellsing logic .. 
-                        var prediction = spells[Spells.Q].GetPrediction(target);
-                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                        if (distance < spells[Spells.Q].RangeSqr)
-                        {
-                            if (spells[Spells.Q].Cast(prediction.CastPosition))
-                                return;
-                        }
-                    }
-                }
-            }
-            else if (comboDamage > target.Health || Player.AttackRange < Player.Distance(target) || GetStacksOn(target) >= stackCount)
-            {
-                spells[Spells.Q].StartCharging();
-            }*/
         }
         #endregion
     }
