@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.7", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.8", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -116,8 +116,8 @@ namespace ElKalista
         {
             float damage = 0;
 
-            if (spells[Spells.Q].IsReady())
-                damage += spells[Spells.Q].GetDamage(enemy);
+            if (spells[Spells.E].IsReady())
+                damage += spells[Spells.E].GetDamage(enemy);
 
             return damage;
         }
