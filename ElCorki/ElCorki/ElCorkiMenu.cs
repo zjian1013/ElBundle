@@ -86,6 +86,8 @@ namespace ElCorki
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.R", "Draw R").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElCorki.Draw.Text", "Draw Text").SetValue(true));
+
             miscMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElCorki.misc.ks", "Killsteal mode").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElCorki.misc.junglesteal", "Jungle steal mode").SetValue(false));

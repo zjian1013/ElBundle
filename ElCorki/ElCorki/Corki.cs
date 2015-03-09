@@ -109,6 +109,7 @@ namespace ElCorki
 
             KsMode();
             AutoHarassMode(target);
+            JungleStealMode();
 
             spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
         }
@@ -295,31 +296,32 @@ namespace ElCorki
 
         private static void Harass(Obj_AI_Base target)
         {
+
             if (target == null || !target.IsValidTarget())
-                return;
+                 return;
+        
+             var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").GetValue<bool>();
+             var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").GetValue<bool>();
+             var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").GetValue<bool>();
+             var minmana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
 
-            var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").GetValue<bool>();
-            var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").GetValue<bool>();
-            var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").GetValue<bool>();
-            var minmana = ElCorkiMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
+             if (Player.ManaPercentage() < minmana)
+                 return;
 
-            if (Player.ManaPercentage() < minmana)
-                return;
-            
             if (harassQ && spells[Spells.Q].IsReady())
-            {
-                spells[Spells.Q].Cast(target);
-            }
+             {
+                 spells[Spells.Q].Cast(target);
+             }
 
             if (harassE && spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].CastOnBestTarget();
-            }
+             {
+                 spells[Spells.E].CastOnBestTarget();
+             }
 
-            if (harassR && spells[Spells.R1].IsReady())
-            {
-                spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance, true);
-            }
+             if (harassR && spells[Spells.R1].IsReady())
+             {
+                 spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance, true);
+             }
         }
         #endregion
 
@@ -383,13 +385,13 @@ namespace ElCorki
             var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.R1].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health + (x.HPRegenRate / 2) <= spells[Spells.R1].GetDamage(x));
 
             if (spells[Spells.R1].CanCast(jMob))
-                spells[Spells.R1].Cast();
+                spells[Spells.R1].Cast(jMob);
 
             var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.R1].Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health <= spells[Spells.E].GetDamage(x) && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
 
             if (spells[Spells.R1].IsReady() && spells[Spells.R1].CanCast(minion))
             {
-                spells[Spells.R1].Cast();
+                spells[Spells.R1].Cast(minion);
             }
         }
 

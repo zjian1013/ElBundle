@@ -18,9 +18,14 @@ namespace ElCorki
             var drawW = ElCorkiMenu._menu.Item("ElCorki.Draw.W").GetValue<Circle>();
             var drawE = ElCorkiMenu._menu.Item("ElCorki.Draw.E").GetValue<Circle>();
             var drawR = ElCorkiMenu._menu.Item("ElCorki.Draw.R").GetValue<Circle>();
+            var drawText = ElCorkiMenu._menu.Item("ElCorki.Draw.Text").GetValue<bool>();
+            var rBool = ElCorkiMenu._menu.Item("ElCorki.AutoHarass").GetValue<KeyBind>().Active;
+
 
             if (drawOff)
                 return;
+
+            var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
 
             if (drawQ.Active)
                 if (Corki.spells[Spells.Q].Level > 0)
@@ -37,6 +42,9 @@ namespace ElCorki
             if (drawR.Active)
                 if (Corki.spells[Spells.R1].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.R1].Range, Corki.spells[Spells.R1].IsReady() ? Color.Green : Color.Red);
+
+            if (drawText)
+                Drawing.DrawText( playerPos.X - 70, playerPos.Y + 40, (rBool ? Color.Green : Color.Red), "{0}", (rBool ? "Auto harass Enabled" : "Auto harass Disabled"));
         }
     }
 }
