@@ -24,7 +24,7 @@ namespace ElCorki
     {
         private static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Orbwalking.Orbwalker Orbwalker;
-
+        private static SpellSlot _ignite;
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
             { Spells.Q, new Spell(SpellSlot.Q, 825)},
@@ -70,12 +70,13 @@ namespace ElCorki
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElCorki by jQuery v1.0.0.0", 1000);
+            Notifications.AddNotification("ElCorki by jQuery v1.0.0.1", 1000);
 
             spells[Spells.Q].SetSkillshot(0.35f, 250f, 1000f, false, SkillshotType.SkillshotCircle);
             spells[Spells.E].SetSkillshot(0f, (float)(45 * Math.PI / 180), 1500, false, SkillshotType.SkillshotCone);
             spells[Spells.R1].SetSkillshot(0.2f, 40f, 2000f, true, SkillshotType.SkillshotLine);
             spells[Spells.R2].SetSkillshot(0.2f, 40f, 2000f, true, SkillshotType.SkillshotLine);
+            _ignite = Player.GetSpellSlot("summonerdot");
 
             ElCorkiMenu.Initialize();
             Game.OnUpdate += OnUpdate;
@@ -164,6 +165,8 @@ namespace ElCorki
             var comboQ = ElCorkiMenu._menu.Item("ElCorki.Combo.Q").GetValue<bool>();
             var comboE = ElCorkiMenu._menu.Item("ElCorki.Combo.E").GetValue<bool>();
             var comboR = ElCorkiMenu._menu.Item("ElCorki.Combo.R").GetValue<bool>();
+            var useIgnite = ElCorkiMenu._menu.Item("ElCorki.Combo.Ignite").GetValue<bool>();
+            var rStacks = ElCorkiMenu._menu.Item("ElCorki.Combo.RStacks").GetValue<Slider>().Value;
 
             Items(target);
 
@@ -177,9 +180,26 @@ namespace ElCorki
                 spells[Spells.E].Cast(target);
             }
 
-            if (comboR && spells[Spells.R1].IsReady())
+            if (comboR && spells[Spells.R1].IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks)
             {
-                spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance, true);
+                var bigR = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig");
+
+                var _target = TargetSelector.GetTarget(bigR ? spells[Spells.R2].Range : spells[Spells.R1].Range, TargetSelector.DamageType.Magical);
+                if (_target != null)
+                if (bigR)
+                {
+                    spells[Spells.R2].CastIfHitchanceEquals(_target, CustomHitChance, true);
+                }
+                else
+                {
+                    spells[Spells.R1].CastIfHitchanceEquals(_target, CustomHitChance, true);
+                }
+            }
+
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health &&
+               useIgnite)
+            {
+                Player.Spellbook.CastSpell(_ignite, target);
             }
         }
 
@@ -393,6 +413,19 @@ namespace ElCorki
             {
                 spells[Spells.R1].Cast(minion);
             }
+        }
+
+        #endregion
+
+        #region Ignite Damage
+
+        private static float IgniteDamage(Obj_AI_Base target)
+        {
+            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
+            {
+                return 0f;
+            }
+            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
         #endregion

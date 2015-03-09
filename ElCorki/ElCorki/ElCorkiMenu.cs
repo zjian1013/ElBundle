@@ -35,7 +35,9 @@ namespace ElCorki
             cMenu.AddItem(new MenuItem("ElCorki.Combo.Q", "Use Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElCorki.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElCorki.Combo.R", "Use R").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElCorki.Combo.Ignite", "Use Ignite").SetValue(true));
             cMenu.AddItem(new MenuItem("ElCorki.ssssssssssss", ""));
+            cMenu.AddItem(new MenuItem("ElCorki.Combo.RStacks", "Keep R Stacks").SetValue(new Slider(0, 0, 7)));
             cMenu.AddItem(new MenuItem("ElCorki.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
 
@@ -101,7 +103,7 @@ namespace ElCorki
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.0"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.1"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
