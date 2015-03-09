@@ -103,9 +103,13 @@ namespace ElCorki
                     JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    //Harass(target);
+                    Harass(target);
                     break;
             }
+
+            KsMode();
+            AutoHarassMode(target);
+
             spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
         }
         #endregion
@@ -206,9 +210,9 @@ namespace ElCorki
                 {
                     var killcount = 0;
 
-                    foreach (var colminion in minions)
+                    foreach (var cminion in minions)
                     {
-                        if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
+                        if (cminion.Health <= spells[Spells.Q].GetDamage(cminion))
                         {
                             killcount++;
                         }
@@ -244,7 +248,6 @@ namespace ElCorki
             var rMinionkillcount =
                 minions.Count(x => spells[Spells.R1].CanCast(x) && x.Health <= spells[Spells.R1].GetDamage(x));
 
-            // ReSharper disable once InvertIf
             if (rMinionkillcount >= countMinionsR)
             {
                 foreach (var minion in minions.Where(x => x.Health <= spells[Spells.R1].GetDamage(x)))
@@ -286,6 +289,110 @@ namespace ElCorki
                 }
             }
         }
+        #endregion
+
+        #region Harass
+
+        private static void Harass(Obj_AI_Base target)
+        {
+            if (target == null || !target.IsValidTarget())
+                return;
+
+            var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").GetValue<bool>();
+            var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").GetValue<bool>();
+            var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").GetValue<bool>();
+            var minmana = ElCorkiMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
+
+            if (Player.ManaPercentage() < minmana)
+                return;
+            
+            if (harassQ && spells[Spells.Q].IsReady())
+            {
+                spells[Spells.Q].Cast(target);
+            }
+
+            if (harassE && spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].CastOnBestTarget();
+            }
+
+            if (harassR && spells[Spells.R1].IsReady())
+            {
+                spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance, true);
+            }
+        }
+        #endregion
+
+        #region Autoharass
+
+        private static void AutoHarassMode(Obj_AI_Base target)
+        {
+            if (target == null || !target.IsValidTarget())
+                return;
+
+            if (ElCorkiMenu._menu.Item("ElCorki.AutoHarass").GetValue<KeyBind>().Active)
+            {
+                var q = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").GetValue<bool>();
+                var r = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").GetValue<bool>();
+                var mana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
+
+                if (Player.ManaPercentage() < mana)
+                    return;
+
+                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range)
+                {
+                    spells[Spells.Q].Cast(target);
+                }
+
+                if (r && spells[Spells.R1].IsReady() && Player.Distance(target) <= spells[Spells.R1].Range)
+                {
+                    spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance);
+                }
+            }
+        }
+
+        #endregion
+
+        #region KSMode
+
+        private static void KsMode()
+        {
+            var useKs = ElCorkiMenu._menu.Item("ElCorki.misc.ks").GetValue<bool>();
+            if (!useKs)
+                return;
+
+            var target = HeroManager.Enemies.FirstOrDefault(x => !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) && spells[Spells.R1].CanCast(x) && (x.Health + (x.HPRegenRate / 2)) <= spells[Spells.R1].GetDamage(x));
+
+            if (spells[Spells.R1].IsReady() && spells[Spells.R1].CanCast(target))
+            {
+                spells[Spells.R1].Cast(target);
+            }
+        }
+
+        #endregion
+
+        #region JungleSteal
+
+        static void JungleStealMode()
+        {
+            var useJsm = ElCorkiMenu._menu.Item("ElCorki.misc.junglesteal").GetValue<bool>();
+
+            if (!useJsm)
+                return;
+
+            var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.R1].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health + (x.HPRegenRate / 2) <= spells[Spells.R1].GetDamage(x));
+
+            if (spells[Spells.R1].CanCast(jMob))
+                spells[Spells.R1].Cast();
+
+            var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.R1].Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health <= spells[Spells.E].GetDamage(x) && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
+
+            if (spells[Spells.R1].IsReady() && spells[Spells.R1].CanCast(minion))
+            {
+                spells[Spells.R1].Cast();
+            }
+        }
+
         #endregion
     }
 }

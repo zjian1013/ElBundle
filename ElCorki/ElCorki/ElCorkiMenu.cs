@@ -22,11 +22,13 @@ namespace ElCorki
             //ElCorki.Orbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Corki.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+
             _menu.AddSubMenu(orbwalkerMenu);
 
             //ElCorki.TargetSelector
             var targetSelector = new Menu("Target Selector", "TargetSelector");
             TargetSelector.AddToMenu(targetSelector);
+
             _menu.AddSubMenu(targetSelector);
 
             var cMenu = new Menu("Combo", "Combo");
@@ -36,11 +38,19 @@ namespace ElCorki
             cMenu.AddItem(new MenuItem("ElCorki.ssssssssssss", ""));
             cMenu.AddItem(new MenuItem("ElCorki.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
+
             _menu.AddSubMenu(cMenu);
 
             var hMenu = new Menu("Harass", "Harass");
             hMenu.AddItem(new MenuItem("ElCorki.Harass.Q", "Use Q").SetValue(true));
             hMenu.AddItem(new MenuItem("ElCorki.Harass.E", "Use E").SetValue(false));
+            hMenu.AddItem(new MenuItem("ElCorki.Harass.R", "Use R").SetValue(true));
+
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElCorki.AutoHarass", "[Toggle] Auto harass", false).SetValue(new KeyBind("U".ToCharArray()[0], KeyBindType.Toggle)));
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElCorki.UseQAutoHarass", "Use Q").SetValue(true));
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElCorki.UseRAutoHarass", "Use R").SetValue(true));
+            hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElCorki.harass.mana", "Auto harass mana")).SetValue(new Slider(55));
+
             _menu.AddSubMenu(hMenu);
 
             var lMenu = new Menu("Clear", "Clear");
@@ -56,6 +66,7 @@ namespace ElCorki
             lMenu.AddItem(new MenuItem("useRFarmJungle", "Use R in jungle").SetValue(true));
             lMenu.AddItem(new MenuItem("useEFarmddssd", ""));
             lMenu.AddItem(new MenuItem("minmanaclear", "Mana needed to clear ")).SetValue(new Slider(55));
+
             _menu.AddSubMenu(lMenu);
 
             var itemMenu = new Menu("Items", "Items");
@@ -65,15 +76,20 @@ namespace ElCorki
             itemMenu.AddItem(new MenuItem("ElCorki.Harasssfsddass.E", ""));
             itemMenu.AddItem(new MenuItem("ElCorki.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
             itemMenu.AddItem(new MenuItem("ElCorki.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
+
             _menu.AddSubMenu(itemMenu);
 
             //ElCorki.Misc
-            var miscMenu = new Menu("Drawings", "Misc");
+            var miscMenu = new Menu("Misc", "Misc");
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElCorki.Draw.R", "Draw R").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
+            miscMenu.AddItem(new MenuItem("ElCorki.misc.ks", "Killsteal mode").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElCorki.misc.junglesteal", "Jungle steal mode").SetValue(false));
+
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
