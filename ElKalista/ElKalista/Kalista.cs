@@ -415,7 +415,10 @@ namespace ElKalista
 
             if (Player.ManaPercentage() < minmana)
                 return;
-               
+
+            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                return;
+
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
 
             if (minions.Count <= 0)
