@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.8", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.0.9", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -137,7 +137,7 @@ namespace ElKalista
                 if (Player.ManaPercentage() < mana)
                     return;
 
-                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range)
+                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range && !Player.IsDashing() && !Player.IsWindingUp)
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
                 }
@@ -156,22 +156,21 @@ namespace ElKalista
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.E.Auto").GetValue<bool>();
             var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
+            var oor = ElKalistaMenu._menu.Item("ElKalista.E.OOR").GetValue<bool>();
 
             if (spells[Spells.E].IsReady() && useE && getEstacks.Count >= useEStacks)
             {
                 if (spells[Spells.E].GetDamage(target) >= target.Health)
                 {
-                    spells[Spells.E].Cast(true);
+                    spells[Spells.E].Cast();
                 }
-                else
+
+                //Hellsing calculations..
+                if (oor && target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
+                    getEstacks.EndTime - Game.Time < 0.3)
                 {
-                    //Hellsing calculations..
-                    if (target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
-                        getEstacks.EndTime - Game.Time < 0.3)
-                    {
-                        spells[Spells.E].Cast(true);
-                    }
-                }    
+                    spells[Spells.E].Cast();
+                }
             }
         }
 
@@ -222,6 +221,11 @@ namespace ElKalista
             {
                 spells[Spells.E].Cast();
             }
+
+            if (spells[Spells.Q].IsReady() && spells[Spells.Q].CanCast(target))
+            {
+                spells[Spells.Q].Cast();
+            }
         }
 
         static void JungleStealMode()
@@ -231,16 +235,11 @@ namespace ElKalista
             if (!useJsm)
                 return;
 
-            var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health + (x.HPRegenRate / 2) <= spells[Spells.E].GetDamage(x));
+            var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All , MinionTeam.All, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health <= spells[Spells.E].GetDamage(x) && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
 
             if (spells[Spells.E].CanCast(jMob))
-                spells[Spells.E].Cast();
-
-            var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health <= spells[Spells.E].GetDamage(x) && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
-
-            if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(minion))
             {
-                spells[Spells.E].Cast();
+                spells[Spells.E].Cast(jMob);
             }
         }
 
@@ -251,7 +250,7 @@ namespace ElKalista
         private static void Items(Obj_AI_Base target)
         {
             var botrk = ItemData.Blade_of_the_Ruined_King.GetItem();
-            var Ghost = ItemData.Youmuus_Ghostblade.GetItem();
+            var ghost = ItemData.Youmuus_Ghostblade.GetItem();
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
             var useYoumuu = ElKalistaMenu._menu.Item("ElKalista.Items.Youmuu").GetValue<bool>();
@@ -278,9 +277,9 @@ namespace ElKalista
                 && useCutlass)
                 cutlass.Cast(target);
 
-            if (Ghost.IsReady() && Ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
+            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
                 && useYoumuu)
-                Ghost.Cast();
+                ghost.Cast();
         }
 
         #endregion
@@ -333,27 +332,30 @@ namespace ElKalista
                 return;
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.ComboE.Auto").GetValue<bool>();
-            var useEStacks = ElKalistaMenu._menu.Item("ElKalista.ComboE.Stacks").GetValue<Slider>().Value;
+            var oor = ElKalistaMenu._menu.Item("ElKalista.E.OOR").GetValue<bool>();
+            var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
 
-            if (comboE && spells[Spells.E].IsReady() && eTarget.Health <= spells[Spells.E].GetDamage(eTarget) 
-                || target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) 
-                || getEstacks.EndTime - Game.Time < 0.3
-                || useE && getEstacks.Count >= useEStacks)
-            {
-                //var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range).Where(x => x.Health <= spells[Spells.E].GetDamage(x)).OrderBy(x => x.Health).FirstOrDefault();
-
-                if ((eTarget.Health <= spells[Spells.E].GetDamage(eTarget)))
+            if(comboE && spells[Spells.E].IsReady())
+            {             
+                if (useE && oor && target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2)
+                || getEstacks.EndTime - Game.Time < 0.3 )
                 {
                     spells[Spells.E].Cast();
                 }
 
-                if (spells[Spells.E].CanCast(target) &&
-                    spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsDashing() &&
-                    !Player.IsWindingUp)
+                if (!oor && useE && getEstacks.EndTime - Game.Time < 0.3 
+                    || useE && !oor)
                 {
-                    spells[Spells.E].Cast(target);
+                    if (getEstacks.Count >= useEStacks && target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2))
+                    {
+                        spells[Spells.E].Cast();
+                    }
                 }
-                    
+
+                if (eTarget != null && spells[Spells.E].GetDamage(eTarget) >=  eTarget.Health)
+                {
+                    spells[Spells.E].Cast();
+                }
             }
         }
         #endregion
@@ -377,7 +379,7 @@ namespace ElKalista
                 {
                     spells[Spells.Q].Cast(minion);
                 }
-
+           
                 if (spells[Spells.E].IsReady() && useE && minions[0].Health + (minions[0].HPRegenRate / 2) <= spells[Spells.E].GetDamage(minion))
                 {
                     spells[Spells.E].Cast();

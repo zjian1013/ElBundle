@@ -35,7 +35,6 @@ namespace ElKalista
             cMenu.AddItem(new MenuItem("ElKalista.Combo.R", "Use R").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.sssssssss", ""));
             cMenu.AddItem(new MenuItem("ElKalista.ComboE.Auto", "Use stacked E").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElKalista.ComboE.Stacks", "Stacks for E usage >=").SetValue(new Slider(5, 1, 20)));
             cMenu.AddItem(new MenuItem("ElKalista.ssssddsdssssss", ""));
 
             cMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
@@ -54,16 +53,8 @@ namespace ElKalista
 
             _menu.AddSubMenu(hMenu);
 
-            var itemMenu = new Menu("Items", "Items");
-            itemMenu.AddItem(new MenuItem("ElKalista.Items.Youmuu", "Use Youmuu's Ghostblade").SetValue(true));
-            itemMenu.AddItem(new MenuItem("ElKalista.Items.Cutlass", "Use Cutlass").SetValue(true));
-            itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade", "Use Blade of the Ruined King").SetValue(true));
-            itemMenu.AddItem(new MenuItem("ElKalista.Harasssfsddass.E", ""));
-            itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
-            _menu.AddSubMenu(itemMenu);
 
-            var lMenu = new Menu("Clear", "Clear");
+            var lMenu = new Menu("Lane clear", "Clear");
             lMenu.AddItem(new MenuItem("useQFarm", "Use Q").SetValue(true));
             lMenu.AddItem(new MenuItem("ElKalista.Count.Minions", "Killable minions with Q >=").SetValue(new Slider(2, 1, 5)));
             lMenu.AddItem(new MenuItem("useEFarm", "Use E").SetValue(true));
@@ -76,13 +67,25 @@ namespace ElKalista
 
             _menu.AddSubMenu(lMenu);
 
+
+            var itemMenu = new Menu("Items", "Items");
+            itemMenu.AddItem(new MenuItem("ElKalista.Items.Youmuu", "Use Youmuu's Ghostblade").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElKalista.Items.Cutlass", "Use Cutlass").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade", "Use Blade of the Ruined King").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElKalista.Harasssfsddass.E", ""));
+            itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
+            itemMenu.AddItem(new MenuItem("ElKalista.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
+            _menu.AddSubMenu(itemMenu);
+
+
             //ElKalista.Misc
-            var miscMenu = new Menu("Super Secret Settings", "Misc");
+            var miscMenu = new Menu("Secret Settings", "Misc");
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.R", "Draw R").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElKalista.Draw.Text", "Draw Text").SetValue(true));
 
             var dmgAfterE = new MenuItem("ElKalista.DrawComboDamage", "Draw E damage").SetValue(true);
             var drawFill = new MenuItem("ElKalista.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
@@ -94,6 +97,7 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElKalista.E.OOR", "E when out of range").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(3, 1, 20)));
             miscMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
@@ -124,7 +128,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.8"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.9"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
