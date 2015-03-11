@@ -69,7 +69,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.0.9", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.1.1", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -156,20 +156,19 @@ namespace ElKalista
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.E.Auto").GetValue<bool>();
             var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
-            var oor = ElKalistaMenu._menu.Item("ElKalista.E.OOR").GetValue<bool>();
 
             if (spells[Spells.E].IsReady() && useE && getEstacks.Count >= useEStacks)
             {
-                if (spells[Spells.E].GetDamage(target) >= target.Health)
+                if (spells[Spells.E].GetDamage(target) > target.Health)
                 {
-                    spells[Spells.E].Cast();
+                    spells[Spells.E].Cast(true);
                 }
 
                 //Hellsing calculations..
-                if (oor && target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
+                if (target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) ||
                     getEstacks.EndTime - Game.Time < 0.3)
                 {
-                    spells[Spells.E].Cast();
+                    spells[Spells.E].Cast(true);
                 }
             }
         }
@@ -235,7 +234,11 @@ namespace ElKalista
             if (!useJsm)
                 return;
 
-            var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All , MinionTeam.All, MinionOrderTypes.MaxHealth).FirstOrDefault(x => x.Health <= spells[Spells.E].GetDamage(x) && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
+           // var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All , MinionTeam.All, MinionOrderTypes.MaxHealth).
+                //FirstOrDefault(x => spells[Spells.E].GetDamage(x) > x.Health && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
+
+            var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.All, MinionOrderTypes.MaxHealth).
+              FirstOrDefault(x => spells[Spells.E].GetDamage(x) > x.Health);
 
             if (spells[Spells.E].CanCast(jMob))
             {
@@ -360,11 +363,15 @@ namespace ElKalista
             var useQ = ElKalistaMenu._menu.Item("useQFarmJungle").GetValue<bool>();
             var useE = ElKalistaMenu._menu.Item("useEFarmJungle").GetValue<bool>();
             var minmana = ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 700, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
             if (Player.ManaPercentage() < minmana)
                 return;
-           
+
+            var minions = MinionManager.GetMinions(Player.ServerPosition, Orbwalking.GetRealAutoAttackRange(Player) + 100, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+
+            if (minions.Count <= 0)
+                return;
+                  
             foreach (var minion in minions)
             {
                 if (spells[Spells.Q].IsReady() && useQ)
@@ -394,8 +401,6 @@ namespace ElKalista
 
             return Collision.GetCollision(new List<Vector3> { targetposition }, input).OrderBy(obj => obj.Distance(source, false)).ToList();
         }
-        //End credits to xcsoft
-
 
         private static void LaneClear()
         {

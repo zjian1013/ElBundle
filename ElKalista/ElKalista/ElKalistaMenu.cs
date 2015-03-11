@@ -78,8 +78,20 @@ namespace ElKalista
             _menu.AddSubMenu(itemMenu);
 
 
+            var setMenu = new Menu("Secret Settings", "SSS");
+            setMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
+            setMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
+            setMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
+            setMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
+            setMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(10, 1, 20)));
+            setMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
+            setMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
+            setMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
+
+            _menu.AddSubMenu(setMenu);
+
             //ElKalista.Misc
-            var miscMenu = new Menu("Secret Settings", "Misc");
+            var miscMenu = new Menu("Drawings", "Misc");
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElKalista.Draw.W", "Draw W").SetValue(new Circle()));
@@ -92,15 +104,7 @@ namespace ElKalista
             miscMenu.AddItem(drawFill);
             miscMenu.AddItem(dmgAfterE);
 
-            miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasaadsd", ""));
-            miscMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
-            miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
-            miscMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(10, 1, 20)));
-            miscMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
-            miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
-            miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
+
 
             EDamage.DamageToUnit = Kalista.GetComboDamage;
             EDamage.Enabled = dmgAfterE.GetValue<bool>();
@@ -127,7 +131,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.0"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.1"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
