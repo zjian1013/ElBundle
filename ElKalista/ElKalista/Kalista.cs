@@ -325,36 +325,28 @@ namespace ElKalista
             }
 
             var eTarget = HeroManager.Enemies.Where(x => spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 && !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield)).OrderByDescending(x => spells[Spells.E].GetDamage(x)).FirstOrDefault();
-
             var getEstacks = target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
 
             if (getEstacks == null)
                 return;
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.ComboE.Auto").GetValue<bool>();
-            var oor = ElKalistaMenu._menu.Item("ElKalista.E.OOR").GetValue<bool>();
             var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
 
-            if(comboE && spells[Spells.E].IsReady())
-            {             
-                if (useE && oor && target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2)
-                || getEstacks.EndTime - Game.Time < 0.3 )
+
+            if (useE && comboE && spells[Spells.E].IsReady())
+            {
+                if (spells[Spells.E].IsInRange(target) && spells[Spells.E].GetDamage(target) * 0.98f > target.Health || getEstacks.Count >= useEStacks)
                 {
                     spells[Spells.E].Cast();
                 }
-
-                if (!oor && useE && getEstacks.EndTime - Game.Time < 0.3 
-                    || useE && !oor)
+                else
                 {
-                    if (getEstacks.Count >= useEStacks && target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2))
+                    if(target.ServerPosition.Distance(Player.ServerPosition, true) > Math.Pow(spells[Spells.E].Range * 0.8, 2) 
+                        || getEstacks.EndTime - Game.Time < 0.3)
                     {
                         spells[Spells.E].Cast();
                     }
-                }
-
-                if (eTarget != null && spells[Spells.E].GetDamage(eTarget) >=  eTarget.Health)
-                {
-                    spells[Spells.E].Cast();
                 }
             }
         }

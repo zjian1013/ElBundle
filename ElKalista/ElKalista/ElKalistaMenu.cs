@@ -97,8 +97,7 @@ namespace ElKalista
             miscMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
             miscMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElKalista.E.OOR", "E when out of range").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(3, 1, 20)));
+            miscMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(10, 1, 20)));
             miscMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
@@ -128,7 +127,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.0.9"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.0"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
