@@ -52,6 +52,7 @@ namespace ElXerath
             var lMenu = new Menu("Lane clear", "LaneClear");
             lMenu.AddItem(new MenuItem("ElXerath.clear.Q", "Use Q").SetValue(true));
             lMenu.AddItem(new MenuItem("ElXerath.clear.W", "Use W").SetValue(true));
+            lMenu.AddItem(new MenuItem("minmanaclear", "Auto harass mana")).SetValue(new Slider(55));
 
             _menu.AddSubMenu(lMenu);
 
@@ -61,6 +62,7 @@ namespace ElXerath
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.W", "Draw W").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElXerath.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.Text", "Draw Text").SetValue(true));
 

@@ -115,11 +115,7 @@ namespace ElXerath
             AutoHarassMode(target);
             KsMode();
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health &&
-               ElXerathMenu._menu.Item("ElXerath.Ignite").GetValue<bool>())
-            {
-                Player.Spellbook.CastSpell(_ignite, target);
-            }
+     
         }
 
         #endregion
@@ -192,11 +188,10 @@ namespace ElXerath
 
         #region Laneclear
 
-        private static
-            void LaneClear()
+        private static void LaneClear()
         {
             var clearQ = ElXerathMenu._menu.Item("ElXerath.clear.Q").GetValue<bool>();
-            var clearW = ElXerathMenu._menu.Item("ElXerath.clear.Q").GetValue<bool>();
+            var clearW = ElXerathMenu._menu.Item("ElXerath.clear.W").GetValue<bool>();
             var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
             if (Player.ManaPercentage() < minmana)
@@ -206,9 +201,33 @@ namespace ElXerath
             if (minions.Count <= 0)
                 return;
 
+            if (spells[Spells.Q].IsCharging)
+            {
+                if (minions.Max(x => x.Distance(Player, true)) < spells[Spells.Q].RangeSqr)
+                {
+                    if (minions.Max(x => x.Distance(Player, true)) < spells[Spells.Q].RangeSqr)
+                    {
+                        spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
+                    }
+                }
+            }
+
+            if (spells[Spells.Q].IsCharging)
+                return;
+
             if (spells[Spells.Q].IsReady() && clearQ)
             {
-                
+                if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= 1)
+                {
+                    spells[Spells.Q].StartCharging();
+                    return;
+                }
+            }
+
+            if (spells[Spells.W].IsReady() && clearW)
+            {
+                var farmLocation = spells[Spells.W].GetCircularFarmLocation(minions);
+                spells[Spells.W].Cast(farmLocation.Position);
             }
         }
 
@@ -247,7 +266,6 @@ namespace ElXerath
             
         #endregion
 
-
         #region Combo
 
         private static void Combo(Obj_AI_Base target)
@@ -284,9 +302,37 @@ namespace ElXerath
                     Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
             }
+
+            if (spells[Spells.R].IsReady())
+            {
+                var Target = spells[Spells.R].GetTarget();
+                if (Target != null && spells[Spells.R]. GetDamage(target) > target.Health)
+                {
+                        //ult soon
+                }
+            }
+
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && ElXerathMenu._menu.Item("ElXerath.Ignite").GetValue<bool>())
+            {
+                Player.Spellbook.CastSpell(_ignite, target);
+            }
         }
 
         #endregion
+
+        #region XerathR
+
+        private static void castR(Obj_AI_Base target)
+        {
+            if (target == null || !target.IsValidTarget())
+                return;
+
+      
+        }
+
+
+        #endregion
+
 
         #region GetComboDamage   
 
