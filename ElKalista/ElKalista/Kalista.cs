@@ -131,11 +131,12 @@ namespace ElKalista
 
             if (ElKalistaMenu._menu.Item("ElKalista.AutoHarass").GetValue<KeyBind>().Active)
             {
-                var q = ElKalistaMenu._menu.Item("ElKalista.UseQAutoHarass").GetValue<bool>();
-                var mana = ElKalistaMenu._menu.Item("ElKalista.harass.mana").GetValue<Slider>().Value;
 
-                if (Player.ManaPercentage() < mana)
+                if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("ElKalista.harass.mana").GetValue<Slider>().Value)
                     return;
+
+                var q = ElKalistaMenu._menu.Item("ElKalista.UseQAutoHarass").GetValue<bool>();
+
 
                 if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range && !Player.IsDashing() && !Player.IsWindingUp)
                 {
@@ -188,7 +189,6 @@ namespace ElKalista
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
-
             if (ConnectedAlly == null)
             {
                 ConnectedAlly =
@@ -233,9 +233,6 @@ namespace ElKalista
 
             if (!useJsm)
                 return;
-
-           // var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All , MinionTeam.All, MinionOrderTypes.MaxHealth).
-                //FirstOrDefault(x => spells[Spells.E].GetDamage(x) > x.Health && (x.SkinName.ToLower().Contains("siege") || x.SkinName.ToLower().Contains("super")));
 
             var jMob = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.All, MinionOrderTypes.MaxHealth).
               FirstOrDefault(x => spells[Spells.E].GetDamage(x) > x.Health);
@@ -294,11 +291,10 @@ namespace ElKalista
             if (target == null || !target.IsValidTarget())
                 return;
 
-            var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
-            var minmana = ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value;
-
-            if (Player.ManaPercentage() < minmana)
+            if (!Orbwalking.CanMove(1) || !(Player.ManaPercentage() > ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value))
                 return;
+
+            var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
 
             if (harassQ && spells[Spells.Q].IsReady())
             {
@@ -314,6 +310,9 @@ namespace ElKalista
         private static void Combo(Obj_AI_Base target)
         {
             if (target == null || !target.IsValidTarget())
+                return;
+
+            if (!Orbwalking.CanMove(1))
                 return;
 
             Items(target);
@@ -339,7 +338,7 @@ namespace ElKalista
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
-                if (spells[Spells.E].IsInRange(target) && spells[Spells.E].GetDamage(target) * 0.98f > target.Health || getEstacks.Count >= useEStacks)
+                if (spells[Spells.E].IsInRange(target) && target.Health <= spells[Spells.E].GetDamage(target) * 0.98f || getEstacks.Count >= useEStacks)
                 {
                     spells[Spells.E].Cast();
                 }
@@ -358,14 +357,12 @@ namespace ElKalista
         #region Laneclear
 
         private static void JungleClear()
-        {
+        { 
+            if (!Orbwalking.CanMove(1) || !(Player.ManaPercentage() < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value))
+                return;
 
             var useQ = ElKalistaMenu._menu.Item("useQFarmJungle").GetValue<bool>();
             var useE = ElKalistaMenu._menu.Item("useEFarmJungle").GetValue<bool>();
-            var minmana = ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-
-            if (Player.ManaPercentage() < minmana)
-                return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, Orbwalking.GetRealAutoAttackRange(Player) + 100, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
@@ -386,7 +383,6 @@ namespace ElKalista
             }
         }
 
-        //Credits to xcsoft
         static List<Obj_AI_Base> Q_GetCollisionMinions(Obj_AI_Hero source, Vector3 targetposition)
         {
             var input = new PredictionInput
@@ -408,9 +404,8 @@ namespace ElKalista
             var useE = ElKalistaMenu._menu.Item("useQFarm").GetValue<bool>();
             var countMinions = ElKalistaMenu._menu.Item("ElKalista.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElKalistaMenu._menu.Item("ElKalista.Count.Minions.E").GetValue<Slider>().Value;
-            var minmana = ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (!Orbwalking.CanMove(1) ||  !(Player.ManaPercentage() > ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value))
                 return;
 
             if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
