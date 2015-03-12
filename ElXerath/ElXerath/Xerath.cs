@@ -25,7 +25,7 @@ namespace ElXerath
 
         public static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Orbwalking.Orbwalker _orbwalker;
-        private static Obj_AI_Hero ConnectedAlly { get; set; }
+        private static SpellSlot _ignite;
 
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
@@ -79,6 +79,8 @@ namespace ElXerath
             spells[Spells.E].SetSkillshot(0.25f, 60f, 1400f, true, SkillshotType.SkillshotLine);
             spells[Spells.R].SetSkillshot(0.7f, 120f, float.MaxValue, false, SkillshotType.SkillshotCircle);
             spells[Spells.Q].SetCharged("XerathArcanopulseChargeUp", "XerathArcanopulseChargeUp", 750, 1550, 1.5f);
+            _ignite = Player.GetSpellSlot("summonerdot");
+
 
             ElXerathMenu.Initialize();
             Game.OnUpdate += OnUpdate;
@@ -109,17 +111,105 @@ namespace ElXerath
                     Harass(target);
                     break;
             }
+
+            AutoHarassMode(target);
+            KsMode();
+
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health &&
+               ElXerathMenu._menu.Item("ElXerath.Ignite").GetValue<bool>())
+            {
+                Player.Spellbook.CastSpell(_ignite, target);
+            }
         }
+
+        #endregion
+
+        #region KSMode
+
+        private static void KsMode()
+        {
+            var useKs = ElXerathMenu._menu.Item("ElXerath.misc.ks").GetValue<bool>();
+            if (!useKs)
+                return;
+
+            var target = HeroManager.Enemies.FirstOrDefault(x => !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) && spells[Spells.Q].CanCast(x) && (x.Health + (x.HPRegenRate / 2)) <= spells[Spells.Q].GetDamage(x));
+
+            if (spells[Spells.Q].CanCast(target) && spells[Spells.Q].IsReady())
+            {
+                if (!spells[Spells.Q].IsCharging)
+                {
+                    spells[Spells.Q].StartCharging();
+                    return;
+                }
+                else if (spells[Spells.Q].IsCharging)
+                {
+                    spells[Spells.Q].Cast(target);
+                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Autoharass
+
+        private static void AutoHarassMode(Obj_AI_Base target)
+        {
+            if (target == null || !target.IsValidTarget())
+                return;
+
+            if (ElXerathMenu._menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active)
+            {
+                var q = ElXerathMenu._menu.Item("ElXerath.UseQAutoHarass").GetValue<bool>();
+                var w = ElXerathMenu._menu.Item("ElXerath.UseWAutoHarass").GetValue<bool>();
+                var mana = ElXerathMenu._menu.Item("ElXerath.harass.mana").GetValue<Slider>().Value;
+
+                if (Player.ManaPercentage() < mana)
+                    return;
+
+                if (w && spells[Spells.W].IsReady())
+                {
+                    spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
+                }
+
+                if (q && spells[Spells.Q].IsReady())
+                {
+                    if (!spells[Spells.Q].IsCharging)
+                    {
+                        spells[Spells.Q].StartCharging();
+                        return;
+                    }
+                    else if (spells[Spells.Q].IsCharging)
+                    {
+                        spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
+                        Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Laneclear
 
-        private static void LaneClear()
+        private static
+            void LaneClear()
         {
             var clearQ = ElXerathMenu._menu.Item("ElXerath.clear.Q").GetValue<bool>();
             var clearW = ElXerathMenu._menu.Item("ElXerath.clear.Q").GetValue<bool>();
+            var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
+            if (Player.ManaPercentage() < minmana)
+                return;
 
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].ChargedMaxRange);
+            if (minions.Count <= 0)
+                return;
+
+            if (spells[Spells.Q].IsReady() && clearQ)
+            {
+                
+            }
         }
 
         #endregion
@@ -210,6 +300,19 @@ namespace ElXerath
             }
 
             return (float)damage;
+        }
+
+        #endregion
+
+        #region Ignite Damage
+
+        private static float IgniteDamage(Obj_AI_Base target)
+        {
+            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
+            {
+                return 0f;
+            }
+            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
         #endregion
