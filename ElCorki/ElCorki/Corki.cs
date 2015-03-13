@@ -70,7 +70,7 @@ namespace ElCorki
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElCorki by jQuery v1.0.0.1", 1000);
+            Notifications.AddNotification("ElCorki by jQuery v1.0.0.2", 1000);
 
             spells[Spells.Q].SetSkillshot(0.35f, 250f, 1000f, false, SkillshotType.SkillshotCircle);
             spells[Spells.E].SetSkillshot(0f, (float)(45 * Math.PI / 180), 1500, false, SkillshotType.SkillshotCone);
@@ -320,12 +320,13 @@ namespace ElCorki
             if (target == null || !target.IsValidTarget())
                  return;
         
-             var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").GetValue<bool>();
-             var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").GetValue<bool>();
-             var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").GetValue<bool>();
-             var minmana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
+            var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").GetValue<bool>();
+            var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").GetValue<bool>();
+            var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").GetValue<bool>();
+            var minmana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
+            var rStacks = ElCorkiMenu._menu.Item("ElCorki.Harass.RStacks").GetValue<Slider>().Value;
 
-             if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercentage() < minmana)
                  return;
 
             if (harassQ && spells[Spells.Q].IsReady())
@@ -338,7 +339,7 @@ namespace ElCorki
                  spells[Spells.E].CastOnBestTarget();
              }
 
-             if (harassR && spells[Spells.R1].IsReady())
+             if (harassR && spells[Spells.R1].IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks)
              {
                  spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance, true);
              }

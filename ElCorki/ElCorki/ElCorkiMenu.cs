@@ -47,6 +47,8 @@ namespace ElCorki
             hMenu.AddItem(new MenuItem("ElCorki.Harass.Q", "Use Q").SetValue(true));
             hMenu.AddItem(new MenuItem("ElCorki.Harass.E", "Use E").SetValue(false));
             hMenu.AddItem(new MenuItem("ElCorki.Harass.R", "Use R").SetValue(true));
+            hMenu.AddItem(new MenuItem("ElCorki.Harass.RStacks", "Keep R Stacks").SetValue(new Slider(0, 0, 7)));
+
 
             hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElCorki.AutoHarass", "[Toggle] Auto harass", false).SetValue(new KeyBind("U".ToCharArray()[0], KeyBindType.Toggle)));
             hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElCorki.UseQAutoHarass", "Use Q").SetValue(true));
