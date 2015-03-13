@@ -8,6 +8,7 @@ Currently:
 - Kalista
 - Corki
 - Xerath WIP
+- Bard WIP
 
 Info: https://www.joduska.me/forum/topic/38911-elbundle-elsinged-im-pretty-much-out-of-gas
 
