@@ -23,7 +23,7 @@ namespace ElXerath
     internal class Xerath
     {
         private static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
-        public static Orbwalking.Orbwalker _orbwalker;
+        public static Orbwalking.Orbwalker Orbwalker;
         private static SpellSlot _ignite;
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
@@ -43,7 +43,7 @@ namespace ElXerath
         }
 
         #region casting R
-        private static bool CastingR => ObjectManager.Player.HasBuff("XerathLocusOfPower2", true) ||(ObjectManager.Player.LastCastedSpellName() == "XerathLocusOfPower2" && Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
+        private static bool CastingR { get { return ObjectManager.Player.HasBuff("XerathLocusOfPower2", true) || (ObjectManager.Player.LastCastedSpellName() == "XerathLocusOfPower2" && Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500); } }
         #endregion
 
         #region hitchance
@@ -108,7 +108,7 @@ namespace ElXerath
 
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
-            switch (_orbwalker.ActiveMode)
+            switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo(target);

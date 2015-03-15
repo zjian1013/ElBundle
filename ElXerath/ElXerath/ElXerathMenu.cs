@@ -21,7 +21,7 @@ namespace ElXerath
 
             //ElXerath.Orbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Xerath._orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Xerath.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             _menu.AddSubMenu(orbwalkerMenu);
 
             //ElXerath.TargetSelector
