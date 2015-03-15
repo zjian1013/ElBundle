@@ -22,11 +22,9 @@ namespace ElXerath
 
     internal class Xerath
     {
-
-        public static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
+        private static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Orbwalking.Orbwalker _orbwalker;
         private static SpellSlot _ignite;
-
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
@@ -36,7 +34,17 @@ namespace ElXerath
             { Spells.R, new Spell(SpellSlot.R, 675)}
         };
 
-        #region Gameloaded 
+        private static class R
+        {
+            public static int CastSpell;
+            public static int _index;
+            public static bool _Key;
+            public static Vector3 _position;
+        }
+
+        #region casting R
+        private static bool CastingR => ObjectManager.Player.HasBuff("XerathLocusOfPower2", true) ||(ObjectManager.Player.LastCastedSpellName() == "XerathLocusOfPower2" && Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
+        #endregion
 
         #region hitchance
 
@@ -64,6 +72,7 @@ namespace ElXerath
 
         #endregion
 
+        #region Gameloaded 
 
         public static void Game_OnGameLoad(EventArgs args)
         {
@@ -85,6 +94,7 @@ namespace ElXerath
             ElXerathMenu.Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
+            Obj_AI_Hero.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
         }
 
         #endregion
@@ -114,8 +124,19 @@ namespace ElXerath
 
             AutoHarassMode(target);
             KsMode();
+            if (CastingR)
+                CastR();
+        }
 
-     
+        #endregion
+
+        #region Obj_AI_Hero_OnIssueOrder
+
+        static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
+        {
+            var blockMovement = ElXerathMenu._menu.Item("ElXerath.R.Block").GetValue<bool>();
+            if (CastingR && blockMovement)
+                args.Process = false;
         }
 
         #endregion
@@ -276,8 +297,6 @@ namespace ElXerath
             var comboQ = ElXerathMenu._menu.Item("ElXerath.Combo.Q").GetValue<bool>();
             var comboW = ElXerathMenu._menu.Item("ElXerath.Combo.Q").GetValue<bool>();
             var comboE = ElXerathMenu._menu.Item("ElXerath.Combo.E").GetValue<bool>();
-            var comboR = ElXerathMenu._menu.Item("ElXerath.Combo.R").GetValue<bool>();
-
 
             if (comboW && spells[Spells.W].IsReady())
             {
@@ -303,15 +322,6 @@ namespace ElXerath
                 }
             }
 
-            if (spells[Spells.R].IsReady())
-            {
-                var Target = spells[Spells.R].GetTarget();
-                if (Target != null && spells[Spells.R]. GetDamage(target) > target.Health)
-                {
-                        //ult soon
-                }
-            }
-
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && ElXerathMenu._menu.Item("ElXerath.Ignite").GetValue<bool>())
             {
                 Player.Spellbook.CastSpell(_ignite, target);
@@ -322,14 +332,48 @@ namespace ElXerath
 
         #region XerathR
 
-        private static void castR(Obj_AI_Base target)
+        private static void CastR()
         {
-            if (target == null || !target.IsValidTarget())
+            var ultTarget = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+            var useR = ElXerathMenu._menu.Item("ElXerath.R.AutoUseR").GetValue<bool>();
+            if (!useR)
                 return;
 
-      
-        }
+            if (ultTarget == null || !ultTarget.IsValidTarget())
+                return;
 
+            var ultType = ElXerathMenu._menu.Item("ElXerath.R.Mode").GetValue<StringList>().SelectedIndex;
+
+
+            if (ultTarget.Health - spells[Spells.R].GetDamage(ultTarget) < 0)
+                if (Environment.TickCount - R.CastSpell <= 700) return;
+
+            if ((R._index != 0 && ultTarget.Distance(R._position) > 1000))
+                if (Environment.TickCount - R.CastSpell <= Math.Min(2500, ultTarget.Distance(R._position) - 1000)) return;
+
+            switch (ultType)
+            {
+                case 0:
+                    spells[Spells.R].Cast(ultTarget);
+                break;
+
+                case 1:
+                    var d = ElXerathMenu._menu.Item("Delay" + (R._index + 1)).GetValue<Slider>().Value;
+                        if (Environment.TickCount - R.CastSpell > d)
+                        spells[Spells.R].Cast(ultTarget);
+                    break;
+
+                case 2:
+                    if (R._Key)
+                        spells[Spells.R].Cast(ultTarget);
+                    break;
+
+                case 3:
+                    if (spells[Spells.R].GetPrediction(ultTarget).Hitchance >= CustomHitChance)
+                        spells[Spells.R].Cast(ultTarget);
+                    break;
+            }
+        }
 
         #endregion
 
