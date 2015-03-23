@@ -144,21 +144,9 @@ namespace ElXerath
             AutoHarassMode(target);
             KsMode();
 
-            /*var useNotifcations = ElXerathMenu._menu.Item("ElXerath.misc.Notifications").GetValue<bool>();
-
-            if (spells[Spells.R].IsReady() && useNotifcations)
-            {
-                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget() && (float)Player.GetSpellDamage(x, SpellSlot.R) * 3 > x.Health))
-                {
-                    Notifications.AddNotification(new Notification(enemy.BaseSkinName, 2));
-                }
-            }*/
-
-
             if (CastingR)
             {
                 CastR(utarget);
-                Console.WriteLine("Casting");
             }
         }
 
