@@ -155,7 +155,7 @@ namespace ElXerath
         #region Obj_AI_Hero_OnIssueOrder
 
         private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
-        {
+        {   
             var blockMovement = ElXerathMenu._menu.Item("ElXerath.R.Block").GetValue<bool>();
             if (CastingR && blockMovement)
             {
@@ -532,9 +532,7 @@ namespace ElXerath
             if (gapcloser.Sender.IsValidTarget(spells[Spells.E].Range) &&
                 (ElXerathMenu._menu.Item("ElXerath.misc.Antigapcloser").GetValue<bool>() && spells[Spells.E].IsReady()))
             {
-                spells[Spells.E].Cast(ObjectManager.Player);
                 spells[Spells.E].Cast(gapcloser.Sender);
-                Console.WriteLine("fdsfsfsfs");
             }
         }
 
