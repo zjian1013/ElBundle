@@ -323,7 +323,7 @@ namespace ElKalista
                 return;
             }
 
-            if (!Orbwalking.CanMove(1) ||
+            if (
                 !(Player.ManaPercentage() > ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value))
             {
                 return;
@@ -347,11 +347,6 @@ namespace ElKalista
         private static void Combo(Obj_AI_Base target)
         {
             if (target == null || !target.IsValidTarget())
-            {
-                return;
-            }
-
-            if (!Orbwalking.CanMove(1))
             {
                 return;
             }
@@ -483,7 +478,7 @@ namespace ElKalista
             var countMinions = ElKalistaMenu._menu.Item("ElKalista.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElKalistaMenu._menu.Item("ElKalista.Count.Minions.E").GetValue<Slider>().Value;
 
-            if (!Orbwalking.CanMove(1) ||
+            if (
                 !(Player.ManaPercentage() > ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value))
             {
                 return;
