@@ -31,6 +31,7 @@ namespace ElXerath
 
             var cMenu = new Menu("Combo", "Combo");
             cMenu.AddItem(new MenuItem("ElXerath.Combo.Q", "Use Q").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElXerath.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElXerath.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
 
@@ -42,7 +43,7 @@ namespace ElXerath
             rMenu.AddItem(new MenuItem("ElXerath.R.OnTap", "Ult on tap").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             rMenu.AddItem(new MenuItem("ElXerath.R.Block", "Block movement").SetValue(true));
 
-            rMenu.SubMenu("CustomDelay").AddItem(new MenuItem("ElXerath.R.Delay", "Custom delays"));
+            rMenu.SubMenu("CustomDelay").AddItem(new MenuItem("ElXerath.R.Delay", "Custom delays").SetValue(true));
             for (var i = 1; i <= 3; i++)
                 rMenu.SubMenu("CustomDelay").SubMenu("Custom delay").AddItem(new MenuItem("Delay" + i, "Delay" + i).SetValue(new Slider(0, 1500, 0)));
 
@@ -58,24 +59,32 @@ namespace ElXerath
 
             _menu.AddSubMenu(hMenu);
 
-            var lMenu = new Menu("Lane clear", "LaneClear");
+            var lMenu = new Menu("Clear", "LaneClear");
             lMenu.AddItem(new MenuItem("ElXerath.clear.Q", "Use Q").SetValue(true));
             lMenu.AddItem(new MenuItem("ElXerath.clear.W", "Use W").SetValue(true));
+            lMenu.AddItem(new MenuItem("fasfsafsafsasfasfa", ""));
+            lMenu.AddItem(new MenuItem("ElXerath.jclear.Q", "Jungle Use Q").SetValue(true));
+            lMenu.AddItem(new MenuItem("ElXerath.jclear.W", "Jungle Use W").SetValue(true));
+            lMenu.AddItem(new MenuItem("ElXerath.jclear.E", "Jungle Use E").SetValue(true));
+            lMenu.AddItem(new MenuItem("fasfsafsafsadsasasfasfa", ""));
             lMenu.AddItem(new MenuItem("minmanaclear", "Auto harass mana")).SetValue(new Slider(55));
 
             _menu.AddSubMenu(lMenu);
 
             //ElXerath.Misc
-            var miscMenu = new Menu("Drawings", "Misc");
+            var miscMenu = new Menu("Misc", "Misc");
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElXerath.Draw.Text", "Draw Text").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElXerath.Draw.RON", "Draw R target radius").SetValue(true));
             miscMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElXerath.Ignite", "Use ignite").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElXerath.misc.ks", "Killsteal mode").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElXerath.misc.Antigapcloser", "Antigapcloser").SetValue(true));
+           // miscMenu.AddItem(new MenuItem("ElXerath.misc.Notifications", "Use notifications").SetValue(true));
             miscMenu.AddItem(new MenuItem("useEdaadaDFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElXerath.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
 
@@ -88,7 +97,7 @@ namespace ElXerath
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.6"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.0"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

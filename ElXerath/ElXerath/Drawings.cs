@@ -20,11 +20,21 @@ namespace ElXerath
             var drawR = ElXerathMenu._menu.Item("ElXerath.Draw.R").GetValue<Circle>();
             var drawText = ElXerathMenu._menu.Item("ElXerath.Draw.Text").GetValue<bool>();
             var rBool = ElXerathMenu._menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active;
+            var drawROn = ElXerathMenu._menu.Item("ElXerath.Draw.RON").GetValue<bool>();
+
 
             if (drawOff)
                 return;
 
             var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
+
+            if (drawROn)
+            {
+                if (Xerath.CastingR)
+                {
+                    Render.Circle.DrawCircle(Game.CursorPos, 500, Color.White);
+                }
+            }
 
             if (drawQ.Active)
                 if (Xerath.spells[Spells.Q].Level > 0)
@@ -37,7 +47,6 @@ namespace ElXerath
             if (drawE.Active)
                 if (Xerath.spells[Spells.E].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Xerath.spells[Spells.E].Range, Color.White);
-
 
             if (drawR.Active)
                 if (Xerath.spells[Spells.R].Level > 0)
