@@ -188,11 +188,11 @@ namespace ElCorki
                 if (_target != null)
                 if (bigR)
                 {
-                    spells[Spells.R2].CastIfHitchanceEquals(_target, CustomHitChance, true);
+                    spells[Spells.R2].CastIfHitchanceEquals(_target, CustomHitChance);
                 }
                 else
                 {
-                    spells[Spells.R1].CastIfHitchanceEquals(_target, CustomHitChance, true);
+                    spells[Spells.R1].CastIfHitchanceEquals(_target, CustomHitChance);
                 }
             }
 
