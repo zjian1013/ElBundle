@@ -21,7 +21,7 @@ namespace ElKalista
 
             //ElKalista.Orbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Kalista._orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Kalista.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             _menu.AddSubMenu(orbwalkerMenu);
 
             //ElKalista.TargetSelector
@@ -52,7 +52,6 @@ namespace ElKalista
             hMenu.SubMenu("AutoHarass").AddItem(new MenuItem("ElKalista.harass.mana", "Auto harass mana")).SetValue(new Slider(55));
 
             _menu.AddSubMenu(hMenu);
-
 
             var lMenu = new Menu("Lane clear", "Clear");
             lMenu.AddItem(new MenuItem("useQFarm", "Use Q").SetValue(true));
@@ -131,7 +130,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.2"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.3"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
