@@ -8,8 +8,6 @@ using LeagueSharp.Common;
 using SharpDX;
 using LeagueSharp.Common.Data;
 
-
-
 namespace Elvarus
 {
     internal enum Spells
