@@ -62,7 +62,7 @@ namespace ElNamiReborn
 			if (!ObjectManager.Player.ChampionName.Equals("Nami", StringComparison.CurrentCultureIgnoreCase)) 
 				return;
 		
-			Notifications.AddNotification ("ElNamiReborn by jQuery v1.0.0.0", 1000);
+			Notifications.AddNotification ("ElNamiReborn by jQuery v1.0.0.0", 5000);
 
 			spells[Spells.Q].SetSkillshot(1f, 150f, float.MaxValue, false, SkillshotType.SkillshotCircle);
 			spells[Spells.R].SetSkillshot(0.5f, 260f, 850f, false, SkillshotType.SkillshotLine);
