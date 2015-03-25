@@ -76,7 +76,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.1.3", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.1.5", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -152,10 +152,12 @@ namespace ElKalista
 
                 var q = ElKalistaMenu._menu.Item("ElKalista.UseQAutoHarass").GetValue<bool>();
 
-                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range &&
+                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= 1000 &&
                     !Player.IsDashing() && !Player.IsWindingUp)
                 {
-                    spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
+                    var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
+                    if (prediction >= CustomHitChance)
+                        spells[Spells.Q].Cast(target);
                 }
             }
         }
@@ -163,9 +165,7 @@ namespace ElKalista
         private static void AutoCastEMode(Obj_AI_Base target)
         {
             if (target == null || !target.IsValidTarget())
-            {
                 return;
-            }
 
             var getEstacks =
                 target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
@@ -203,7 +203,6 @@ namespace ElKalista
                 spells[Spells.R].Cast();
             }
         }
-
         private static void SaveMode()
         {
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
@@ -319,15 +318,10 @@ namespace ElKalista
         private static void Harass(Obj_AI_Base target)
         {
             if (target == null || !target.IsValidTarget())
-            {
                 return;
-            }
 
-            if (
-                !(Player.ManaPercentage() > ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value))
-            {
+            if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
                 return;
-            }
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
 
@@ -358,13 +352,11 @@ namespace ElKalista
 
             if (comboQ && spells[Spells.Q].IsReady())
             {
-                if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance)
-                {
+                var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
+                if (prediction >= CustomHitChance)
                     spells[Spells.Q].Cast(target);
-                }
             }
 
-            //var eTarget = HeroManager.Enemies.Where(x => spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 && !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield)).OrderByDescending(x => spells[Spells.E].GetDamage(x)).FirstOrDefault();
             var getEstacks =
                 target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
 
@@ -375,17 +367,6 @@ namespace ElKalista
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.ComboE.Auto").GetValue<bool>();
             var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
-
-
-            /*if (useE && spells[Spells.E].IsReady())
-            {
-                var t = HeroManager.Enemies.Where(x => spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 && !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield)).OrderByDescending(x => spells[Spells.E].GetDamage(x)).FirstOrDefault();
-                var m = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Enemy).Where(x => x.Health <= spells[Spells.E].GetDamage(x)).OrderBy(x => x.Health).FirstOrDefault();
-
-                if (t != null && (t.Health <= spells[Spells.E].GetDamage(t) || (spells[Spells.E].CanCast(m) && spells[Spells.E].CanCast(t))))
-                    spells[Spells.E].Cast();
-            }*/
-
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
@@ -420,23 +401,18 @@ namespace ElKalista
 
         private static void JungleClear()
         {
-            if (!Orbwalking.CanMove(1) ||
-                !(Player.ManaPercentage() < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value))
-            {
+            if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
                 return;
-            }
 
             var useQ = ElKalistaMenu._menu.Item("useQFarmJungle").GetValue<bool>();
             var useE = ElKalistaMenu._menu.Item("useEFarmJungle").GetValue<bool>();
 
             var minions = MinionManager.GetMinions(
-                Player.ServerPosition, Orbwalking.GetRealAutoAttackRange(Player) + 100, MinionTypes.All,
+                Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All,
                 MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            if (minions.Count <= 0)
-            {
+            if (minions.Count < 0)
                 return;
-            }
 
             foreach (var minion in minions)
             {
@@ -478,11 +454,8 @@ namespace ElKalista
             var countMinions = ElKalistaMenu._menu.Item("ElKalista.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElKalistaMenu._menu.Item("ElKalista.Count.Minions.E").GetValue<Slider>().Value;
 
-            if (
-                !(Player.ManaPercentage() > ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value))
-            {
+            if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
                 return;
-            }
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
