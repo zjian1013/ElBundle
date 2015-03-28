@@ -7,6 +7,8 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
 using SharpDX;
+using Color = System.Drawing.Color;
+
 
 namespace ElXerath
 {
@@ -27,6 +29,7 @@ namespace ElXerath
 
         public static Orbwalking.Orbwalker Orbwalker;
         private static SpellSlot _ignite;
+        private static int lastNotification = 0;
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
@@ -53,6 +56,15 @@ namespace ElXerath
                        (ObjectManager.Player.LastCastedSpellName() == "XerathLocusOfPower2" &&
                         Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
             }
+        }
+
+        #endregion
+
+        #region Notifications 
+
+        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
+        {
+            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
         }
 
         #endregion
@@ -95,7 +107,7 @@ namespace ElXerath
             Console.WriteLine("Injected");
 
             Notifications.AddNotification(
-                "ElXerath by jQuery v1.0.0.0", 1000);
+                "ElXerath by jQuery v1.0.0.2", 1000);
 
             spells[Spells.Q].SetSkillshot(0.6f, 100f, float.MaxValue, false, SkillshotType.SkillshotLine);
             spells[Spells.W].SetSkillshot(0.7f, 125f, float.MaxValue, false, SkillshotType.SkillshotCircle);
@@ -126,7 +138,6 @@ namespace ElXerath
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             var utarget = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
 
-
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -139,6 +150,17 @@ namespace ElXerath
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass(target);
                     break;
+            }
+
+            var showNotifications = ElXerathMenu._menu.Item("ElXerath.misc.Notifications").GetValue<bool>();
+
+            if (spells[Spells.R].IsReady() &&  showNotifications &&Environment.TickCount - lastNotification > 5000)
+            {
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget() && (float) Player.GetSpellDamage(h, SpellSlot.R) * 3 > h.Health))
+                {
+                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
+                    lastNotification = Environment.TickCount;
+                }
             }
 
             AutoHarassMode(target);
@@ -191,7 +213,6 @@ namespace ElXerath
                 else if (spells[Spells.Q].IsCharging)
                 {
                     spells[Spells.Q].Cast(target);
-                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
             }
         }
@@ -214,9 +235,7 @@ namespace ElXerath
                 var mana = ElXerathMenu._menu.Item("ElXerath.harass.mana").GetValue<Slider>().Value;
 
                 if (Player.ManaPercentage() < mana)
-                {
                     return;
-                }
 
                 if (q && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].ChargedMaxRange))
                 {
@@ -248,9 +267,7 @@ namespace ElXerath
             var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
             if (Player.ManaPercentage() < minmana)
-            {
                 return;
-            }
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].ChargedMaxRange);
             if (minions.Count <= 0)
@@ -381,7 +398,6 @@ namespace ElXerath
                 else if (spells[Spells.Q].IsCharging)
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
-                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
             }
         }
@@ -424,7 +440,6 @@ namespace ElXerath
                 else if (spells[Spells.Q].IsCharging)
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
-                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
             }
 
@@ -562,7 +577,6 @@ namespace ElXerath
             }
             return (float) Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
-
         #endregion
     }
 }
