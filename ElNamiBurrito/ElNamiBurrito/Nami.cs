@@ -69,7 +69,7 @@ namespace ElNamiBurrito
             if (!Player.ChampionName.Equals("Nami", StringComparison.CurrentCultureIgnoreCase))
                 return;
 
-            Notifications.AddNotification("ElNamiReborn by jQuery v1.0.0.0", 5000);
+            Notifications.AddNotification("ElNamiReborn by jQuery v1.0.0.1", 5000);
 
             spells[Spells.Q].SetSkillshot(1f, 150f, float.MaxValue, false, SkillshotType.SkillshotCircle);
             spells[Spells.R].SetSkillshot(0.5f, 260f, 850f, false, SkillshotType.SkillshotLine);
@@ -213,7 +213,7 @@ namespace ElNamiBurrito
             if (useE && spells[Spells.E].IsReady())
             {
                 var selectedAlly =
-                            HeroManager.Allies.Where(hero => hero.IsAlly && !ElNamiMenu._menu.Item("ElNamiReborn.Settings.E1" + hero.BaseSkinName).GetValue<bool>())
+                            HeroManager.Allies.Where(hero => hero.IsAlly && ElNamiMenu._menu.Item("ElNamiReborn.Settings.E1" + hero.BaseSkinName).GetValue<bool>())
                                 .OrderBy(closest => closest.Distance(target))
                                 .FirstOrDefault();
 
@@ -225,7 +225,7 @@ namespace ElNamiBurrito
 
             if (useW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].Cast();
+                spells[Spells.W].Cast(target);
             }
         }
 
@@ -270,7 +270,7 @@ namespace ElNamiBurrito
 
             if (useW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].Cast();
+                spells[Spells.W].Cast(target);
             }
 
             if (useR && spells[Spells.R].IsReady()
