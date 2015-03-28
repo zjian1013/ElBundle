@@ -112,7 +112,7 @@ namespace ElCorki
             AutoHarassMode(target);
             JungleStealMode();
 
-            spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
+            //spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
         }
         #endregion
 

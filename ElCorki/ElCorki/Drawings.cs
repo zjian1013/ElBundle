@@ -29,19 +29,19 @@ namespace ElCorki
 
             if (drawQ.Active)
                 if (Corki.spells[Spells.Q].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.Q].Range, Corki.spells[Spells.Q].IsReady() ? Color.Green : Color.Red);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.Q].Range, Color.White);
 
             if (drawE.Active)
                 if (Corki.spells[Spells.E].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.E].Range, Corki.spells[Spells.E].IsReady() ? Color.Green : Color.Red);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.E].Range, Color.White);
 
             if (drawW.Active)
                 if (Corki.spells[Spells.W].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.W].Range, Corki.spells[Spells.W].IsReady() ? Color.Green : Color.Red);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.W].Range, Color.White);
 
             if (drawR.Active)
                 if (Corki.spells[Spells.R1].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.R1].Range, Corki.spells[Spells.R1].IsReady() ? Color.Green : Color.Red);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, Corki.spells[Spells.R1].Range, Color.White);
 
             if (drawText)
                 Drawing.DrawText( playerPos.X - 70, playerPos.Y + 40, (rBool ? Color.Green : Color.Red), "{0}", (rBool ? "Auto harass Enabled" : "Auto harass Disabled"));
