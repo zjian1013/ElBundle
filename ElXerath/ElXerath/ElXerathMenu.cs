@@ -39,7 +39,7 @@ namespace ElXerath
 
             var rMenu = new Menu("Ult", "Ult");
             rMenu.AddItem(new MenuItem("ElXerath.R.AutoUseR", "Auto use charges").SetValue(true));
-            rMenu.AddItem(new MenuItem("ElXerath.R.Mode", "Mode ").SetValue(new StringList(new[] { "Normal", "Custom delays", "OnTap", "Custom hitchance" })));
+            rMenu.AddItem(new MenuItem("ElXerath.R.Mode", "Mode ").SetValue(new StringList(new[] { "Normal", "Custom delays", "OnTap", "Custom hitchance", "Near mouse" })));
             rMenu.AddItem(new MenuItem("ElXerath.R.OnTap", "Ult on tap").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             rMenu.AddItem(new MenuItem("ElXerath.R.Block", "Block movement").SetValue(true));
 
@@ -97,7 +97,7 @@ namespace ElXerath
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.3"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

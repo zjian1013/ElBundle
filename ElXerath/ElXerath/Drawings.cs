@@ -32,7 +32,7 @@ namespace ElXerath
             {
                 if (Xerath.CastingR)
                 {
-                    Render.Circle.DrawCircle(Game.CursorPos, 500, Color.White);
+                    Render.Circle.DrawCircle(Game.CursorPos, 700, Color.White);
                 }
             }
 
