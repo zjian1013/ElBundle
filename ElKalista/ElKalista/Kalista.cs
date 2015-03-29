@@ -76,7 +76,7 @@ namespace ElKalista
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.1.5", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.1.6", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -340,10 +340,8 @@ namespace ElKalista
 
         private static void Combo(Obj_AI_Base target)
         {
-            if (target == null || !target.IsValidTarget())
-            {
+            if (target == null || !target.IsValidTarget() || target.IsMinion)
                 return;
-            }
 
             Items(target);
 
@@ -422,7 +420,7 @@ namespace ElKalista
                 }
 
                 if (spells[Spells.E].IsReady() && useE &&
-                    minions[0].Health + (minions[0].HPRegenRate / 2) <= spells[Spells.E].GetDamage(minion))
+                    minions[0].Health + minions[0].HPRegenRate / 2 < spells[Spells.E].GetDamage(minion))
                 {
                     spells[Spells.E].Cast();
                 }
@@ -456,11 +454,6 @@ namespace ElKalista
 
             if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
                 return;
-
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-            {
-                return;
-            }
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
 
