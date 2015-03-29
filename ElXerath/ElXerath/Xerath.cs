@@ -278,31 +278,47 @@ namespace ElXerath
                 return;
             }
 
-            if (spells[Spells.Q].IsCharging)
+            /*if (spells[Spells.Q].IsCharging)
+                 {
+                     if (minions.Max(x => x.Distance(Player, true)) < spells[Spells.Q].RangeSqr)
+                     {
+                         if (minions.Max(x => x.Distance(Player, true)) < spells[Spells.Q].RangeSqr)
+                         {
+                             spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
+                         }
+                     }
+                 }
+
+                if (spells[Spells.Q].IsCharging)
+                 {
+                     return;
+                 }
+
+                 if (spells[Spells.Q].IsReady() && clearQ)
+                 {
+                     if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= 0)
+                     {
+                         spells[Spells.Q].StartCharging();
+                         return;
+                     }
+                 }
+                 */
+
+            if (clearQ && spells[Spells.Q].IsReady())
             {
-                if (minions.Max(x => x.Distance(Player, true)) < spells[Spells.Q].RangeSqr)
+                if (spells[Spells.Q].IsCharging)
                 {
-                    if (minions.Max(x => x.Distance(Player, true)) < spells[Spells.Q].RangeSqr)
-                    {
-                        spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
-                    }
+                    var bestFarmPos = spells[Spells.Q].GetLineFarmLocation(minions);
+                    if (minions.Count == minions.Count(x => Player.Distance(x) < spells[Spells.Q].Range) 
+                        && bestFarmPos.Position.IsValid()
+                        && bestFarmPos.MinionsHit > 0 )
+                        spells[Spells.Q].Cast(bestFarmPos.Position);
                 }
-            }
-
-            if (spells[Spells.Q].IsCharging)
-            {
-                return;
-            }
-
-            if (spells[Spells.Q].IsReady() && clearQ)
-            {
-                if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= 0)
-                {
+                else if (minions.Count > 0)
                     spells[Spells.Q].StartCharging();
-                    return;
-                }
             }
 
+  
             if (spells[Spells.W].IsReady() && clearW)
             {
                 var farmLocation = spells[Spells.W].GetCircularFarmLocation(minions);
