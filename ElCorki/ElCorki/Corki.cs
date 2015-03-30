@@ -70,7 +70,7 @@ namespace ElCorki
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElCorki by jQuery v1.0.0.2", 1000);
+            Notifications.AddNotification("ElCorki by jQuery v1.0.0.5", 1000);
 
             spells[Spells.Q].SetSkillshot(0.35f, 250f, 1000f, false, SkillshotType.SkillshotCircle);
             spells[Spells.E].SetSkillshot(0f, (float)(45 * Math.PI / 180), 1500, false, SkillshotType.SkillshotCone);
@@ -109,7 +109,7 @@ namespace ElCorki
             }
 
             KsMode();
-            AutoHarassMode(target);
+            AutoHarassMode();
             JungleStealMode();
 
             //spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
@@ -348,8 +348,10 @@ namespace ElCorki
 
         #region Autoharass
 
-        private static void AutoHarassMode(Obj_AI_Base target)
+        private static void AutoHarassMode()
         {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -362,14 +364,25 @@ namespace ElCorki
                 if (Player.ManaPercentage() < mana)
                     return;
 
-                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range)
+                if (r && spells[Spells.R1].IsReady())
                 {
-                    spells[Spells.Q].Cast(target);
+                    var bigR = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig");
+
+                    var _target = TargetSelector.GetTarget(bigR ? spells[Spells.R2].Range : spells[Spells.R1].Range, TargetSelector.DamageType.Magical);
+                    if (_target != null)
+                    if (bigR)
+                    {
+                        spells[Spells.R2].Cast(_target);
+                    }
+                    else
+                    {
+                        spells[Spells.R1].Cast(_target);
+                    }
                 }
 
-                if (r && spells[Spells.R1].IsReady() && Player.Distance(target) <= spells[Spells.R1].Range)
+                if (q && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
-                    spells[Spells.R1].CastIfHitchanceEquals(target, CustomHitChance);
+                    spells[Spells.Q].Cast(target);
                 }
             }
         }
