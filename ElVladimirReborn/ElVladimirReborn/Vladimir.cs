@@ -77,7 +77,6 @@ namespace ElVladimirReborn
                     break;
             }
 
-
             var showNotifications = ElVladimirMenu._menu.Item("ElVladimir.misc.Notifications").GetValue<bool>();
 
             if (showNotifications && Environment.TickCount - lastNotification > 5000)
@@ -165,7 +164,6 @@ namespace ElVladimirReborn
                         }
                     }
                 }
-
             }
 
             if (spells[Spells.E].IsReady() && (Player.Health / Player.MaxHealth) * 100 >= playerHp && useE)
@@ -391,6 +389,5 @@ namespace ElVladimirReborn
                 spells[Spells.W].Cast(Player);
         }
         #endregion
-
     }
 }
