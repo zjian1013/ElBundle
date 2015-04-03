@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Damages.cs" />
     <Compile Include="Drawings.cs" />
     <Compile Include="EDamage.cs" />
     <Compile Include="ElKalistaMenu.cs" />
