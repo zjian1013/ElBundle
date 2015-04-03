@@ -29,6 +29,13 @@ namespace ElKalista
 
         public static Orbwalking.Orbwalker Orbwalker;
         private static Obj_AI_Hero ConnectedAlly;
+        private static Dictionary<float, float> _incomingDamage = new Dictionary<float, float>();
+        private static Dictionary<float, float> _instantDamage = new Dictionary<float, float>();
+        public static float IncomingDamage
+        {
+            get { return _incomingDamage.Sum(e => e.Value) + _instantDamage.Sum(e => e.Value); }
+        }
+
 
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
@@ -83,6 +90,7 @@ namespace ElKalista
             ElKalistaMenu.Initialize();
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
         #endregion
@@ -145,7 +153,7 @@ namespace ElKalista
 
             if (ElKalistaMenu._menu.Item("ElKalista.AutoHarass").GetValue<KeyBind>().Active)
             {
-                if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("ElKalista.harass.mana").GetValue<Slider>().Value)
+                if (Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.harass.mana").GetValue<Slider>().Value)
                 {
                     return;
                 }
@@ -185,7 +193,6 @@ namespace ElKalista
                     spells[Spells.E].Cast(true);
                 }
 
-                //Hellsing calculations..
                 if (target.ServerPosition.Distance(Player.ServerPosition, true) >
                     Math.Pow(spells[Spells.E].Range * 0.8, 2) || getEstacks.EndTime - Game.Time < 0.3)
                 {
@@ -218,9 +225,44 @@ namespace ElKalista
             }
             else
             {
-                if (save && ConnectedAlly.HealthPercentage() < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0)
+                if (save && ConnectedAlly.HealthPercent < 5 && ConnectedAlly.CountEnemiesInRange(500) > 0 ||
+                    IncomingDamage > ConnectedAlly.Health)
                 {
                     spells[Spells.R].Cast();
+                }
+            }
+        }
+
+        //credits to hellsing
+        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsEnemy)
+            {
+                if (ConnectedAlly != null && spells[Spells.R].IsReady())
+                {
+                    if ((!(sender is Obj_AI_Hero) || args.SData.IsAutoAttack()) && args.Target != null && args.Target.NetworkId == ConnectedAlly.NetworkId)
+                    {
+                        _incomingDamage.Add(ConnectedAlly.ServerPosition.Distance(sender.ServerPosition) / args.SData.MissileSpeed + Game.Time, (float)sender.GetAutoAttackDamage(ConnectedAlly));
+                    }
+                    else if (sender is Obj_AI_Hero)
+                    {
+                        var attacker = (Obj_AI_Hero)sender;
+                        var slot = attacker.GetSpellSlot(args.SData.Name);
+
+                        if (slot != SpellSlot.Unknown)
+                        {
+                            if (slot == attacker.GetSpellSlot("SummonerDot") && args.Target != null && args.Target.NetworkId == ConnectedAlly.NetworkId)
+                            {
+                                _instantDamage.Add(Game.Time + 2, (float)attacker.GetSummonerSpellDamage(ConnectedAlly, Damage.SummonerSpell.Ignite));
+                            }
+                            else if (slot.HasFlag(SpellSlot.Q | SpellSlot.W | SpellSlot.E | SpellSlot.R) &&
+                                ((args.Target != null && args.Target.NetworkId == ConnectedAlly.NetworkId) ||
+                                args.End.Distance(ConnectedAlly.ServerPosition) < Math.Pow(args.SData.LineWidth, 2)))
+                            {
+                                _instantDamage.Add(Game.Time + 2, (float)attacker.GetSpellDamage(ConnectedAlly, slot));
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -288,19 +330,19 @@ namespace ElKalista
             var useBladeMhp = ElKalistaMenu._menu.Item("ElKalista.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target) &&
-                target.HealthPercentage() <= useBladeEhp && useBlade)
+                target.HealthPercent <= useBladeEhp && useBlade)
             {
                 botrk.Cast(target);
             }
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target) &&
-                Player.HealthPercentage() <= useBladeMhp && useBlade)
+                Player.HealthPercent <= useBladeMhp && useBlade)
             {
                 botrk.Cast(target);
             }
 
             if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) &&
-                target.HealthPercentage() <= useBladeEhp && useCutlass)
+                target.HealthPercent <= useBladeEhp && useCutlass)
             {
                 cutlass.Cast(target);
             }
@@ -320,7 +362,7 @@ namespace ElKalista
             if (target == null || !target.IsValidTarget())
                 return;
 
-            if (Player.ManaPercentage() < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
+            if (Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
                 return;
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
@@ -368,7 +410,23 @@ namespace ElKalista
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
-                var t =
+                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable() || getEstacks.Count >= useEStacks))
+                {
+                    if (target.IsRendKillable())
+                    {
+                        spells[Spells.E].Cast(true);
+                    }
+                    else
+                    {
+                        if (target.ServerPosition.Distance(Player.ServerPosition, true) >
+                            Math.Pow(spells[Spells.E].Range * 0.8, 2) || getEstacks.EndTime - Game.Time < 0.3)
+                        {
+                            spells[Spells.E].Cast(true);
+                        }
+                    }
+                }
+
+                /*var t =
                     HeroManager.Enemies.Where(
                         x =>
                             spells[Spells.E].CanCast(x) && spells[Spells.E].GetDamage(x) >= 1 &&
@@ -390,6 +448,7 @@ namespace ElKalista
                         spells[Spells.E].Cast();
                     }
                 }
+            }*/
             }
         }
 
