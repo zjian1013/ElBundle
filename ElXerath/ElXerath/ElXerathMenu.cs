@@ -47,6 +47,8 @@ namespace ElXerath
             for (var i = 1; i <= 3; i++)
                 rMenu.SubMenu("CustomDelay").SubMenu("Custom delay").AddItem(new MenuItem("Delay" + i, "Delay" + i).SetValue(new Slider(0, 1500, 0)));
 
+            rMenu.AddItem(new MenuItem("ElXerath.R.Radius", "Target radius").SetValue(new Slider(700, 1500, 300)));
+
             _menu.AddSubMenu(rMenu);   
 
             var hMenu = new Menu("Harass", "Harass");
@@ -86,6 +88,8 @@ namespace ElXerath
             miscMenu.AddItem(new MenuItem("ElXerath.misc.Antigapcloser", "Antigapcloser").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElXerath.misc.Notifications", "Use notifications").SetValue(true));
             miscMenu.AddItem(new MenuItem("useEdaadaDFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
+            miscMenu.AddItem(new MenuItem("ElXerath.Misc.E", "Cast E key").SetValue(new KeyBind("H".ToCharArray()[0], KeyBindType.Press)));
+            miscMenu.AddItem(new MenuItem("useEdaadaDFafsddssdsgdrmddsddsasfsasdsdsaadsd", ""));
             miscMenu.AddItem(new MenuItem("ElXerath.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
 
             _menu.AddSubMenu(miscMenu);
@@ -97,7 +101,7 @@ namespace ElXerath
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.3"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.5"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

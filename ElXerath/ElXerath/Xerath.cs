@@ -44,6 +44,7 @@ namespace ElXerath
             public static int CastSpell;
             public static int _index;
             public static Vector3 _position;
+            public static bool _tapKey;
         }
 
         #region casting R
@@ -109,7 +110,7 @@ namespace ElXerath
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElXerath by jQuery v1.0.0.3", 1000);
+            Notifications.AddNotification("ElXerath by jQuery v1.0.0.5", 1000);
 
             spells[Spells.Q].SetSkillshot(0.6f, 100f, float.MaxValue, false, SkillshotType.SkillshotLine);
             spells[Spells.W].SetSkillshot(0.7f, 125f, float.MaxValue, false, SkillshotType.SkillshotCircle);
@@ -118,12 +119,13 @@ namespace ElXerath
             spells[Spells.Q].SetCharged("XerathArcanopulseChargeUp", "XerathArcanopulseChargeUp", 750, 1550, 1.5f);
             _ignite = Player.GetSpellSlot("summonerdot");
 
-
             ElXerathMenu.Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
             Obj_AI_Hero.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
+            Game.OnWndProc += Game_OnWndProc;
         }
 
         #endregion
@@ -138,6 +140,7 @@ namespace ElXerath
             }
 
             var utarget = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+            spells[Spells.R].Range = 2000 + spells[Spells.R].Level * 1200;
 
             switch (Orbwalker.ActiveMode)
             {
@@ -166,12 +169,21 @@ namespace ElXerath
 
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
 
-            AutoHarassMode(target);
+            AutoHarassMode();
             KsMode();
 
             if (CastingR)
             {
                 CastR(utarget);
+            }
+
+            if (spells[Spells.E].IsReady())
+            {
+                var useE = ElXerathMenu._menu.Item("ElXerath.Misc.E").GetValue<KeyBind>().Active;
+                var eTarget = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
+
+                if (useE)
+                    spells[Spells.E].Cast(eTarget);
             }
         }
 
@@ -224,8 +236,11 @@ namespace ElXerath
 
         #region Autoharass
 
-        private static void AutoHarassMode(Obj_AI_Base target)
+        private static void AutoHarassMode()
         {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Magical);
+            var wTarget = TargetSelector.GetTarget(spells[Spells.W].Range + spells[Spells.W].Width * 0.5f, TargetSelector.DamageType.Magical);
+
             if (target == null || !target.IsValidTarget())
             {
                 return;
@@ -237,7 +252,7 @@ namespace ElXerath
                 var w = ElXerathMenu._menu.Item("ElXerath.UseWAutoHarass").GetValue<bool>();
                 var mana = ElXerathMenu._menu.Item("ElXerath.harass.mana").GetValue<Slider>().Value;
 
-                if (Player.ManaPercentage() < mana)
+                if (Player.ManaPercent < mana)
                     return;
 
                 if (q && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].ChargedMaxRange))
@@ -252,9 +267,9 @@ namespace ElXerath
                         spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
                     }
                 }
-                if (w && spells[Spells.W].IsReady())
+                if (wTarget != null && w && spells[Spells.W].IsReady())
                 {
-                    spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
+                    spells[Spells.W].CastIfHitchanceEquals(wTarget, CustomHitChance);
                 }
             }
         }
@@ -269,7 +284,7 @@ namespace ElXerath
             var clearW = ElXerathMenu._menu.Item("ElXerath.clear.W").GetValue<bool>();
             var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].ChargedMaxRange);
@@ -337,7 +352,7 @@ namespace ElXerath
             var clearE = ElXerathMenu._menu.Item("ElXerath.jclear.E").GetValue<bool>();
             var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
             {
                 return;
             }
@@ -394,15 +409,17 @@ namespace ElXerath
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Magical);
+            var wTarget = TargetSelector.GetTarget(spells[Spells.W].Range + spells[Spells.W].Width * 0.5f, TargetSelector.DamageType.Magical);
+
             if (target == null || !target.IsValidTarget())
                 return;
 
             var harassQ = ElXerathMenu._menu.Item("ElXerath.Harass.Q").GetValue<bool>();
             var harassW = ElXerathMenu._menu.Item("ElXerath.Harass.W").GetValue<bool>();
 
-            if (harassW && spells[Spells.W].IsReady())
+            if (wTarget != null && harassW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
+                spells[Spells.W].CastIfHitchanceEquals(wTarget, CustomHitChance);
             }
 
             if (harassQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target) && target.IsValidTarget(spells[Spells.Q].ChargedMaxRange))
@@ -427,6 +444,9 @@ namespace ElXerath
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Magical);
+            var eTarget = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
+            var wTarget = TargetSelector.GetTarget(spells[Spells.W].Range + spells[Spells.W].Width * 0.5f, TargetSelector.DamageType.Magical);
+
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -434,17 +454,14 @@ namespace ElXerath
             var comboW = ElXerathMenu._menu.Item("ElXerath.Combo.W").GetValue<bool>();
             var comboE = ElXerathMenu._menu.Item("ElXerath.Combo.E").GetValue<bool>();
 
-            if (comboW && spells[Spells.W].IsReady())
+            if (wTarget != null && comboW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
+                spells[Spells.W].CastIfHitchanceEquals(wTarget, CustomHitChance);
             }
 
-            if (comboE && spells[Spells.E].IsReady() && Player.Distance(target) < spells[Spells.E].Range)
+            if (eTarget != null && comboE && spells[Spells.E].IsReady() && Player.Distance(target) < spells[Spells.E].Range * 0.4f)
             {
-                if (spells[Spells.E].GetPrediction(target).Hitchance >= CustomHitChance)
-                {
-                    spells[Spells.E].Cast(target);
-                }
+                spells[Spells.E].Cast(eTarget);
             }
 
             if (comboQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
@@ -458,16 +475,6 @@ namespace ElXerath
                 if (spells[Spells.Q].IsCharging)
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
-                }
-            }
-
-            var orb = ItemData.Scrying_Orb_Trinket.GetItem();
-            if ((!Player.IsVisible && orb.IsOwned() && orb.IsReady()))
-            {
-                if (orb.IsOwned() && orb.IsReady() && (Player.Level >= 9 ? 3500f : orb.Range) >= Player.Distance(target))
-                {
-                    orb.Cast(target);
-                    Console.WriteLine("Cast ORB");
                 }
             }
 
@@ -486,6 +493,8 @@ namespace ElXerath
         {
             var useR = ElXerathMenu._menu.Item("ElXerath.R.AutoUseR").GetValue<bool>();
             var tapkey = ElXerathMenu._menu.Item("ElXerath.R.OnTap").GetValue<KeyBind>().Active;
+            var ultRadius = ElXerathMenu._menu.Item("ElXerath.R.Radius").GetValue<Slider>().Value;
+            var drawROn = ElXerathMenu._menu.Item("ElXerath.Draw.RON").GetValue<bool>();
 
             if (!useR)
                 return;
@@ -511,48 +520,56 @@ namespace ElXerath
                 }
             }
 
+
+            /*var orb = ItemData.Scrying_Orb_Trinket.GetItem();
+            if ((orb.IsOwned() && orb.IsReady()))
+            {
+                if (orb.IsOwned() && orb.IsReady() && (Player.Level >= 9 ? 3500f : orb.Range) >= Player.Distance(target))
+                {
+                    orb.Cast(target.Position);
+                    Console.WriteLine("Cast ORB");
+                }
+            }*/
+
             switch (ultType)
             {
                 case 0:
                     spells[Spells.R].Cast(target);
                     break;
 
-                case 1:           
+                case 1:
                     var d = ElXerathMenu._menu.Item("Delay" + (RCombo._index + 1)).GetValue<Slider>().Value;
                     if (Utils.TickCount - RCombo.CastSpell > d)
                     {
-                        spells[Spells.R].Cast(target);
-                  
+                        spells[Spells.R].Cast(target, true);
                     }
                     break;
 
                 case 2:
-                    if (tapkey)
-                        spells[Spells.R].Cast(target);
-
+                    //if (tapkey)
+                        if (RCombo._tapKey)
+                            spells[Spells.R].Cast(target, true);
                     break;
 
                 case 3:
                     if (spells[Spells.R].GetPrediction(target).Hitchance >= CustomHitChance)
                     {
-                        spells[Spells.R].Cast(target);
+                        spells[Spells.R].Cast(target, true);
                     }
 
                     break;
 
                 case 4:
                    
-                    if (Game.CursorPos.Distance(target.ServerPosition) < 700 
+                    if (Game.CursorPos.Distance(target.ServerPosition) < ultRadius
                         && ObjectManager.Player.Distance(target.ServerPosition) < spells[Spells.R].Range)
                     {
-                        spells[Spells.R].Cast(target);
+                        spells[Spells.R].Cast(target, true);
                     }
-
-                    var drawROn = ElXerathMenu._menu.Item("ElXerath.Draw.RON").GetValue<bool>();
 
                     if (drawROn)
                     {
-                        Render.Circle.DrawCircle(Game.CursorPos, 700, Color.White);
+                        Render.Circle.DrawCircle(Game.CursorPos, ultRadius, Color.White);
                     }
 
                     break;
@@ -560,6 +577,7 @@ namespace ElXerath
         }
 
         #endregion
+
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
@@ -591,6 +609,35 @@ namespace ElXerath
         }
 
         #endregion
+
+        //Thanks to Esk0r for the R
+        static void Game_OnWndProc(WndEventArgs args)
+        {
+            if (args.Msg == (uint)WindowsMessages.WM_KEYUP)
+                RCombo._tapKey = true;
+        }
+
+        static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                if (args.SData.Name == "XerathLocusOfPower2")
+                {
+                    RCombo.CastSpell = 0;
+                    RCombo._index = 0;
+                    RCombo._position = new Vector3();
+                    RCombo._tapKey = false;
+                }
+                else if (args.SData.Name == "xerathlocuspulse")
+                {
+                    RCombo.CastSpell = Utils.TickCount;
+                    RCombo._index++;
+                    RCombo._position = args.End;
+                    RCombo._tapKey = false;
+                }
+            }
+        }
+        //End Thanks to Esk0r for the R
 
         #region Ignite Damage
 

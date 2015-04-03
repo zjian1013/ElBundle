@@ -21,13 +21,10 @@ namespace ElXerath
             var drawText = ElXerathMenu._menu.Item("ElXerath.Draw.Text").GetValue<bool>();
             var rBool = ElXerathMenu._menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active;
 
-
             if (drawOff)
                 return;
 
             var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
-
-            
 
             if (drawQ.Active)
                 if (Xerath.spells[Spells.Q].Level > 0)
