@@ -382,7 +382,7 @@ namespace ElKalista
 
         private static void Combo(Obj_AI_Base target)
         {
-            if (target == null || !target.IsValidTarget() || target.IsMinion)
+            if (target == null || !target.IsValidTarget())
                 return;
 
             Items(target);
