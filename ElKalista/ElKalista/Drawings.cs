@@ -46,8 +46,8 @@ namespace ElKalista
                 if (Kalista.spells[Spells.R].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Kalista.spells[Spells.R].Range, Color.White);
 
-            if (drawText)
-                Drawing.DrawText(playerPos.X - 70, playerPos.Y + 40, (rBool ? Color.Green : Color.Red), "{0}", (rBool ? "Auto harass Enabled" : "Auto harass Disabled"));
+            //if (drawText)
+               // Drawing.DrawText(playerPos.X - 70, playerPos.Y + 40, (rBool ? Color.Green : Color.Red), "{0}", (rBool ? "Auto harass Enabled" : "Auto harass Disabled"));
         }
     }
 }

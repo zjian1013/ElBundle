@@ -7,10 +7,8 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using System.Drawing;
 
-
 namespace ElKalista
 {
-
     public class ElKalistaMenu
     {
         public static Menu _menu;
@@ -84,8 +82,8 @@ namespace ElKalista
             setMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
             setMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(10, 1, 20)));
             setMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
-            setMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
-            setMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
+            //setMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
+            //setMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
             _menu.AddSubMenu(setMenu);
 
@@ -102,8 +100,6 @@ namespace ElKalista
             var drawFill = new MenuItem("ElKalista.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
             miscMenu.AddItem(drawFill);
             miscMenu.AddItem(dmgAfterE);
-
-
 
             EDamage.DamageToUnit = Kalista.GetComboDamage;
             EDamage.Enabled = dmgAfterE.GetValue<bool>();
@@ -130,7 +126,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.7"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Alpha Version: 1.0.1.8"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
