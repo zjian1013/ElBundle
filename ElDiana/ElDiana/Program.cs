@@ -7,13 +7,13 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
-namespace ElJayce
+namespace ElDiana
 {
     internal class Program
     {
         private static void Main(string[] args)
         {
-            CustomEvents.Game.OnGameLoad += Jayce.OnLoad;
+            CustomEvents.Game.OnGameLoad += Diana.OnLoad;
         }
     }
 }
