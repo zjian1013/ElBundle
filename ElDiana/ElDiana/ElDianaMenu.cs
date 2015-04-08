@@ -39,6 +39,7 @@ namespace ElDiana
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Ignite", "Use Ignite").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.ssssssssssss", ""));
             cMenu.AddItem(new MenuItem("ElDiana.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
+            //cMenu.AddItem(new MenuItem("ElDiana.Combo.Leapcombo", "Leap Combo").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
 
             _menu.AddSubMenu(cMenu);
@@ -79,6 +80,7 @@ namespace ElDiana
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.Text", "Draw Text").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElDiana.misc.Notifications", "Use Notifications").SetValue(true));
 
             var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw combo damage").SetValue(true);
             var drawFill = new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
@@ -110,7 +112,7 @@ namespace ElDiana
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.0"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.1"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

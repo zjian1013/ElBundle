@@ -12,8 +12,8 @@ using Color = System.Drawing.Color;
 namespace ElDiana
 {
     /// <summary>
-    /// ElDiana by jQuery
-    /// Version 1.0.0.0
+    /// ElDiana by jQuery - BETA
+    /// Version 1.0.0.1
     /// 
     /// Combo
     /// Q, W, E, R
@@ -39,7 +39,9 @@ namespace ElDiana
     /// 
     /// Extra
     /// Custom hitchanes in combo menu, default is set to high.
+    /// Notifications when target is killable
     /// 
+    /// Updated and tested 4/8/2015
     /// </summary>
     internal enum Spells
     {
@@ -58,6 +60,7 @@ namespace ElDiana
 
         public static Orbwalking.Orbwalker Orbwalker;
         private static SpellSlot _ignite;
+        private static int lastNotification = 0;
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
             { Spells.Q, new Spell(SpellSlot.Q, 900) },
@@ -130,7 +133,106 @@ namespace ElDiana
                     Harass();
                     break;
             }
+
+            /* if (ElDianaMenu._menu.Item("ElDiana.Combo.Leapcombo").GetValue<KeyBind>().Active)
+             {
+                 leapCombo();
+             }*/
+
+
+            var showNotifications = ElDianaMenu._menu.Item("ElDiana.misc.Notifications").GetValue<bool>();
+
+            if (showNotifications && Environment.TickCount - lastNotification > 5000)
+            {
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(1000) && GetComboDamage(h) > h.Health))
+                {
+                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
+                    lastNotification = Environment.TickCount;
+                }
+            }
+
         }
+        #endregion
+
+        #region leapCombo
+
+        /*private static void leapCombo()
+        {
+
+            //This: http://i.imgur.com/UGEBFHN.png XD - untested so not live enabled yet.
+
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValid)
+                return;
+
+            Console.WriteLine("xxxx");
+
+            var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
+
+
+            var leapMinion = MinionManager.GetMinions(
+                             ObjectManager.Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.NotAlly);
+
+             if (useR && spells[Spells.R].IsReady())
+             {
+                 bool minionGotHit = false;
+
+                 //find Mob with moonlight buff
+                 var moonlightMob = leapMinion.FindAll(x => !x.HasBuff("dianamoonlight", true) && x.Health > spells[Spells.R].GetDamage(x)).OrderBy(x => x.HealthPercentage());
+                 if (moonlightMob.Any())
+                 {
+                     //only cast on minion closest to enemy
+                     var minionNearEnemy = moonlightMob.Find(
+                         x => x.IsValidTarget() && x.Distance(target) < 900);
+
+                     //Debug: Draw circle around closest  minions
+                     Render.Circle.DrawCircle(minionNearEnemy.Position, minionNearEnemy.BoundingRadius, Color.Red);
+
+                     //cast R on minion closest to enemy
+                     if (minionNearEnemy.IsValidTarget())
+                     {
+                        if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                        {
+                            var pred = spells[Spells.Q].GetPrediction(target);
+                            if (pred.Hitchance >= CustomHitChance)
+                                spells[Spells.Q].Cast(minionNearEnemy);
+                        }
+                        if (spells[Spells.R].IsReady() && 
+                                minionNearEnemy.HasBuff("dianamoonlight", true))
+                        {
+                            spells[Spells.R].Cast(minionNearEnemy);
+                        }
+                        //spells[Spells.R].Cast(minionNearEnemy);
+
+                        //minion got hit and is leaped to
+                        minionGotHit = true;
+
+                         //leap to enemy with second Q + R
+                         if (minionGotHit)
+                         {
+                             if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                             {
+                                 var pred = spells[Spells.Q].GetPrediction(target);
+                                 if (pred.Hitchance >= CustomHitChance)
+                                     spells[Spells.Q].Cast(target);
+                             }
+                             else if(!spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+                             {   
+                                 // Cast R when Q is not ready
+                                 spells[Spells.R].Cast(target);
+                             }
+
+                             if (spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
+                                 target.HasBuff("dianamoonlight", true))
+                             {
+                                 spells[Spells.R].Cast(target);
+                             }
+                         }
+                     }
+                 }
+             }
+        }*/
+
         #endregion
 
         #region Combo
@@ -147,59 +249,6 @@ namespace ElDiana
             var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
             var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
             var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
-
-            //This: http://i.imgur.com/UGEBFHN.png XD - untested so not live enabled yet.
-
-           /* var leapMinion = MinionManager.GetMinions(
-                            ObjectManager.Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.NotAlly);
-         
-            if (useR && spells[Spells.R].IsReady())
-            {
-                bool minionGotHit = false;
-
-                //find Mob with moonlight buff
-                var moonlightMob = leapMinion.FindAll(x => x.HasBuff("dianamoonlight", true)).OrderBy(x => x.HealthPercentage());
-                if (moonlightMob.Any())
-                {
-                    //only cast on minion closest to enemy
-                    var minionNearEnemy = moonlightMob.Find(
-                        x => x.IsValidTarget() && x.Distance(target) < 900);
-
-                    //Debug: Draw circle around closest  minions
-                    Render.Circle.DrawCircle(minionNearEnemy.Position, minionNearEnemy.BoundingRadius, Color.Red);
-
-                    //cast R on minion closest to enemy
-                    if (minionNearEnemy.IsValidTarget())
-                    {
-                        spells[Spells.R].Cast(minionNearEnemy);
-
-                        //minion got hit and is leaped to
-                        minionGotHit = true;
-
-                        //leap to enemy with second Q + R
-                        if (minionGotHit)
-                        {
-                            if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                            {
-                                var pred = spells[Spells.Q].GetPrediction(target);
-                                if (pred.Hitchance >= CustomHitChance)
-                                    spells[Spells.Q].Cast(target);
-                            }
-                            else if(!spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
-                            {   
-                                // Cast R when Q is not ready
-                                spells[Spells.R].Cast(target);
-                            }
-
-                            if (spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
-                                target.HasBuff("dianamoonlight", true))
-                            {
-                                spells[Spells.R].Cast(target);
-                            }
-                        }
-                    }
-                }
-            }*/
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
@@ -413,6 +462,15 @@ namespace ElDiana
                 return 0f;
             }
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+        }
+
+        #endregion
+
+        #region Notifications 
+
+        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
+        {
+            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
         }
 
         #endregion
