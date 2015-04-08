@@ -41,8 +41,6 @@ namespace ElDiana
     /// Custom hitchanes in combo menu, default is set to high.
     /// 
     /// </summary>
-
-
     internal enum Spells
     {
         Q,
@@ -59,7 +57,7 @@ namespace ElDiana
         }
 
         public static Orbwalking.Orbwalker Orbwalker;
-        private static SpellSlot Ignite;
+        private static SpellSlot _ignite;
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
             { Spells.Q, new Spell(SpellSlot.Q, 900) },
@@ -96,7 +94,6 @@ namespace ElDiana
 
         #endregion
 
-
         public static void OnLoad(EventArgs args)
         {
             if (ObjectManager.Player.BaseSkinName != "Diana")
@@ -104,8 +101,7 @@ namespace ElDiana
 
             Notifications.AddNotification("ElDiana by jQuery v1.0.0.0", 1000);
             spells[Spells.Q].SetSkillshot(0.35f, 180f, 1800f, false, SkillshotType.SkillshotCircle);
-            Ignite = Player.GetSpellSlot("summonerdot");
-
+            _ignite = Player.GetSpellSlot("summonerdot");
 
             ElDianaMenu.Initialize();
             Game.OnUpdate += OnUpdate;
@@ -134,11 +130,6 @@ namespace ElDiana
                     Harass();
                     break;
             }
-
-
-      
-
-            //Render.Circle.DrawCircle(playerPos, spells[Spells.Q].Range, Color.red);
         }
         #endregion
 
@@ -156,43 +147,59 @@ namespace ElDiana
             var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
             var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
             var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
-            // var useMisayaCombo = ElDianaMenu._menu.Item("ElDiana.Combo.Misaya").GetValue<bool>();
 
+            //This: http://i.imgur.com/UGEBFHN.png XD - untested so not live enabled yet.
 
-            /* var leapminions = MinionManager.GetMinions(
+           /* var leapMinion = MinionManager.GetMinions(
                             ObjectManager.Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.NotAlly);
+         
+            if (useR && spells[Spells.R].IsReady())
+            {
+                bool minionGotHit = false;
 
+                //find Mob with moonlight buff
+                var moonlightMob = leapMinion.FindAll(x => x.HasBuff("dianamoonlight", true)).OrderBy(x => x.HealthPercentage());
+                if (moonlightMob.Any())
+                {
+                    //only cast on minion closest to enemy
+                    var minionNearEnemy = moonlightMob.Find(
+                        x => x.IsValidTarget() && x.Distance(target) < 900);
 
-             var qMinions = leapminions.FindAll(minionQ => minionQ.IsValidTarget(spells[Spells.Q].Range));
-             var qMinion = qMinions.Find(minionQ => minionQ.IsValidTarget() && minionQ.Distance(target) < 900);
+                    //Debug: Draw circle around closest  minions
+                    Render.Circle.DrawCircle(minionNearEnemy.Position, minionNearEnemy.BoundingRadius, Color.Red);
 
-             Render.Circle.DrawCircle(qMinion.Position, qMinion.BoundingRadius, Color.Red);
+                    //cast R on minion closest to enemy
+                    if (minionNearEnemy.IsValidTarget())
+                    {
+                        spells[Spells.R].Cast(minionNearEnemy);
 
-             if (spells[Spells.Q].IsReady())
-             {
-                 spells[Spells.Q].Cast(qMinion);
+                        //minion got hit and is leaped to
+                        minionGotHit = true;
 
+                        //leap to enemy with second Q + R
+                        if (minionGotHit)
+                        {
+                            if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                            {
+                                var pred = spells[Spells.Q].GetPrediction(target);
+                                if (pred.Hitchance >= CustomHitChance)
+                                    spells[Spells.Q].Cast(target);
+                            }
+                            else if(!spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+                            {   
+                                // Cast R when Q is not ready
+                                spells[Spells.R].Cast(target);
+                            }
 
-             }
-
-             if (useR && spells[Spells.R].IsReady() &&
-                 qMinion.HasBuff("dianamoonlight", true))
-             {
-                 spells[Spells.R].Cast(qMinion);
-             }*/
-
-            /* if (useMisayaCombo && Player.Distance(target) <= spells[Spells.Q].Range && spells[Spells.R].IsInRange(target) && spells[Spells.R].IsReady())
-       {
-           if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance)
-           {
-               spells[Spells.R].Cast(target, true);
-               spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance, true);
-           }
-       }
-       else
-       {
-
-       }*/
+                            if (spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
+                                target.HasBuff("dianamoonlight", true))
+                            {
+                                spells[Spells.R].Cast(target);
+                            }
+                        }
+                    }
+                }
+            }*/
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
@@ -237,7 +244,7 @@ namespace ElDiana
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
             {
-                Player.Spellbook.CastSpell(Ignite, target);
+                Player.Spellbook.CastSpell(_ignite, target);
             }     
         }
 
@@ -282,7 +289,6 @@ namespace ElDiana
         #endregion
 
         #region LaneClear
-
         private static void LaneClear()
         {
             var minion = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range).FirstOrDefault();
@@ -402,7 +408,7 @@ namespace ElDiana
 
         private static float IgniteDamage(Obj_AI_Hero target)
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
             {
                 return 0f;
             }
@@ -437,7 +443,7 @@ namespace ElDiana
                 damage += spells[Spells.R].GetDamage(enemy);
             }
 
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
             {
                 damage += (float)Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
             }
