@@ -118,19 +118,19 @@ namespace ElEasy.Plugins
     #endregion
 
         #region OnCombo
-    private static void OnCombo()
+        private static void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
                 return;
 
-            var useE = _menu.Item("ElEasy.Taric.Combo.Q").GetValue<bool>();
+            var useQ = _menu.Item("ElEasy.Taric.Combo.Q").GetValue<bool>();
             var useW = _menu.Item("ElEasy.Taric.Combo.W").GetValue<bool>();
             var useR = _menu.Item("ElEasy.Taric.Combo.R").GetValue<bool>();
             var useI = _menu.Item("ElEasy.Taric.Combo.Ignite").GetValue<bool>();
             var countEnemies = _menu.Item("ElEasy.Taric.Combo.Count.Enemies").GetValue<Slider>().Value;
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useQ && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
             {
                 spells[Spells.E].Cast(target);
             }
