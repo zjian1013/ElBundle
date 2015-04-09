@@ -12,6 +12,7 @@ Currently:
 - Vladimir
 - Diana 
 - Rumble
+- Alistar:Reborn
 
 # ElEasy AiO
 
