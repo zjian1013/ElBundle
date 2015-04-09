@@ -110,7 +110,7 @@ namespace ElEasy.Plugins
             if (drawR.Active)
                 if (spells[Spells.W].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
-    }
+        }
 
 
     #endregion
