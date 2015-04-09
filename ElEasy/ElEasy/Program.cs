@@ -11,7 +11,7 @@ namespace ElEasy
     class Program
     {
         static void Main(string[] args)
-        {
+         {
             CustomEvents.Game.OnGameLoad += OnLoad;
         }
 

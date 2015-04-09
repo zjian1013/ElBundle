@@ -17,6 +17,10 @@ namespace ElEasy
                 case "Taric":
                     Plugins.Taric.Load();
                     break;
+
+                case "Leona":
+                    Plugins.Leona.Load();
+                    break;
             }
         }
     }
