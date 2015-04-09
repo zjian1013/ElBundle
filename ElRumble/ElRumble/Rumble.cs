@@ -475,7 +475,6 @@ namespace ElRumble
             }
             return false;
         }
-
         #endregion
     }
 }
