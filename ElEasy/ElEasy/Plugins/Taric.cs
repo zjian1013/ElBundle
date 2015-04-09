@@ -31,6 +31,7 @@ namespace ElEasy.Plugins
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
         }
 
+        #region Onupdate
         private static void OnUpdate(EventArgs args)
         {
             if (Player.IsDead)
@@ -49,6 +50,7 @@ namespace ElEasy.Plugins
 
             HealManager();
         }
+        #endregion
 
         #region HealManager
 
