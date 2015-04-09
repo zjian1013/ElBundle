@@ -283,6 +283,7 @@ namespace ElEasy.Plugins
 
             _menu.AddSubMenu(settingsMenu);
 
+
             var miscMenu = new Menu("Misc", "Misc");
             miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.Q", "Draw Q").SetValue(new Circle()));
