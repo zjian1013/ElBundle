@@ -454,7 +454,6 @@ namespace ElRumble
 
         #endregion
 
-
         #region Wall
 
         //CREDITS TO XSALICE
