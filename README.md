@@ -13,7 +13,7 @@ Currently:
 - Diana 
 - Rumble
 
-# ElEasy
+# ElEasy AiO
 
 - Taric
 - Leona
