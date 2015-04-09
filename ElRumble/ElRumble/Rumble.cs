@@ -11,6 +11,43 @@ using Color = System.Drawing.Color;
 
 namespace ElRumble
 {
+    /// <summary>
+    /// ElRumble by jQuery - BETA
+    /// Version 1.0.0.1
+    /// 
+    /// Combo
+    /// Q, W, E, R
+    /// Auto ignite when target is killable
+    /// 
+    /// Harass
+    /// Q, E
+    /// 
+    /// Autoheat
+    /// Q, W to control heat (Rumble passive)
+    /// 
+    /// Clear settings
+    /// 
+    /// - Lane clear
+    /// Q,  E
+    /// 
+    /// - Jungleclear
+    /// Q, E
+    /// 
+    /// - Lasthit
+    /// Q
+    /// 
+    /// Drawings (Misc)
+    /// Draws combo damage
+    /// Q, W, E, R ranges
+    /// 
+    /// Extra
+    /// Custom hitchanes in combo menu, default is set to high.
+    /// Notifications when target is killable
+    /// 
+    /// Credits to xSalice for a part of his Rumble ult
+    /// 
+    /// Updated and tested 4/9/2015
+    /// </summary>
     internal enum Spells
     {
         Q,
