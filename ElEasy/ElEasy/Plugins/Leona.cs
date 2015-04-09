@@ -315,7 +315,6 @@ namespace ElEasy.Plugins
             }
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
-
         #endregion
     }
 }
