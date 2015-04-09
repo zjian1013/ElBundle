@@ -124,13 +124,13 @@ namespace ElEasy.Plugins
             if (target == null || !target.IsValid)
                 return;
 
-            var useQ = _menu.Item("ElEasy.Taric.Combo.Q").GetValue<bool>();
+            var useE = _menu.Item("ElEasy.Taric.Combo.E").GetValue<bool>();
             var useW = _menu.Item("ElEasy.Taric.Combo.W").GetValue<bool>();
             var useR = _menu.Item("ElEasy.Taric.Combo.R").GetValue<bool>();
             var useI = _menu.Item("ElEasy.Taric.Combo.Ignite").GetValue<bool>();
             var countEnemies = _menu.Item("ElEasy.Taric.Combo.Count.Enemies").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
             {
                 spells[Spells.E].Cast(target);
             }
