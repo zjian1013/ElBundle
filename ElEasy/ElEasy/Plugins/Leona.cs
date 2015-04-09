@@ -317,7 +317,5 @@ namespace ElEasy.Plugins
         }
 
         #endregion
-
-
     }
 }
