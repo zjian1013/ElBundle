@@ -91,7 +91,7 @@ namespace ElEasy.Plugins
             var drawQ = _menu.Item("ElEasy.Taric.Draw.Q").GetValue<Circle>();
             var drawW = _menu.Item("ElEasy.Taric.Draw.W").GetValue<Circle>();
             var drawE = _menu.Item("ElEasy.Taric.Draw.E").GetValue<Circle>();
-            var drawR = _menu.Item("ElEasy.Taric.Draw.E").GetValue<Circle>();
+            var drawR = _menu.Item("ElEasy.Taric.Draw.R").GetValue<Circle>();
 
 
             if (drawOff)
