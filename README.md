@@ -9,7 +9,7 @@ Currently:
 - Corki
 - Xerath
 - Sejuani
-- Vladimir
+- Vladimir:Reborn
 - Diana 
 - Rumble
 - Alistar:Reborn
