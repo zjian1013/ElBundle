@@ -21,6 +21,10 @@ namespace ElEasy
                 case "Leona":
                     Plugins.Leona.Load();
                     break;
+
+                case "Sona":
+                    Plugins.Sona.Load();
+                    break;
             }
         }
     }

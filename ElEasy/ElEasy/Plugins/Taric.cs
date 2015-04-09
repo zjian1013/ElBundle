@@ -62,7 +62,7 @@ namespace ElEasy.Plugins
             var playerHp = _menu.Item("ElEasy.Taric.Heal.Player.HP").GetValue<Slider>().Value;
             var allyHp = _menu.Item("ElEasy.Taric.Heal.Ally.HP").GetValue<Slider>().Value;
 
-            if (Player.HasBuff("Recall") || Player.InFountain() || !useHeal|| Player.ManaPercent < playerMana || !spells[Spells.Q].IsReady())
+            if (Player.IsRecalling() || Player.InFountain() || !useHeal|| Player.ManaPercent < playerMana || !spells[Spells.Q].IsReady())
                 return;
 
             //self heal

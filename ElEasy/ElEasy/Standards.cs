@@ -14,7 +14,7 @@ namespace ElEasy
         W,
         E,
         R
-    }
+    } 
 
     public class Standards
     {
