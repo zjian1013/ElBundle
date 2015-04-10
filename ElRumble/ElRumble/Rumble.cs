@@ -34,7 +34,7 @@ namespace ElRumble
     /// Q, E
     /// 
     /// - Lasthit
-    /// Q
+    /// E
     /// 
     /// Drawings (Misc)
     /// Draws combo damage
