@@ -15,6 +15,7 @@ namespace ElEasy.Plugins
     {
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
+            { Spells.Q, new Spell(SpellSlot.Q, Player.AttackRange + 50) },
             { Spells.W, new Spell(SpellSlot.W, 600) },
             { Spells.E, new Spell(SpellSlot.E, 650) },
             { Spells.R, new Spell(SpellSlot.R) }
