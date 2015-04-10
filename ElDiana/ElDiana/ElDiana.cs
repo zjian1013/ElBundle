@@ -102,7 +102,7 @@ namespace ElDiana
             if (ObjectManager.Player.BaseSkinName != "Diana")
                 return;
 
-            Notifications.AddNotification("ElDiana by jQuery v1.0.0.0", 1000);
+            Notifications.AddNotification("ElDiana by jQuery v1.0.0.2", 1000);
             spells[Spells.Q].SetSkillshot(0.35f, 180f, 1800f, false, SkillshotType.SkillshotCircle);
             _ignite = Player.GetSpellSlot("summonerdot");
 
@@ -123,7 +123,18 @@ namespace ElDiana
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    Combo();
+                    var ultType = ElDianaMenu._menu.Item("ElDiana.Combo.R.Mode").GetValue<StringList>().SelectedIndex;
+                    switch (ultType)
+                    {
+                        case 0:
+                            Combo();
+                            break;
+
+                        case 1:
+                            MisayaCombo();
+                            break;
+                    }
+                    
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                      LaneClear();
@@ -235,11 +246,121 @@ namespace ElDiana
 
         #endregion
 
+        #region MisayaCombo
+
+        private static void MisayaCombo()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValid)
+                return;
+
+            var useQ = ElDianaMenu._menu.Item("ElDiana.Combo.Q").GetValue<bool>();
+            var useW = ElDianaMenu._menu.Item("ElDiana.Combo.W").GetValue<bool>();
+            var useE = ElDianaMenu._menu.Item("ElDiana.Combo.E").GetValue<bool>();
+            var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
+            var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
+            var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
+
+            if (useQ && useR && Player.Distance(target) <= spells[Spells.Q].Range && spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+            {
+                if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance)
+                {
+                    spells[Spells.R].Cast(target);
+                    spells[Spells.Q].CastIfHitchanceEquals(target, HitChance.High, true);
+
+                }
+            }
+
+            /*if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target) && !spells[Spells.R].IsReady())
+            {
+                var pred = spells[Spells.Q].GetPrediction(target);
+                if (pred.Hitchance >= CustomHitChance)
+                    spells[Spells.Q].Cast(target);
+            }*/
+
+            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            {
+                spells[Spells.W].Cast();
+            }
+
+            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            {
+                var pred = spells[Spells.E].GetPrediction(target);
+                if (pred.Hitchance >= CustomHitChance)
+                    spells[Spells.E].Cast();
+            }
+
+            if (secondR && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+            {
+                if (target.Health < spells[Spells.R].GetDamage(target))
+                {
+                    spells[Spells.R].Cast(target);
+                }
+            }
+
+            if (secondR && spells[Spells.R].IsReady())
+            {
+                if (target.Health < spells[Spells.R].GetDamage(target))
+                {
+                    spells[Spells.R].Cast(target);
+                }
+            }
+
+
+            /* if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+             {
+                 var pred = spells[Spells.Q].GetPrediction(target);
+                 if (pred.Hitchance >= CustomHitChance)
+                     spells[Spells.Q].Cast(target);
+             }
+
+             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
+                 target.HasBuff("dianamoonlight", true))
+             {
+                 spells[Spells.R].Cast(target);
+             }
+
+             if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+             {
+                 spells[Spells.W].Cast();
+             }
+
+             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+             {
+                 var pred = spells[Spells.E].GetPrediction(target);
+                 if (pred.Hitchance >= CustomHitChance)
+                     spells[Spells.E].Cast();
+             }
+
+             if (secondR && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+             {
+                 if (target.Health < spells[Spells.R].GetDamage(target))
+                 {
+                     spells[Spells.R].Cast(target);
+                 }
+             }
+
+             if (secondR && spells[Spells.R].IsReady())
+             {
+                 if (target.Health < spells[Spells.R].GetDamage(target))
+                 {
+                     spells[Spells.R].Cast(target);
+                 }
+             }
+             */
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
+            {
+                Player.Spellbook.CastSpell(_ignite, target);
+            }
+        }
+
+        #endregion
+
         #region Combo
 
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
                 return;
 

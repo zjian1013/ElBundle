@@ -30,11 +30,12 @@ namespace ElDiana
             _menu.AddSubMenu(targetSelector);
 
             var cMenu = new Menu("Combo", "Combo");
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.Mode", "Mode").SetValue(new StringList(new[] { "Normal (Q->R)", "Misaya Combo (R->Q)" })));
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R", "Use R").SetValue(true));
+
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Q", "Use Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.E", "Use E").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElDiana.Combo.R", "Use R").SetValue(true));
-            //cMenu.AddItem(new MenuItem("ElDiana.Combo.Misaya", "Use Misaya combo when out of range").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Secure", "Use R to secure kill").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Ignite", "Use Ignite").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.ssssssssssss", ""));
@@ -112,7 +113,7 @@ namespace ElDiana
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.1"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
