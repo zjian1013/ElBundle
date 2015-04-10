@@ -34,7 +34,5 @@ namespace ElEasy
         }
 
         #endregion
-
-
     }
 }

@@ -33,6 +33,10 @@ namespace ElEasy
                 case "Malphite":
                     Plugins.Malphite.Load();
                     break;
+
+                case "Darius":
+                    Plugins.Darius.Load();
+                    break;
             }
         }
     }
