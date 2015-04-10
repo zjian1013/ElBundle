@@ -1,8 +1,5 @@
 # ElBundle
 
-
-Currently:
-
 - Singed
 - Varus
 - Kalista
