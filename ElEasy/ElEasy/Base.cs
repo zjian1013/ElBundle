@@ -29,6 +29,10 @@ namespace ElEasy
                 case "Nasus":
                     Plugins.Nasus.Load();
                     break;
+
+                case "Malphite":
+                    Plugins.Malphite.Load();
+                    break;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,5 +24,17 @@ namespace ElEasy
         protected static SpellSlot _ignite;
         protected static int lastNotification = 0;
         protected static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
+
+
+        #region Notifications 
+
+        protected static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
+        {
+            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
+        }
+
+        #endregion
+
+
     }
 }

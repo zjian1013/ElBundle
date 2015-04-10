@@ -8,7 +8,6 @@ using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-
 namespace ElEasy.Plugins
 {
     public class Nasus : Standards
@@ -261,7 +260,6 @@ namespace ElEasy.Plugins
             var drawOff = _menu.Item("ElEasy.Nasus.Draw.off").GetValue<bool>();
             var drawW = _menu.Item("ElEasy.Nasus.Draw.W").GetValue<Circle>();
             var drawE = _menu.Item("ElEasy.Nasus.Draw.E").GetValue<Circle>();
-            var drawR = _menu.Item("ElEasy.Nasus.Draw.R").GetValue<Circle>();
             var drawText = _menu.Item("ElEasy.Nasus.Draw.Text").GetValue<bool>();
             var rBool = _menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
             var helper = _menu.Item("ElEasy.Nasus.Draw.MinionHelper").GetValue<bool>();
@@ -278,10 +276,6 @@ namespace ElEasy.Plugins
             if (drawW.Active)
                 if (spells[Spells.W].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
-
-            if (drawR.Active)
-                if (spells[Spells.W].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
 
             if (drawText)
                 Drawing.DrawText(
@@ -370,7 +364,6 @@ namespace ElEasy.Plugins
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.E", "Draw E").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.Text", "Draw text").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.MinionHelper", "Draw killable minions").SetValue(true));
 
