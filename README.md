@@ -11,9 +11,6 @@
 - Rumble
 - Alistar:Reborn
 
-![](https://s3.amazonaws.com/f.cl.ly/items/3b0h333L2o2k2o443J3e/KonoeGod_ElEasy.png)
-
-
 # ElEasy AiO
 
 - Taric
