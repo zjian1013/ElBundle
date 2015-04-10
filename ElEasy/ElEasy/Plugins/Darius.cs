@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LeagueSharp.Common.Data;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -160,22 +161,55 @@ namespace ElEasy.Plugins
             var useE = _menu.Item("ElEasy.Darius.Combo.E").GetValue<bool>();
             var useR = _menu.Item("ElEasy.Darius.Combo.R").GetValue<bool>();
             var useI = _menu.Item("ElEasy.Darius.Combo.Ignite").GetValue<bool>();
+            //var ultType = _menu.Item("ElEasy.Malphite.Combo.R.Mode").GetValue<StringList>().SelectedIndex;
 
+            /*switch (ultType)
+            {
+                case 0:
+                    if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                    {
+                        spells[Spells.E].Cast(target);
+                    }
+
+                    if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
+
+
+                    break;
+
+                case 1:
+                    if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
+
+                    if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                    {
+                        spells[Spells.E].Cast(target);
+                    }
+
+                    break;
+            }*/
 
             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
             {
                 spells[Spells.E].Cast(target);
             }
 
+            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            {
+                spells[Spells.Q].Cast(target);
+            }
+
+            Items(target);
+
             if (useW && spells[Spells.W].IsReady())
             {
                 spells[Spells.W].CastOnUnit(Player);
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-            {
-                spells[Spells.Q].Cast(target);
-            }
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && spells[Spells.R].GetDamage(target) >= target.Health)
             {
@@ -252,7 +286,8 @@ namespace ElEasy.Plugins
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Q", "Use Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.E", "Use E").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.R", "Use R").SetValue(true));
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R", "Use SlamDUNK").SetValue(true));
+            //cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R.Mode", "Mode ").SetValue(new StringList(new[] { "E->Q", "Q->E" })));
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Ignite", "Use Ignite").SetValue(true));
 
             _menu.AddSubMenu(cMenu);
@@ -276,7 +311,17 @@ namespace ElEasy.Plugins
             interruptMenu.AddItem(new MenuItem("ElEasy.Darius.Interrupt.Activated", "Interrupt spells").SetValue(true));
             interruptMenu.AddItem(new MenuItem("ElEasy.Darius.Notifications", "Show notifications").SetValue(true));
             _menu.AddSubMenu(interruptMenu);
-            
+
+            var itemMenu = new Menu("Items", "Items");
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Youmuu", "Use Youmuu's Ghostblade").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Cutlass", "Use Cutlass").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade", "Use Blade of the Ruined King").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Harasssfsddass.E", ""));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
+
+            _menu.AddSubMenu(itemMenu);
+
             var miscMenu = new Menu("Misc", "Misc");
             miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.Q", "Draw Q").SetValue(new Circle()));
@@ -306,6 +351,45 @@ namespace ElEasy.Plugins
                 return 0f;
             }
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+        }
+
+        #endregion
+
+        #region itemusage
+
+        private static void Items(Obj_AI_Base target)
+        {
+            var botrk = ItemData.Blade_of_the_Ruined_King.GetItem();
+            var ghost = ItemData.Youmuus_Ghostblade.GetItem();
+            var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
+
+            var useYoumuu = _menu.Item("ElEasy.Darius.Items.Youmuu").GetValue<bool>();
+            var useCutlass = _menu.Item("ElEasy.Darius.Items.Cutlass").GetValue<bool>();
+            var useBlade = _menu.Item("ElEasy.Darius.Items.Blade").GetValue<bool>();
+
+            var useBladeEhp = _menu.Item("ElEasy.Darius.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
+            var useBladeMhp = _menu.Item("ElEasy.Darius.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
+
+            if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
+            && target.HealthPercent <= useBladeEhp
+            && useBlade)
+
+                botrk.Cast(target);
+
+            if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
+                && Player.HealthPercent <= useBladeMhp
+                && useBlade)
+
+                botrk.Cast(target);
+
+            if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) &&
+                target.HealthPercent <= useBladeEhp
+                && useCutlass)
+                cutlass.Cast(target);
+
+            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
+                && useYoumuu)
+                ghost.Cast();
         }
 
         #endregion
