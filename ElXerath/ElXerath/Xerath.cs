@@ -110,7 +110,7 @@ namespace ElXerath
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElXerath by jQuery v1.0.0.5", 1000);
+            Notifications.AddNotification("ElXerath by jQuery v1.0.0.6", 1000);
 
             spells[Spells.Q].SetSkillshot(0.6f, 100f, float.MaxValue, false, SkillshotType.SkillshotLine);
             spells[Spells.W].SetSkillshot(0.7f, 125f, float.MaxValue, false, SkillshotType.SkillshotCircle);
@@ -459,7 +459,7 @@ namespace ElXerath
                 spells[Spells.W].CastIfHitchanceEquals(wTarget, CustomHitChance);
             }
 
-            if (eTarget != null && comboE && spells[Spells.E].IsReady() && Player.Distance(target) < spells[Spells.E].Range * 0.4f)
+            if (eTarget != null && comboE && spells[Spells.E].IsReady() && Player.Distance(target) < spells[Spells.E].Range)
             {
                 spells[Spells.E].Cast(eTarget);
             }
