@@ -296,7 +296,6 @@ namespace ElEasy.Plugins
                 {
                     if (minion != null)
                     {
-                        var qDamage = ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q);
                         if ((GetBonusDmg(minion) > minion.Health))
                             Render.Circle.DrawCircle(minion.ServerPosition, minion.BoundingRadius, Color.Black);
                     }

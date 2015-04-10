@@ -210,23 +210,29 @@ namespace ElKalista
 
         private static void SaveMode()
         {
+            if (Player.IsRecalling() || Player.InFountain())
+                return;
+
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
 
-            if (ConnectedAlly == null)
+            if (save)
             {
-                foreach (var cAlly in from ally in ObjectManager.Get<Obj_AI_Hero>().Where(b => b.IsAlly && !b.IsDead && !b.IsMe) where Player.Distance(ally) < spells[Spells.R].Range from buff in ally.Buffs  where ally.HasBuff("kalistacoopstrikeally") select ally)
+                if (ConnectedAlly == null)
                 {
-                    ConnectedAlly = cAlly;
-                    break;
+                    foreach (var cAlly in from ally in ObjectManager.Get<Obj_AI_Hero>().Where(b => b.IsAlly && !b.IsDead && !b.IsMe) where Player.Distance(ally) < spells[Spells.R].Range from buff in ally.Buffs where ally.HasBuff("kalistacoopstrikeally") select ally)
+                    {
+                        ConnectedAlly = cAlly;
+                        break;
+                    }
                 }
-            }
-            else
-            {
-                if (save && ConnectedAlly.HealthPercent < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0 ||
-                    IncomingDamage > ConnectedAlly.Health)
+                else
                 {
-                    spells[Spells.R].Cast();
+                    // || IncomingDamage > ConnectedAlly.Health
+                    if (ConnectedAlly.HealthPercent < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0)
+                    {
+                        spells[Spells.R].Cast();
+                    }
                 }
             }
         }
@@ -390,9 +396,14 @@ namespace ElKalista
 
             if (comboQ && spells[Spells.Q].IsReady())
             {
-                var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
+                var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+
+                if (spells[Spells.Q].CanCast(qtarget) && spells[Spells.Q].GetPrediction(qtarget).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
+                    spells[Spells.Q].Cast(qtarget);
+
+                /*var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
                 if (prediction >= CustomHitChance)
-                    spells[Spells.Q].Cast(target.ServerPosition);
+                    spells[Spells.Q].Cast(target.ServerPosition);*/
             }
 
             var getEstacks =
@@ -460,7 +471,7 @@ namespace ElKalista
             }
         }
 
-        private static List<Obj_AI_Base> Q_GetCollisionMinions(Obj_AI_Hero source, Vector3 targetposition)
+        private static List<Obj_AI_Base> QGetCollisionMinions(Obj_AI_Hero source, Vector3 targetposition)
         {
             var input = new PredictionInput
             {
@@ -503,7 +514,7 @@ namespace ElKalista
 
                     foreach (
                         var colminion in
-                            Q_GetCollisionMinions(
+                            QGetCollisionMinions(
                                 Player, Player.ServerPosition.Extend(minion.ServerPosition, spells[Spells.Q].Range)))
                     {
                         if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
