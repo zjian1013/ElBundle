@@ -15,7 +15,7 @@ namespace ElEasy.Plugins
     {
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
-            { Spells.Q, new Spell(SpellSlot.Q, 400) },
+            { Spells.Q, new Spell(SpellSlot.Q, 420) },
             { Spells.W, new Spell(SpellSlot.W, 145) },
             { Spells.E, new Spell(SpellSlot.E, 540) },
             { Spells.R, new Spell(SpellSlot.R, 460) }
