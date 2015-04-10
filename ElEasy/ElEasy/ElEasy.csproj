@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base.cs" />
+    <Compile Include="DrawDamage.cs" />
     <Compile Include="Plugins\Leona.cs" />
     <Compile Include="Plugins\Nasus.cs" />
     <Compile Include="Plugins\Sona.cs" />

@@ -13,10 +13,8 @@ namespace ElEasy.Plugins
 {
     public class Nasus : Standards
     {
-        public static Int32 Sheen = 3057, Iceborn = 3025;
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
-            { Spells.Q, new Spell(SpellSlot.Q, Player.AttackRange + 25) },
             { Spells.W, new Spell(SpellSlot.W, 600) },
             { Spells.E, new Spell(SpellSlot.E, 650) },
             { Spells.R, new Spell(SpellSlot.R) }
@@ -25,12 +23,11 @@ namespace ElEasy.Plugins
         public static void Load()
         {
             _ignite = Player.GetSpellSlot("summonerdot");
-            spells[Spells.R].SetSkillshot(spells[Spells.E].Instance.SData.SpellCastTime, spells[Spells.E].Instance.SData.LineWidth, spells[Spells.E].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotCircle);
+            spells[Spells.E].SetSkillshot(spells[Spells.E].Instance.SData.SpellCastTime, spells[Spells.E].Instance.SData.LineWidth, spells[Spells.E].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotCircle);
 
             Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
-
         }
 
         #region Onupdate
@@ -61,7 +58,7 @@ namespace ElEasy.Plugins
 
             var active = _menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
             if (active)
-                AutoLastHit();
+                AutoLastHit();            
         }
 
         #endregion
@@ -71,7 +68,6 @@ namespace ElEasy.Plugins
 
         private static void Laneclear()
         {
-
             var useQ = _menu.Item("ElEasy.Nasus.LaneClear.Q").GetValue<bool>();
             var useE = _menu.Item("ElEasy.Nasus.LaneClear.E").GetValue<bool>();
 
@@ -79,11 +75,29 @@ namespace ElEasy.Plugins
             if (minions.Count <= 0)
                 return;
 
-            if (useQ && spells[Spells.Q].IsReady())
+          /*  if (useQ && spells[Spells.Q].IsReady())
             {
                 if (minions.Find(x => x.Health >= spells[Spells.Q].GetDamage(x) && x.IsValidTarget()) != null)
                 {
                     spells[Spells.Q].Cast();
+                }
+            }*/
+
+            if (spells[Spells.Q].IsReady() && useQ)
+            {
+                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range);
+                {
+                    foreach (
+                        var minion in
+                            allMinions.Where(
+                                minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q)))
+                    {
+                        if (minion.IsValidTarget())
+                        {
+                            spells[Spells.Q].CastOnUnit(minion);
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -181,8 +195,10 @@ namespace ElEasy.Plugins
                 if (spells[Spells.Q].GetDamage(minion) > minion.Health &&
                    Vector3.Distance(ObjectManager.Player.ServerPosition, minion.Position) < Player.AttackRange + 50 && spells[Spells.Q].IsReady())
                 {
+                    Orbwalker.SetAttack(false);
                     spells[Spells.Q].Cast();
                     Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                    Orbwalker.SetAttack(true);
                     break;
                 }
             }
@@ -245,6 +261,11 @@ namespace ElEasy.Plugins
             var drawW = _menu.Item("ElEasy.Nasus.Draw.W").GetValue<Circle>();
             var drawE = _menu.Item("ElEasy.Nasus.Draw.E").GetValue<Circle>();
             var drawR = _menu.Item("ElEasy.Nasus.Draw.R").GetValue<Circle>();
+            var drawText = _menu.Item("ElEasy.Nasus.Draw.Text").GetValue<bool>();
+            var rBool = _menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
+            var helper = _menu.Item("ElEasy.Nasus.Draw.MinionHelper").GetValue<bool>();
+
+            var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
 
             if (drawOff)
                 return;
@@ -260,10 +281,46 @@ namespace ElEasy.Plugins
             if (drawR.Active)
                 if (spells[Spells.W].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
+
+            if (drawText)
+                Drawing.DrawText(
+                    playerPos.X - 70, playerPos.Y + 40, (rBool ? Color.Green : Color.Red), "{0}",
+                    (rBool ? "Auto lasthit enabled" : "Auto lasthit disabled"));
+
+            if (helper)
+            {
+                var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.NotAlly);
+                foreach (var minion in minions)
+                {
+                    if (minion != null)
+                    {
+                        var qDamage = ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q);
+                        if ((qDamage > minion.Health))
+                            Render.Circle.DrawCircle(minion.ServerPosition, minion.BoundingRadius, Color.Black);
+                    }
+                }
+            }
         }
 
+        #endregion
+
+
+        #region ComboDamage
+
+        private static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            float damage = 0;
+
+            if (spells[Spells.Q].IsReady())
+            {
+                damage += (float)ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.Q);
+            }
+
+            return damage;
+        }
 
         #endregion
+    
 
         #region Menu
         private static void Initialize()
@@ -313,6 +370,31 @@ namespace ElEasy.Plugins
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.R", "Draw R").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.Text", "Draw text").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.MinionHelper", "Draw killable minions").SetValue(true));
+
+
+            /*var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw Q damage").SetValue(true);
+            var drawFill = new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            miscMenu.AddItem(drawFill);
+            miscMenu.AddItem(dmgAfterE);
+
+            DrawDamage.DamageToUnit = GetComboDamage;
+            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmgAfterE.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };*/
+
 
             _menu.AddSubMenu(miscMenu);
 

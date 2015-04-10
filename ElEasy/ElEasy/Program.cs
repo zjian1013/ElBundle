@@ -20,7 +20,7 @@ namespace ElEasy
             try
             {
                 Base.Load(ObjectManager.Player.ChampionName);
-                Notifications.AddNotification("ElEasy - " + ObjectManager.Player.ChampionName + " 1.0.0.0", 5000);
+                Notifications.AddNotification("ElEasy - " + ObjectManager.Player.ChampionName + " 1.0.0.1", 5000);
             }
             catch (Exception e)
             {
