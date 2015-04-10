@@ -12,6 +12,7 @@ namespace ElEasy.Plugins
 {
     public class Nasus : Standards
     {
+        public static Int32 Sheen = 3057, Iceborn = 3025;
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
             { Spells.Q, new Spell(SpellSlot.Q, Player.AttackRange + 50) },
@@ -28,6 +29,8 @@ namespace ElEasy.Plugins
             Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+
         }
 
         #region Onupdate
@@ -172,9 +175,13 @@ namespace ElEasy.Plugins
 
             foreach (var minion in minions)
             {
-                if (spells[Spells.Q].GetDamage(minion) > minion.Health && spells[Spells.Q].IsReady())
+                if (GetBonusDmg(minion) > minion.Health && spells[Spells.Q].IsReady())
                 {
-                    spells[Spells.Q].Cast();
+                    /*Orbwalker.SetAttack(false);
+                    spells[Spells.Q].Cast();*/
+                    Orbwalker.SetAttack(false);
+                    Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                    Orbwalker.SetAttack(true);
                 }
             }
         }
@@ -192,11 +199,11 @@ namespace ElEasy.Plugins
 
             foreach (var minion in minions)
             {
-                if (spells[Spells.Q].GetDamage(minion) > minion.Health &&
+                if (GetBonusDmg(minion) > minion.Health &&
                    Vector3.Distance(ObjectManager.Player.ServerPosition, minion.Position) < Player.AttackRange + 50 && spells[Spells.Q].IsReady())
                 {
                     Orbwalker.SetAttack(false);
-                    spells[Spells.Q].Cast();
+                    //spells[Spells.Q].Cast();
                     Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
                     Orbwalker.SetAttack(true);
                     break;
@@ -299,24 +306,7 @@ namespace ElEasy.Plugins
 
         #endregion
 
-
-        #region ComboDamage
-
-        private static float GetComboDamage(Obj_AI_Base enemy)
-        {
-            float damage = 0;
-
-            if (spells[Spells.Q].IsReady())
-            {
-                damage += (float)ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.Q);
-            }
-
-            return damage;
-        }
-
-        #endregion
-    
-
+   
         #region Menu
         private static void Initialize()
         {
@@ -367,29 +357,6 @@ namespace ElEasy.Plugins
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.Text", "Draw text").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.MinionHelper", "Draw killable minions").SetValue(true));
 
-
-            /*var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw Q damage").SetValue(true);
-            var drawFill = new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
-            miscMenu.AddItem(drawFill);
-            miscMenu.AddItem(dmgAfterE);
-
-            DrawDamage.DamageToUnit = GetComboDamage;
-            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
-            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
-            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
-
-            dmgAfterE.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
-            {
-                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
-            };
-
-            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
-            {
-                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
-                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
-            };*/
-
-
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
@@ -402,6 +369,35 @@ namespace ElEasy.Plugins
 
             _menu.AddToMainMenu();
         }
+
+        #endregion
+
+        #region Sheen
+
+        private static double GetBonusDmg(Obj_AI_Base target)
+        {
+            double dmgItem = 0;
+            if (Items.HasItem(Sheen) && (Items.CanUseItem(Sheen) || Player.HasBuff("sheen", true)) && Player.BaseAttackDamage > dmgItem)
+                dmgItem = Player.GetAutoAttackDamage(target);
+
+            if (Items.HasItem(Iceborn) && (Items.CanUseItem(Iceborn) || Player.HasBuff("itemfrozenfist", true)) && Player.BaseAttackDamage * 1.25 > dmgItem)
+                dmgItem = Player.GetAutoAttackDamage(target) * 1.25;
+
+            return spells[Spells.Q].GetDamage(target) + Player.GetAutoAttackDamage(target) + dmgItem;
+        }
+
+        static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!args.SData.Name.ToLower().Contains("attack") || !sender.IsMe)
+                return;
+
+            var unit = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.Target.NetworkId);
+            if ((GetBonusDmg(unit) > unit.Health))
+            {
+                spells[Spells.Q].Cast();
+            }
+        }
+
 
         #endregion
 
