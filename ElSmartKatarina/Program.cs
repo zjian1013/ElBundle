@@ -427,16 +427,10 @@ namespace Katarina
             if (_player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) ||
                 _player.HasBuff("KatarinaR", true))
             {
-                Console.WriteLine("yess");
                 Orbwalker.SetMovement(false);
                 Orbwalker.SetAttack(false);
                 return;
             }
-            else
-            {
-                Console.WriteLine("noo");
-            }
-               
 
             if (spells[Spells.Q].IsInRange(target))
             {
