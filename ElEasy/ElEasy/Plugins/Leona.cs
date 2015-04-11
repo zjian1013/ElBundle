@@ -147,12 +147,16 @@ namespace ElEasy.Plugins
             var countEnemies = _menu.Item("ElEasy.Leona.Combo.Count.Enemies").GetValue<Slider>().Value;
 
    
-            if (useQ && spells[Spells.Q].IsReady())
+            if (useQ && spells[Spells.Q].IsReady() && 
+                !target.HasBuff("BlackShield") || 
+                !target.HasBuff("SivirShield") || 
+                !target.HasBuff("BansheesVeil") || 
+                !target.HasBuff("ShroudofDarkness"))
              {
                  spells[Spells.Q].Cast();
              }
 
-             if (useW && spells[Spells.W].IsReady())
+             if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
              {
                  spells[Spells.W].Cast(Player);
              }
