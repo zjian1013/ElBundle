@@ -27,6 +27,8 @@ namespace Katarina
         private static int LastPlaced;
         private static int _lastNotification = 0;
         private static Vector3 _lastWardPos;
+        public static bool IsChanneling;
+
 
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
@@ -56,6 +58,7 @@ namespace Katarina
             Game.OnUpdate += Game_OnGameUpdate;
             Obj_AI_Hero.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
             GameObject.OnCreate += GameObject_OnCreate;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
             Notifications.AddNotification("SmartKatarina by Jouza - jQuery", 5000);
         }
@@ -100,15 +103,30 @@ namespace Katarina
             }
         }
 
+
+        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe || args.SData.Name != "KatarinaR")
+                return;
+
+            IsChanneling = true;
+            Orbwalker.SetMovement(false);
+
+            Orbwalker.SetAttack(false);
+            Utility.DelayAction.Add(1, () => IsChanneling = false);
+        }
+
         private static bool CastingR
         {
             get
             {
-                return ObjectManager.Player.HasBuff("KatarinaR", true) ||
+                return ObjectManager.Player.HasBuff("KatarinaR", true) || ObjectManager.Player.HasBuff("katarinarsound", true) ||
                        (ObjectManager.Player.LastCastedSpellName() == "KatarinaR" &&
                         Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
             }
         }
+
+        
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
@@ -403,6 +421,9 @@ namespace Katarina
         {
             Obj_AI_Hero target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             var rdmg = spells[Spells.R].GetDamage(target, 1);
+            
+            if (_player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) || _player.HasBuff("KatarinaR", true))
+                return;
 
             //Smart Q->E
             if (spells[Spells.Q].IsInRange(target))
@@ -441,15 +462,17 @@ namespace Katarina
                 if (spells[Spells.R].IsReady() && target.Health - rdmg < 0 && !spells[Spells.E].IsReady())
                 {
                     Orbwalker.SetMovement(false);
-                    Orbwalker.SetAttack(false);
                     spells[Spells.R].Cast();
+                    Orbwalker.SetAttack(false);
+
                 }
             }
             else if (spells[Spells.R].IsReady() && !spells[Spells.E].IsReady())
             {
                 Orbwalker.SetMovement(false);
-                Orbwalker.SetAttack(false);
                 spells[Spells.R].Cast();
+                Orbwalker.SetAttack(false);
+
             }
         }
 
@@ -698,7 +721,7 @@ namespace Katarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.1"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
@@ -707,7 +730,7 @@ namespace Katarina
 
         #region ComboDamage
 
-        public static float GetComboDamage(Obj_AI_Base enemy)
+        private static float GetComboDamage(Obj_AI_Base enemy)
         {
             float damage = 0;
 
