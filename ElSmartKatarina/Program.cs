@@ -56,6 +56,7 @@ namespace Katarina
             Game.OnUpdate += Game_OnGameUpdate;
             Obj_AI_Hero.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
             GameObject.OnCreate += GameObject_OnCreate;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
             Notifications.AddNotification("SmartKatarina by Jouza - jQuery", 5000);
         }
@@ -398,6 +399,15 @@ namespace Katarina
             }
         }
 
+        static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe || args.SData.Name != "KatarinaR")
+                return;
+
+            Orbwalker.SetMovement(false);
+            Orbwalker.SetAttack(false);
+        }
+
         //Combo
         private static void Combo()
         {
@@ -696,7 +706,7 @@ namespace Katarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.0"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.1"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
