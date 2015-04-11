@@ -440,11 +440,13 @@ namespace Katarina
             {
                 if (spells[Spells.R].IsReady() && target.Health - rdmg < 0 && !spells[Spells.E].IsReady())
                 {
+                    Orbwalker.SetMovement(false);
                     spells[Spells.R].Cast();
                 }
             }
             else if (spells[Spells.R].IsReady() && !spells[Spells.E].IsReady())
             {
+                Orbwalker.SetMovement(false);
                 spells[Spells.R].Cast();
             }
         }
