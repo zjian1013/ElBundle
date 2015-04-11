@@ -65,6 +65,11 @@ namespace Katarina
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            if (ObjectManager.Player.IsDead || _player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) ||
+                _player.HasBuff("KatarinaR", true))
+                return;
+
+
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -84,8 +89,6 @@ namespace Katarina
 
             KillSteal();
 
-            if (ObjectManager.Player.IsDead)
-                return;
 
             var wardjump = _config.Item("wardjumpkey").GetValue<KeyBind>().Active;
             if (wardjump)
@@ -101,32 +104,31 @@ namespace Katarina
                     _lastNotification = Environment.TickCount;
                 }
             }
+
+            var autoHarass = _config.Item("ElKatarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active;
+            if (autoHarass)
+                OnAutoHarass();
         }
 
-
-        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private static void OnAutoHarass()
         {
-            if (!sender.IsMe || args.SData.Name != "KatarinaR")
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValid || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 return;
 
-            IsChanneling = true;
-            Orbwalker.SetMovement(false);
+            var useQ = _config.Item("ElKatarina.AutoHarass.Q").GetValue<bool>();
+            var useE = _config.Item("ElKatarina.AutoHarass.W").GetValue<bool>();
 
-            Orbwalker.SetAttack(false);
-            Utility.DelayAction.Add(1, () => IsChanneling = false);
-        }
-
-        private static bool CastingR
-        {
-            get
+            if (spells[Spells.Q].IsReady() && target.IsValidTarget() && useQ)
             {
-                return ObjectManager.Player.HasBuff("KatarinaR", true) || ObjectManager.Player.HasBuff("katarinarsound", true) ||
-                       (ObjectManager.Player.LastCastedSpellName() == "KatarinaR" &&
-                        Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
+                spells[Spells.Q].Cast(target);
+            };
+
+            if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range) && useE)
+            {
+                spells[Spells.W].Cast(target);
             }
         }
-
-        
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
@@ -421,11 +423,21 @@ namespace Katarina
         {
             Obj_AI_Hero target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             var rdmg = spells[Spells.R].GetDamage(target, 1);
-            
-            if (_player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) || _player.HasBuff("KatarinaR", true))
-                return;
 
-            //Smart Q->E
+            if (_player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) ||
+                _player.HasBuff("KatarinaR", true))
+            {
+                Console.WriteLine("yess");
+                Orbwalker.SetMovement(false);
+                Orbwalker.SetAttack(false);
+                return;
+            }
+            else
+            {
+                Console.WriteLine("noo");
+            }
+               
+
             if (spells[Spells.Q].IsInRange(target))
             {
                 if (spells[Spells.Q].IsReady())
@@ -449,7 +461,6 @@ namespace Katarina
                 }
             }
 
-            //Cast W
             if (spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
             {
                 spells[Spells.W].Cast();
@@ -472,7 +483,6 @@ namespace Katarina
                 Orbwalker.SetMovement(false);
                 spells[Spells.R].Cast();
                 Orbwalker.SetAttack(false);
-
             }
         }
 
@@ -654,6 +664,11 @@ namespace Katarina
             _config.AddSubMenu(new Menu("Harass", "harass"));
             _config.SubMenu("harass").AddItem(new MenuItem("hMode", "Harass Mode: ").SetValue(new StringList(new[] { "Q only", "Q+W", "Q+E+W" })));
 
+            _config.SubMenu("harass").SubMenu("AutoHarass settings").AddItem(new MenuItem("ElKatarina.AutoHarass.Activated", "Auto harass", true).SetValue(new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
+            _config.SubMenu("harass").SubMenu("AutoHarass settings").AddItem(new MenuItem("ElKatarina.AutoHarass.Q", "Use Q").SetValue(true));
+            _config.SubMenu("harass").SubMenu("AutoHarass settings").AddItem(new MenuItem("ElKatarina.AutoHarass.W", "Use W").SetValue(true));
+
+
             _config.AddSubMenu(new Menu("Farming", "farm"));
             _config.SubMenu("farm").AddItem(new MenuItem("smartFarm", "Use Smart Farm").SetValue(true));
             _config.SubMenu("farm").AddItem(new MenuItem("qFarm", "Use Q").SetValue(true));
@@ -665,10 +680,8 @@ namespace Katarina
             _config.SubMenu("jungle").AddItem(new MenuItem("wJungle", "Use W").SetValue(true));
             _config.SubMenu("jungle").AddItem(new MenuItem("eJungle", "Use E").SetValue(true));
 
-
             _config.AddSubMenu(new Menu("Killsteal", "KillSteal"));
             _config.SubMenu("KillSteal").AddItem(new MenuItem("KillSteal", "Smart").SetValue(true));
-            _config.SubMenu("KillSteal").AddItem(new MenuItem("wjKS", "Use WardJump").SetValue(true));
             _config.SubMenu("KillSteal").AddItem(new MenuItem("jumpsS", "Use E").SetValue(true));
 
             _config.AddSubMenu(new Menu("Draw", "drawing"));
@@ -721,12 +734,35 @@ namespace Katarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.3"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
             _config.AddToMainMenu();
         }
+
+        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe || args.SData.Name != "KatarinaR")
+                return;
+
+            IsChanneling = true;
+            Orbwalker.SetMovement(false);
+
+            Orbwalker.SetAttack(false);
+            Utility.DelayAction.Add(1, () => IsChanneling = false);
+        }
+
+        private static bool CastingR
+        {
+            get
+            {
+                return ObjectManager.Player.HasBuff("KatarinaR", true) || ObjectManager.Player.HasBuff("katarinarsound", true) ||
+                       (ObjectManager.Player.LastCastedSpellName() == "KatarinaR" &&
+                        Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
+            }
+        }
+
 
         #region ComboDamage
 
