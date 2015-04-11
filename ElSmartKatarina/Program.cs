@@ -72,8 +72,6 @@ namespace Katarina
                 Orbwalker.SetAttack(false);
             }
                 
-
-
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -154,6 +152,7 @@ namespace Katarina
             {
                 args.Process = false;
                 Orbwalker.SetMovement(false);
+                Orbwalker.SetAttack(false);
             }
         }
 
@@ -425,7 +424,10 @@ namespace Katarina
         //Combo
         private static void Combo()
         {
-            Obj_AI_Hero target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValidTarget())
+                return;
+
             var rdmg = spells[Spells.R].GetDamage(target, 1);
 
             if (_player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) ||
@@ -471,16 +473,16 @@ namespace Katarina
                 if (spells[Spells.R].IsReady() && target.Health - rdmg < 0 && !spells[Spells.E].IsReady())
                 {
                     Orbwalker.SetMovement(false);
-                    spells[Spells.R].Cast();
                     Orbwalker.SetAttack(false);
+                    spells[Spells.R].Cast();
 
                 }
             }
             else if (spells[Spells.R].IsReady() && !spells[Spells.E].IsReady())
             {
                 Orbwalker.SetMovement(false);
-                spells[Spells.R].Cast();
                 Orbwalker.SetAttack(false);
+                spells[Spells.R].Cast();
             }
         }
 
@@ -837,28 +839,5 @@ namespace Katarina
         }
 
         #endregion
-
-        //Combo Damage calculating
-        private static float ComboDamage(Obj_AI_Base target)
-        {
-            var dmg = 0d;
-
-            if (spells[Spells.Q].IsReady())
-            {
-                dmg += _player.GetSpellDamage(target, SpellSlot.Q);
-            }
-
-            if (spells[Spells.W].IsReady())
-            {
-                dmg += _player.GetSpellDamage(target, SpellSlot.W);
-            }
-
-            if (spells[Spells.E].IsReady())
-            {
-                dmg += _player.GetSpellDamage(target, SpellSlot.E);
-            }
-
-            return (float) dmg;
-        }
     }
 }
