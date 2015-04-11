@@ -27,7 +27,8 @@ namespace Katarina
         private static int LastPlaced;
         private static int _lastNotification = 0;
         private static Vector3 _lastWardPos;
-        public static bool IsChanneling;
+        private static bool IsChanneling;
+        private static float rStart = 0;
 
 
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
@@ -59,25 +60,25 @@ namespace Katarina
             Obj_AI_Hero.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
-
+            Orbwalking.BeforeAttack += BeforeAttack;
             Notifications.AddNotification("SmartKatarina by Jouza - jQuery", 5000);
         }
 
         private static bool HasRBuff()
         {
-            return _player.HasBuff("KatarinaR") || _player.IsChannelingImportantSpell() ||
-                   _player.HasBuff("katarinarsound", true);
+            return _player.HasBuff("KatarinaR") || _player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true);
+        }
+
+        private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (args.Unit.IsMe)
+            {
+                args.Process = !_player.HasBuff("KatarinaR");
+            }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            /*if (ObjectManager.Player.IsDead || _player.IsChannelingImportantSpell() ||
-                _player.HasBuff("katarinarsound", true) || _player.HasBuff("KatarinaR", true))
-            {
-                Orbwalker.SetMovement(false);
-                Orbwalker.SetAttack(false);
-            }*/
-
             if (HasRBuff())
             {
                 Orbwalker.SetAttack(false);
@@ -107,7 +108,6 @@ namespace Katarina
             }
 
             KillSteal();
-
 
             var wardjump = _config.Item("wardjumpkey").GetValue<KeyBind>().Active;
             if (wardjump)
@@ -165,11 +165,9 @@ namespace Katarina
 
         private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
-            if (CastingR)
+            if (sender.IsMe && Environment.TickCount < rStart + 300)
             {
                 args.Process = false;
-                Orbwalker.SetMovement(false);
-                Orbwalker.SetAttack(false);
             }
         }
 
@@ -254,8 +252,6 @@ namespace Katarina
                 if (spells[Spells.R].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
 
-
-            //Target Drawing
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (_config.Item("Target").GetValue<Circle>().Active && target != null)
             {
@@ -293,60 +289,54 @@ namespace Katarina
                         ignitedmg = 0f;
                     }
 
-                    //W + Mark
                     if (hero.HasBuff("katarinaqmark") && hero.Health - wdmg - markDmg < 0 && spells[Spells.W].IsReady() &&
                         spells[Spells.W].IsInRange(hero))
                     {
                         spells[Spells.W].Cast();
                     }
-                    //Ignite
+
                     if (hero.Health - ignitedmg < 0 && _igniteSlot.IsReady())
                     {
                         _player.Spellbook.CastSpell(_igniteSlot, hero);
                     }
-                    // E
+                    
+
                     if (hero.Health - edmg < 0 && spells[Spells.E].IsReady())
                     {
                         spells[Spells.E].Cast(hero);
                     }
-                    // Q
+                 
                     if (hero.Health - qdmg < 0 && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(hero))
                     {
                         spells[Spells.Q].Cast(hero);
                     }
-                    /*else if (Q.IsReady() && E.IsReady() && Player.Distance(hero.ServerPosition) <= 1375 && Config.Item("jumpKs", true).GetValue<bool>())
-                    {
-                        JumpKs(hero);
-                        Q.Cast(hero, PacketCast);
-                        return;
-                    } */
-                    // E + W
+
                     if (hero.Health - edmg - wdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.W].IsReady())
                     {
                         CastE(hero);
                         spells[Spells.W].Cast();
                     }
-                    // E + Q
+
                     if (hero.Health - edmg - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady())
                     {
                         CastE(hero);
                         spells[Spells.Q].Cast(hero);
                     }
-                    // E + Q + W (don't proc Mark)
+
                     if (hero.Health - edmg - wdmg - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
                     {
                         CastE(hero);
                         spells[Spells.Q].Cast(hero);
                         spells[Spells.W].Cast();
                     }
-                    // E + Q + W + Mark
+
                     if (hero.Health - edmg - wdmg - qdmg - markDmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
                     {
                         CastE(hero);
                         spells[Spells.Q].Cast(hero);
                         spells[Spells.W].Cast();
                     }
-                    // E + Q + W + Ignite
+
                     if (hero.Health - edmg - wdmg - qdmg - ignitedmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() &&
                         _igniteSlot.IsReady())
                     {
@@ -447,14 +437,6 @@ namespace Katarina
 
             var rdmg = spells[Spells.R].GetDamage(target, 1);
 
-            if (_player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) ||
-                _player.HasBuff("KatarinaR", true))
-            {
-                Orbwalker.SetMovement(false);
-                Orbwalker.SetAttack(false);
-                return;
-            }
-
             if (spells[Spells.Q].IsInRange(target))
             {
                 if (spells[Spells.Q].IsReady())
@@ -493,6 +475,8 @@ namespace Katarina
                     Orbwalker.SetAttack(false);
                     spells[Spells.R].Cast();
 
+                    rStart = Environment.TickCount;
+                    Console.WriteLine("CAST ULT 1");
                 }
             }
             else if (spells[Spells.R].IsReady() && !spells[Spells.E].IsReady())
@@ -500,6 +484,8 @@ namespace Katarina
                 Orbwalker.SetMovement(false);
                 Orbwalker.SetAttack(false);
                 spells[Spells.R].Cast();
+
+                rStart = Environment.TickCount;
             }
         }
 
@@ -751,7 +737,7 @@ namespace Katarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.3"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.4"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
