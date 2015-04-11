@@ -17,10 +17,8 @@ namespace Katarina
         R
     }
 
-
     internal static class Program
     {
-        private static bool _inUlt;
         private static Orbwalking.Orbwalker Orbwalker;
         private static SpellSlot _igniteSlot;
         private static Menu _config;
@@ -50,10 +48,6 @@ namespace Katarina
                 return;
             
             _igniteSlot = _player.GetSpellSlot("summonerdot");
-
-
-            Utility.HpBarDamageIndicator.DamageToUnit = ComboDamage;
-            Utility.HpBarDamageIndicator.Enabled = true;
 
             spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
 
@@ -98,7 +92,7 @@ namespace Katarina
 
             if (spells[Spells.R].IsReady() && showNotifications && Environment.TickCount - _lastNotification > 5000)
             {
-                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget() && (float) _player.GetSpellDamage(h, SpellSlot.R) * 3 > h.Health))
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget() && GetComboDamage(h) > h.Health))
                 {
                     ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
                     _lastNotification = Environment.TickCount;
@@ -652,12 +646,32 @@ namespace Katarina
 
             _config.AddSubMenu(new Menu("Draw", "drawing"));
             _config.SubMenu("drawing").AddItem(new MenuItem("mDraw", "Disable all drawings").SetValue(false));
-            _config.SubMenu("drawing").AddItem(new MenuItem("ultiDmgDraw", "Draw Ultimate damage").SetValue(false));
             _config.SubMenu("drawing").AddItem(new MenuItem("Target", "Highlight Target").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 0))));
             _config.SubMenu("drawing").AddItem(new MenuItem("QDraw", "Draw Q").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 255))));
             _config.SubMenu("drawing").AddItem(new MenuItem("WDraw", "Draw W").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 255))));
             _config.SubMenu("drawing").AddItem(new MenuItem("EDraw", "Draw E").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 255))));
             _config.SubMenu("drawing").AddItem(new MenuItem("RDraw", "Draw R").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 255))));
+
+            var dmgAfterE = new MenuItem("ElKatarina.DrawComboDamage", "Draw combo damage").SetValue(true);
+            var drawFill = new MenuItem("ElKatarina.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            _config.SubMenu("drawing").AddItem(drawFill);
+            _config.SubMenu("drawing").AddItem(dmgAfterE);
+
+            DrawDamage.DamageToUnit = GetComboDamage;
+            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmgAfterE.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };
 
             //Misc Menu
             _config.AddSubMenu(new Menu("Misc", "misc"));
@@ -686,6 +700,42 @@ namespace Katarina
 
             _config.AddToMainMenu();
         }
+
+        #region ComboDamage
+
+        public static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            float damage = 0;
+
+            if (spells[Spells.Q].IsReady())
+            {
+                damage += spells[Spells.Q].GetDamage(enemy);
+            }
+
+            if (spells[Spells.W].IsReady())
+            {
+                damage += spells[Spells.W].GetDamage(enemy);
+            }
+
+            if (spells[Spells.E].IsReady())
+            {
+                damage += spells[Spells.E].GetDamage(enemy);
+            }
+
+            if (spells[Spells.R].IsReady())
+            {
+                damage += spells[Spells.R].GetDamage(enemy);
+            }
+
+            if (_igniteSlot == SpellSlot.Unknown || _player.Spellbook.CanUseSpell(_igniteSlot) != SpellState.Ready)
+            {
+                damage += (float)_player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+            }
+
+            return damage;
+        }
+
+        #endregion
 
         //Jungleclear
         private static void JungleClear()
@@ -748,10 +798,6 @@ namespace Katarina
                 dmg += _player.GetSpellDamage(target, SpellSlot.E);
             }
 
-            if (_config.Item("ultiDmgDraw").GetValue<bool>())
-            {
-                dmg += _player.GetSpellDamage(target, SpellSlot.R, 1);
-            }
             return (float) dmg;
         }
     }
