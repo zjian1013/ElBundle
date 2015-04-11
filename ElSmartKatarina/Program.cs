@@ -65,9 +65,13 @@ namespace Katarina
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (ObjectManager.Player.IsDead || _player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true) ||
-                _player.HasBuff("KatarinaR", true))
-                return;
+            if (ObjectManager.Player.IsDead || _player.IsChannelingImportantSpell() ||
+                _player.HasBuff("katarinarsound", true) || _player.HasBuff("KatarinaR", true))
+            {
+                Orbwalker.SetMovement(false);
+                Orbwalker.SetAttack(false);
+            }
+                
 
 
             switch (Orbwalker.ActiveMode)
@@ -737,12 +741,11 @@ namespace Katarina
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe || args.SData.Name != "KatarinaR")
+            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !_player.HasBuff("katarinarsound", true))
                 return;
 
             IsChanneling = true;
             Orbwalker.SetMovement(false);
-
             Orbwalker.SetAttack(false);
             Utility.DelayAction.Add(1, () => IsChanneling = false);
         }
