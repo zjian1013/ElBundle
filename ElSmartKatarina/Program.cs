@@ -63,15 +63,32 @@ namespace Katarina
             Notifications.AddNotification("SmartKatarina by Jouza - jQuery", 5000);
         }
 
+        private static bool HasRBuff()
+        {
+            return _player.HasBuff("KatarinaR") || _player.IsChannelingImportantSpell() ||
+                   _player.HasBuff("katarinarsound", true);
+        }
+
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (ObjectManager.Player.IsDead || _player.IsChannelingImportantSpell() ||
+            /*if (ObjectManager.Player.IsDead || _player.IsChannelingImportantSpell() ||
                 _player.HasBuff("katarinarsound", true) || _player.HasBuff("KatarinaR", true))
             {
                 Orbwalker.SetMovement(false);
                 Orbwalker.SetAttack(false);
+            }*/
+
+            if (HasRBuff())
+            {
+                Orbwalker.SetAttack(false);
+                Orbwalker.SetMovement(false);
             }
-                
+            else
+            {
+                Orbwalker.SetAttack(true);
+                Orbwalker.SetMovement(true);
+            }
+
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
