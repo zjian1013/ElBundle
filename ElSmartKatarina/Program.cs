@@ -19,17 +19,16 @@ namespace Katarina
 
     internal static class Program
     {
-        private static Orbwalking.Orbwalker Orbwalker;
+        private static Orbwalking.Orbwalker _orbwalker;
         private static SpellSlot _igniteSlot;
         private static Menu _config;
         private static Obj_AI_Hero _player = ObjectManager.Player;
         private static long _lastECast;
-        private static int LastPlaced;
+        private static int _lastPlaced;
         private static int _lastNotification = 0;
         private static Vector3 _lastWardPos;
-        private static bool IsChanneling;
-        private static float rStart = 0;
-
+        private static bool _isChanneling;
+        private static float _rStart = 0;
 
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
@@ -44,7 +43,7 @@ namespace Katarina
             CustomEvents.Game.OnGameLoad += OnLoad;
         }
 
-
+        #region OnLoad
         private static void OnLoad(EventArgs args)
         {
             if (ObjectManager.Player.ChampionName != "Katarina")
@@ -54,21 +53,25 @@ namespace Katarina
 
             spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
 
-            Drawing.OnDraw += Drawing_OnDraw;
+            Drawing.OnDraw += Drawings;
             MenuLoad();
-            Game.OnUpdate += Game_OnGameUpdate;
+            Game.OnUpdate +=OnUpdate;
             Obj_AI_Hero.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Orbwalking.BeforeAttack += BeforeAttack;
             Notifications.AddNotification("SmartKatarina by Jouza - jQuery", 5000);
         }
+        #endregion
 
+        #region HasRBuff
         private static bool HasRBuff()
         {
             return _player.HasBuff("KatarinaR") || _player.IsChannelingImportantSpell() || _player.HasBuff("katarinarsound", true);
         }
+        #endregion
 
+        #region BeforeAttack
         private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             if (args.Unit.IsMe)
@@ -76,21 +79,23 @@ namespace Katarina
                 args.Process = !_player.HasBuff("KatarinaR");
             }
         }
+        #endregion
 
-        private static void Game_OnGameUpdate(EventArgs args)
+        #region OnUpdate
+        private static void OnUpdate(EventArgs args)
         {
             if (HasRBuff())
             {
-                Orbwalker.SetAttack(false);
-                Orbwalker.SetMovement(false);
+                _orbwalker.SetAttack(false);
+                _orbwalker.SetMovement(false);
             }
             else
             {
-                Orbwalker.SetAttack(true);
-                Orbwalker.SetMovement(true);
+                _orbwalker.SetAttack(true);
+                _orbwalker.SetMovement(true);
             }
 
-            switch (Orbwalker.ActiveMode)
+            switch (_orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
@@ -128,11 +133,13 @@ namespace Katarina
             if (autoHarass)
                 OnAutoHarass();
         }
+        #endregion
 
+        #region AutoHarass
         private static void OnAutoHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (target == null || !target.IsValid || _orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 return;
 
             var useQ = _config.Item("ElKatarina.AutoHarass.Q").GetValue<bool>();
@@ -148,13 +155,15 @@ namespace Katarina
                 spells[Spells.W].Cast(target);
             }
         }
+        #endregion
 
+        #region GameObject_OnCreate
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
-            if (!spells[Spells.E].IsReady() || !(sender is Obj_AI_Minion) || Environment.TickCount >= LastPlaced + 300)
+            if (!spells[Spells.E].IsReady() || !(sender is Obj_AI_Minion) || Environment.TickCount >= _lastPlaced + 300)
                 return;
 
-            if (Environment.TickCount >= LastPlaced + 300) return;
+            if (Environment.TickCount >= _lastPlaced + 300) return;
             var ward = (Obj_AI_Minion)sender;
 
             if (ward.Name.ToLower().Contains("ward") && ward.Distance(_lastWardPos) < 500)
@@ -162,26 +171,22 @@ namespace Katarina
                 spells[Spells.E].Cast(ward);
             }
         }
+        #endregion
 
-        private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
-        {
-            if (sender.IsMe && Environment.TickCount < rStart + 300)
-            {
-                args.Process = false;
-            }
-        }
-
+        #region WardSlot
         private static InventorySlot GetBestWardSlot()
         {
             InventorySlot slot = Items.GetWardSlot();
             if (slot == default(InventorySlot)) return null;
             return slot;
         }
+        #endregion
 
+        #region Wardjump
         //credits to theblaxxoororororor
         private static void DoWardJump()
         {
-            if (Environment.TickCount <= LastPlaced + 3000 || !spells[Spells.E].IsReady())
+            if (Environment.TickCount <= _lastPlaced + 3000 || !spells[Spells.E].IsReady())
                 return;
 
             Vector3 cursorPos = Game.CursorPos;
@@ -198,12 +203,14 @@ namespace Katarina
 
             Items.UseItem((int)invSlot.Id, wardPosition);
             _lastWardPos = wardPosition;
-            LastPlaced = Environment.TickCount;
+            _lastPlaced = Environment.TickCount;
 
             spells[Spells.E].Cast();
         }
 
-        //E Humanizer
+        #endregion
+
+        #region Humanizer
         private static void CastE(Obj_AI_Base unit)
         {
             var playLegit = _config.Item("playLegit").GetValue<bool>();
@@ -223,47 +230,12 @@ namespace Katarina
                 _lastECast = Environment.TickCount;
             }
         }
+        #endregion
 
-        //Drawing
-        private static void Drawing_OnDraw(EventArgs args)
-        {
-            var drawOff = _config.Item("mDraw").GetValue<bool>();
-            var drawQ = _config.Item("QDraw").GetValue<Circle>();
-            var drawW = _config.Item("WDraw").GetValue<Circle>();
-            var drawE = _config.Item("EDraw").GetValue<Circle>();
-            var drawR = _config.Item("RDraw").GetValue<Circle>();
-
-            if (drawOff)
-                return;
-
-            if (drawQ.Active)
-                if (spells[Spells.Q].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
-
-            if (drawW.Active)
-                if (spells[Spells.W].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
-
-            if (drawE.Active)
-                if (spells[Spells.E].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
-
-            if (drawR.Active)
-                if (spells[Spells.R].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
-
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (_config.Item("Target").GetValue<Circle>().Active && target != null)
-            {
-                Render.Circle.DrawCircle(target.Position, 50, _config.Item("Target").GetValue<Circle>().Color);
-            }
-        }
-
-
-        //Killsteal
+        #region Killsteal
         private static void KillSteal()
         {
-            if (_config.Item("KillSteal").GetValue<bool>())
+            if (_config.Item("KillSteal").GetValue<bool>() && !HasRBuff())
             {
                 foreach (
                     Obj_AI_Hero hero in
@@ -427,8 +399,9 @@ namespace Katarina
                 }
             }
         }
+        #endregion
 
-        //Combo
+        #region Combo
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
@@ -471,25 +444,26 @@ namespace Katarina
             {
                 if (spells[Spells.R].IsReady() && target.Health - rdmg < 0 && !spells[Spells.E].IsReady())
                 {
-                    Orbwalker.SetMovement(false);
-                    Orbwalker.SetAttack(false);
+                    _orbwalker.SetMovement(false);
+                    _orbwalker.SetAttack(false);
                     spells[Spells.R].Cast();
 
-                    rStart = Environment.TickCount;
+                    _rStart = Environment.TickCount;
                     Console.WriteLine("CAST ULT 1");
                 }
             }
             else if (spells[Spells.R].IsReady() && !spells[Spells.E].IsReady())
             {
-                Orbwalker.SetMovement(false);
-                Orbwalker.SetAttack(false);
+                _orbwalker.SetMovement(false);
+                _orbwalker.SetAttack(false);
                 spells[Spells.R].Cast();
 
-                rStart = Environment.TickCount;
+                _rStart = Environment.TickCount;
             }
         }
+        #endregion
 
-        //Harass
+        #region Harass
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
@@ -527,6 +501,9 @@ namespace Katarina
             }
         }
 
+        #endregion
+
+        #region LaneClear
         private static void Laneclear()
         {
             var useQ = _config.Item("qFarm").GetValue<bool>();
@@ -576,8 +553,9 @@ namespace Katarina
                 }
             }
         }
+        #endregion
 
-        //Farm
+        #region Lasthit
         private static void Farm()
         {
             foreach (var minion in
@@ -646,6 +624,110 @@ namespace Katarina
                 }
             }
         }
+        #endregion
+
+        #region Obj_AI_Base_OnProcessSpellCast
+        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !_player.HasBuff("katarinarsound", true))
+                return;
+
+            _isChanneling = true;
+            _orbwalker.SetMovement(false);
+            _orbwalker.SetAttack(false);
+            Utility.DelayAction.Add(1, () => _isChanneling = false);
+        }
+        #endregion
+
+        #region Obj_AI_Hero_OnIssueOrder
+        private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
+        {
+            if (sender.IsMe && Environment.TickCount < _rStart + 300)
+            {
+                args.Process = false;
+            }
+        }
+        #endregion
+
+        #region ComboDamage
+        private static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            float damage = 0;
+
+            if (spells[Spells.Q].IsReady())
+            {
+                damage += spells[Spells.Q].GetDamage(enemy);
+            }
+
+            if (spells[Spells.W].IsReady())
+            {
+                damage += spells[Spells.W].GetDamage(enemy);
+            }
+
+            if (spells[Spells.E].IsReady())
+            {
+                damage += spells[Spells.E].GetDamage(enemy);
+            }
+
+            if (spells[Spells.R].IsReady())
+            {
+                damage += spells[Spells.R].GetDamage(enemy);
+            }
+
+            if (_igniteSlot == SpellSlot.Unknown || _player.Spellbook.CanUseSpell(_igniteSlot) != SpellState.Ready)
+            {
+                damage += (float)_player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+            }
+
+            return damage;
+        }
+
+        #endregion
+
+        #region JungleClear
+        private static void JungleClear()
+        {
+            var mobs = MinionManager.GetMinions(
+                _player.ServerPosition, spells[Spells.W].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+            if (mobs.Count <= 0)
+            {
+                return;
+            }
+
+            var mob = mobs[0];
+            if (mob == null)
+            {
+                return;
+            }
+
+            if (_config.Item("qJungle").GetValue<bool>() && spells[Spells.Q].IsReady())
+            {
+                spells[Spells.Q].CastOnUnit(mob);
+            }
+
+            if (_config.Item("wJungle").GetValue<bool>() && spells[Spells.W].IsReady())
+            {
+                spells[Spells.W].CastOnUnit(mob);
+            }
+
+            if (_config.Item("eJungle").GetValue<bool>() && spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].CastOnUnit(mob);
+            }
+        }
+
+        #endregion
+
+        #region Notifications 
+
+        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
+        {
+            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
+        }
+
+        #endregion
+
+        #region Menu
 
         private static void MenuLoad()
         {
@@ -653,7 +735,7 @@ namespace Katarina
 
             //Orbwalker Menu
             _config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(_config.SubMenu("Orbwalking"));
+            _orbwalker = new Orbwalking.Orbwalker(_config.SubMenu("Orbwalking"));
 
             //Target Selector Menu
             var tsMenu = new Menu("Target Selector", "Target Selector");
@@ -670,7 +752,6 @@ namespace Katarina
             _config.SubMenu("harass").SubMenu("AutoHarass settings").AddItem(new MenuItem("ElKatarina.AutoHarass.Activated", "Auto harass", true).SetValue(new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
             _config.SubMenu("harass").SubMenu("AutoHarass settings").AddItem(new MenuItem("ElKatarina.AutoHarass.Q", "Use Q").SetValue(true));
             _config.SubMenu("harass").SubMenu("AutoHarass settings").AddItem(new MenuItem("ElKatarina.AutoHarass.W", "Use W").SetValue(true));
-
 
             _config.AddSubMenu(new Menu("Farming", "farm"));
             _config.SubMenu("farm").AddItem(new MenuItem("smartFarm", "Use Smart Farm").SetValue(true));
@@ -737,110 +818,49 @@ namespace Katarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.4"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.5"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
             _config.AddToMainMenu();
         }
 
-        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !_player.HasBuff("katarinarsound", true))
-                return;
-
-            IsChanneling = true;
-            Orbwalker.SetMovement(false);
-            Orbwalker.SetAttack(false);
-            Utility.DelayAction.Add(1, () => IsChanneling = false);
-        }
-
-        private static bool CastingR
-        {
-            get
-            {
-                return ObjectManager.Player.HasBuff("KatarinaR", true) || ObjectManager.Player.HasBuff("katarinarsound", true) ||
-                       (ObjectManager.Player.LastCastedSpellName() == "KatarinaR" &&
-                        Environment.TickCount - ObjectManager.Player.LastCastedSpellT() < 500);
-            }
-        }
-
-
-        #region ComboDamage
-
-        private static float GetComboDamage(Obj_AI_Base enemy)
-        {
-            float damage = 0;
-
-            if (spells[Spells.Q].IsReady())
-            {
-                damage += spells[Spells.Q].GetDamage(enemy);
-            }
-
-            if (spells[Spells.W].IsReady())
-            {
-                damage += spells[Spells.W].GetDamage(enemy);
-            }
-
-            if (spells[Spells.E].IsReady())
-            {
-                damage += spells[Spells.E].GetDamage(enemy);
-            }
-
-            if (spells[Spells.R].IsReady())
-            {
-                damage += spells[Spells.R].GetDamage(enemy);
-            }
-
-            if (_igniteSlot == SpellSlot.Unknown || _player.Spellbook.CanUseSpell(_igniteSlot) != SpellState.Ready)
-            {
-                damage += (float)_player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
-            }
-
-            return damage;
-        }
-
         #endregion
 
-        //Jungleclear
-        private static void JungleClear()
+        #region Drawings
+        private static void Drawings(EventArgs args)
         {
-            var mobs = MinionManager.GetMinions(
-                _player.ServerPosition, spells[Spells.W].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
-            if (mobs.Count <= 0)
-            {
+            var drawOff = _config.Item("mDraw").GetValue<bool>();
+            var drawQ = _config.Item("QDraw").GetValue<Circle>();
+            var drawW = _config.Item("WDraw").GetValue<Circle>();
+            var drawE = _config.Item("EDraw").GetValue<Circle>();
+            var drawR = _config.Item("RDraw").GetValue<Circle>();
+
+            if (drawOff)
                 return;
-            }
 
-            var mob = mobs[0];
-            if (mob == null)
-            {
-                return;
-            }
+            if (drawQ.Active)
+                if (spells[Spells.Q].Level > 0)
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
 
-            if (_config.Item("qJungle").GetValue<bool>() && spells[Spells.Q].IsReady())
-            {
-                spells[Spells.Q].CastOnUnit(mob);
-            }
+            if (drawW.Active)
+                if (spells[Spells.W].Level > 0)
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
 
-            if (_config.Item("wJungle").GetValue<bool>() && spells[Spells.W].IsReady())
-            {
-                spells[Spells.W].CastOnUnit(mob);
-            }
+            if (drawE.Active)
+                if (spells[Spells.E].Level > 0)
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
 
-            if (_config.Item("eJungle").GetValue<bool>() && spells[Spells.E].IsReady())
+            if (drawR.Active)
+                if (spells[Spells.R].Level > 0)
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
+
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (_config.Item("Target").GetValue<Circle>().Active && target != null)
             {
-                spells[Spells.E].CastOnUnit(mob);
+                Render.Circle.DrawCircle(target.Position, 50, _config.Item("Target").GetValue<Circle>().Color);
             }
         }
-
-        #region Notifications 
-
-        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
-        {
-            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
-        }
-
         #endregion
     }
 }
