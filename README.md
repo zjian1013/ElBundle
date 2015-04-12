@@ -10,6 +10,7 @@
 - Diana 
 - Rumble
 - Alistar:Reborn
+- Katarina
 
 # ElEasy AiO
 
