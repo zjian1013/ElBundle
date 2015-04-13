@@ -2,10 +2,9 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace Katarina
+namespace ElKatarina
 {
     class DrawDamage //by xSalice
     {

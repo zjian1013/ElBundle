@@ -1,13 +1,13 @@
-using LeagueSharp;
-using LeagueSharp.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LeagueSharp;
+using LeagueSharp.Common;
+using LeagueSharp.Common.Data;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-
-namespace Katarina
+namespace ElKatarina
 {
     internal enum Spells
     {
@@ -114,6 +114,12 @@ namespace Katarina
 
             KillSteal();
 
+            /*var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValid || _orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                return;
+
+            if (target)*/
+
             var wardjump = _config.Item("wardjumpkey").GetValue<KeyBind>().Active;
             if (wardjump)
                 DoWardJump();
@@ -173,7 +179,27 @@ namespace Katarina
         }
         #endregion
 
-        #region WardSlot
+        #region UseItems
+
+        private static void UseItems(Obj_AI_Base target)
+        {
+            var useHextech = _config.Item("ElKatarina.Items.hextech").GetValue<bool>();
+            if (useHextech)
+            {
+                var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
+                var hextech = ItemData.Hextech_Gunblade.GetItem();
+
+                if (cutlass.IsReady() && cutlass.IsOwned(_player) && cutlass.IsInRange(target))
+                    cutlass.Cast(target);
+
+                if (hextech.IsReady() && hextech.IsOwned(_player) && hextech.IsInRange(target))
+                    hextech.Cast(target);
+            }
+        }
+
+        #endregion
+
+            #region WardSlot
         private static InventorySlot GetBestWardSlot()
         {
             InventorySlot slot = Items.GetWardSlot();
@@ -183,7 +209,6 @@ namespace Katarina
         #endregion
 
         #region Wardjump
-        //credits to theblaxxoororororor
         private static void DoWardJump()
         {
             if (Environment.TickCount <= _lastPlaced + 3000 || !spells[Spells.E].IsReady())
@@ -235,7 +260,8 @@ namespace Katarina
         #region Killsteal
         private static void KillSteal()
         {
-            if (_config.Item("KillSteal").GetValue<bool>() && !HasRBuff())
+            //&& !HasRBuff()
+            if (_config.Item("KillSteal").GetValue<bool>())
             {
                 foreach (
                     Obj_AI_Hero hero in
@@ -408,6 +434,8 @@ namespace Katarina
             if (target == null || !target.IsValidTarget())
                 return;
 
+            UseItems(target);
+
             var rdmg = spells[Spells.R].GetDamage(target, 1);
 
             if (spells[Spells.Q].IsInRange(target))
@@ -532,26 +560,42 @@ namespace Katarina
                 }
             }
 
-            if (useW && spells[Spells.W].IsReady())
+            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(minions.FirstOrDefault())) //check
             {
-                if (minions.Count > 1)
+                if (minions.Count > 2)
                 {
                     var farmLocation = spells[Spells.W].GetCircularFarmLocation(minions);
                     spells[Spells.W].Cast(farmLocation.Position);
                 }
             }
 
-            if (useE && spells[Spells.E].IsReady())
+            foreach (var minion in
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(
+                        minion =>
+                            minion.IsValidTarget() && minion.IsEnemy &&
+                            minion.Distance(_player.ServerPosition) < spells[Spells.E].Range))
+            {
+                var edmg = spells[Spells.E].GetDamage(minion);
+
+                if (minion.Health - edmg <= 0 && minion.Distance(_player.ServerPosition) <= spells[Spells.E].Range &&
+                    spells[Spells.E].IsReady() && (_config.Item("eFarm").GetValue<bool>()))
+                {
+                    CastE(minion);
+                }
+            }
+
+           /* if (useE && spells[Spells.E].IsReady())
             {
                 foreach (
                     var minion in
                         allMinions.Where(
                             minion => minion.IsValidTarget()))
                 {
-                    spells[Spells.E].CastOnUnit(minion);
-                    return;
+                    //spells[Spells.E].CastOnUnit(minion);
+                    CastE(minion);
                 }
-            }
+            }*/
         }
         #endregion
 
@@ -768,6 +812,9 @@ namespace Katarina
             _config.SubMenu("KillSteal").AddItem(new MenuItem("KillSteal", "Smart").SetValue(true));
             _config.SubMenu("KillSteal").AddItem(new MenuItem("jumpsS", "Use E").SetValue(true));
 
+            _config.AddSubMenu(new Menu("Items", "Items"));
+            _config.SubMenu("Items").AddItem(new MenuItem("ElKatarina.Items.hextech", "Use Hextech Gunblade").SetValue(true));
+
             _config.AddSubMenu(new Menu("Draw", "drawing"));
             _config.SubMenu("drawing").AddItem(new MenuItem("mDraw", "Disable all drawings").SetValue(false));
             _config.SubMenu("drawing").AddItem(new MenuItem("Target", "Highlight Target").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 0))));
@@ -777,7 +824,7 @@ namespace Katarina
             _config.SubMenu("drawing").AddItem(new MenuItem("RDraw", "Draw R").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 255))));
 
             var dmgAfterE = new MenuItem("ElKatarina.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill = new MenuItem("ElKatarina.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            var drawFill = new MenuItem("ElKatarina.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 1, 41, 62)));
             _config.SubMenu("drawing").AddItem(drawFill);
             _config.SubMenu("drawing").AddItem(dmgAfterE);
 
@@ -818,7 +865,7 @@ namespace Katarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.5"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.6"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
