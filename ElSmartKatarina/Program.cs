@@ -149,16 +149,16 @@ namespace ElKatarina
                 return;
 
             var useQ = _config.Item("ElKatarina.AutoHarass.Q").GetValue<bool>();
-            var useE = _config.Item("ElKatarina.AutoHarass.W").GetValue<bool>();
+            var useW = _config.Item("ElKatarina.AutoHarass.W").GetValue<bool>();
 
             if (spells[Spells.Q].IsReady() && target.IsValidTarget() && useQ)
             {
                 spells[Spells.Q].Cast(target);
             };
 
-            if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range) && useE)
+            if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range) && useW)
             {
-                spells[Spells.W].Cast(target);
+                spells[Spells.W].Cast();
             }
         }
         #endregion
@@ -199,7 +199,7 @@ namespace ElKatarina
 
         #endregion
 
-            #region WardSlot
+        #region WardSlot
         private static InventorySlot GetBestWardSlot()
         {
             InventorySlot slot = Items.GetWardSlot();
