@@ -824,7 +824,7 @@ namespace ElKatarina
             _config.SubMenu("drawing").AddItem(new MenuItem("RDraw", "Draw R").SetValue(new Circle(true, Color.FromArgb(255, 255, 255, 255))));
 
             var dmgAfterE = new MenuItem("ElKatarina.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill = new MenuItem("ElKatarina.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 1, 41, 62)));
+            var drawFill = new MenuItem("ElKatarina.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 255, 0, 1)));
             _config.SubMenu("drawing").AddItem(drawFill);
             _config.SubMenu("drawing").AddItem(dmgAfterE);
 
@@ -865,7 +865,7 @@ namespace ElKatarina
             _config.AddSubMenu(credits);
 
             _config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.6"));
+            _config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.7"));
             _config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
 
