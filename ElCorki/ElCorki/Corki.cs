@@ -132,19 +132,19 @@ namespace ElCorki
             var useBladeMhp = ElCorkiMenu._menu.Item("ElCorki.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
-            && target.HealthPercentage() <= useBladeEhp
+            && target.HealthPercent <= useBladeEhp
             && useBlade)
 
                 botrk.Cast(target);
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
-                && Player.HealthPercentage() <= useBladeMhp
+                && Player.HealthPercent <= useBladeMhp
                 && useBlade)
 
                 botrk.Cast(target);
 
             if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) &&
-                target.HealthPercentage() <= useBladeEhp
+                target.HealthPercent <= useBladeEhp
                 && useCutlass)
                 cutlass.Cast(target);
 
@@ -167,6 +167,8 @@ namespace ElCorki
             var comboR = ElCorkiMenu._menu.Item("ElCorki.Combo.R").GetValue<bool>();
             var useIgnite = ElCorkiMenu._menu.Item("ElCorki.Combo.Ignite").GetValue<bool>();
             var rStacks = ElCorkiMenu._menu.Item("ElCorki.Combo.RStacks").GetValue<Slider>().Value;
+            var rTarget = TargetSelector.GetTarget(spells[Spells.R1].Range, TargetSelector.DamageType.Magical);
+
 
             Items(target);
 
@@ -180,7 +182,7 @@ namespace ElCorki
                 spells[Spells.E].Cast(target);
             }
 
-            if (comboR && spells[Spells.R1].IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks)
+            if (comboR && spells[Spells.R1].IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks && spells[Spells.R1].IsInRange(rTarget))
             {
                 var bigR = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig");
 
@@ -217,7 +219,7 @@ namespace ElCorki
             var countMinionsR = ElCorkiMenu._menu.Item("ElCorki.Count.Minions.R").GetValue<Slider>().Value;
             var minmana = ElCorkiMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
@@ -289,7 +291,7 @@ namespace ElCorki
             var minmana = ElCorkiMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 700, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
             foreach (var minion in minions)
@@ -326,7 +328,7 @@ namespace ElCorki
             var minmana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
             var rStacks = ElCorkiMenu._menu.Item("ElCorki.Harass.RStacks").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                  return;
 
             if (harassQ && spells[Spells.Q].IsReady())
@@ -351,8 +353,9 @@ namespace ElCorki
         private static void AutoHarassMode()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            var rTarget = TargetSelector.GetTarget(spells[Spells.R1].Range, TargetSelector.DamageType.Magical);
 
-            if (target == null || !target.IsValidTarget())
+            if (target == null || !target.IsValidTarget() || rTarget == null || !rTarget.IsValidTarget())
                 return;
 
             if (ElCorkiMenu._menu.Item("ElCorki.AutoHarass").GetValue<KeyBind>().Active)
@@ -361,10 +364,10 @@ namespace ElCorki
                 var r = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").GetValue<bool>();
                 var mana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
 
-                if (Player.ManaPercentage() < mana)
+                if (Player.ManaPercent < mana)
                     return;
 
-                if (r && spells[Spells.R1].IsReady())
+                if (r && spells[Spells.R1].IsReady() && spells[Spells.R1].IsInRange(rTarget) || spells[Spells.R2].IsInRange(rTarget))
                 {
                     var bigR = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig");
 
