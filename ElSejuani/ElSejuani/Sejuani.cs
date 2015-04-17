@@ -159,7 +159,7 @@ namespace ElSejuani
 
             if (comboE && spells[Spells.E].IsReady() && IsFrozen(target))
             {
-                if (IsFrozen(target) && spells[Spells.E].GetDamage(target) > target.Health)
+                if (IsFrozen(target)) // && spells[Spells.E].GetDamage(target) > target.Health
                 {
                     spells[Spells.E].Cast(target);
                 }
