@@ -30,7 +30,7 @@ namespace ElCorki
             { Spells.Q, new Spell(SpellSlot.Q, 825)},
             { Spells.W, new Spell(SpellSlot.W, 800)},
             { Spells.E, new Spell(SpellSlot.E, 600)},
-            { Spells.R1, new Spell(SpellSlot.R, 1225)},
+            { Spells.R1, new Spell(SpellSlot.R, 1300)},
             { Spells.R2, new Spell(SpellSlot.R, 1500)}
         };
 
@@ -112,7 +112,7 @@ namespace ElCorki
             AutoHarassMode();
             JungleStealMode();
 
-            //spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
+            spells[Spells.R1].Range = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig") ? spells[Spells.R2].Range : spells[Spells.R1].Range;
         }
         #endregion
 
