@@ -70,7 +70,7 @@ namespace ElCorki
 
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElCorki by jQuery v1.0.0.5", 1000);
+            Notifications.AddNotification("ElCorki by jQuery v1.0.0.7", 5000);
 
             spells[Spells.Q].SetSkillshot(0.35f, 250f, 1000f, false, SkillshotType.SkillshotCircle);
             spells[Spells.E].SetSkillshot(0f, (float)(45 * Math.PI / 180), 1500, false, SkillshotType.SkillshotCone);
