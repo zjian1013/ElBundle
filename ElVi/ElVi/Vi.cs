@@ -308,6 +308,8 @@ namespace ElVi
             }
 
             var useQ = ElViMenu._menu.Item("ElVi.Harass.Q").GetValue<bool>();
+            var useE = ElViMenu._menu.Item("ElVi.Harass.E").GetValue<bool>();
+
 
             if (useQ && Spells[ElVi.Spells.Q].IsReady())
             {
@@ -322,6 +324,11 @@ namespace ElVi
                     Spells[ElVi.Spells.Q].StartCharging();
                     return;
                 }
+            }
+
+            if (useE && Spells[ElVi.Spells.E].IsReady())
+            {
+                Spells[ElVi.Spells.E].Cast();
             }
         }
 
