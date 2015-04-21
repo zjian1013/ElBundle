@@ -11,6 +11,7 @@
 - Rumble
 - Alistar:Reborn
 - Katarina
+- Vi
 
 # ElEasy AiO
 
