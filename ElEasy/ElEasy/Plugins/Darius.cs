@@ -93,7 +93,7 @@ namespace ElEasy.Plugins
             var useW = _menu.Item("ElEasy.Darius.LaneClear.W").GetValue<bool>();
             var playerMana = _menu.Item("ElEasy.Darius.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < playerMana)
+            if (Player.ManaPercentage() < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
@@ -124,7 +124,7 @@ namespace ElEasy.Plugins
             var useW = _menu.Item("ElEasy.Darius.JungleClear.W").GetValue<bool>();
             var playerMana = _menu.Item("ElEasy.Darius.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < playerMana)
+            if (Player.ManaPercentage() < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
@@ -210,8 +210,8 @@ namespace ElEasy.Plugins
                 spells[Spells.W].CastOnUnit(Player);
             }
 
-
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && spells[Spells.R].GetDamage(target) >= target.Health)
+            // && spells[Spells.R].GetDamage(target) >= target.Health
+            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target))
             {
                 //Credits: https://github.com/TC-Crew/L-Assemblies/blob/master/Darius/ComboHandler.cs#L40
                 foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(spells[Spells.R].Range)))
@@ -328,6 +328,27 @@ namespace ElEasy.Plugins
             miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.R", "Draw R").SetValue(new Circle()));
 
+            var dmgAfterE = new MenuItem("ElEasy.Darius.DrawComboDamage", "Draw combo damage").SetValue(true);
+            var drawFill = new MenuItem("ElEasy.Darius.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            miscMenu.AddItem(drawFill);
+            miscMenu.AddItem(dmgAfterE);
+
+            DrawDamage.DamageToUnit = GetComboDamage;
+            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmgAfterE.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };
+
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
@@ -433,10 +454,14 @@ namespace ElEasy.Plugins
             {
                 damage += Player.GetSpellDamage(enemy, SpellSlot.E);
             }
+            
+           
 
             if (spells[Spells.R].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
+                //damage += Player.GetSpellDamage(enemy, SpellSlot.R);
+
+                damage += enemy.Buffs.Where(buff => buff.Name == "dariushemo").Sum(buff => Player.GetSpellDamage(enemy, SpellSlot.R, 1) * (1 + buff.Count / 5) - 1);
             }
 
             return (float)damage;
