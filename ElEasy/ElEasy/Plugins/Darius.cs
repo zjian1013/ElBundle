@@ -193,7 +193,11 @@ namespace ElEasy.Plugins
                     break;
             }*/
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target) &&
+                !target.HasBuff("BlackShield") ||
+                !target.HasBuff("SivirShield") ||
+                !target.HasBuff("BansheesVeil") ||
+                !target.HasBuff("ShroudofDarkness"))
             {
                 spells[Spells.E].Cast(target);
             }
