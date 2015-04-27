@@ -19,7 +19,7 @@ namespace ElEasy
 
     public class Standards
     {
-        protected static Menu _menu;
+        public static Menu _menu;
         protected static Orbwalking.Orbwalker Orbwalker;
         protected static SpellSlot _ignite;
         protected static int lastNotification = 0;

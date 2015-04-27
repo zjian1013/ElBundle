@@ -54,9 +54,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssassinManager.cs" />
     <Compile Include="Base.cs" />
     <Compile Include="DrawDamage.cs" />
     <Compile Include="Plugins\Darius.cs" />
+    <Compile Include="Plugins\Katarina.cs" />
     <Compile Include="Plugins\Leona.cs" />
     <Compile Include="Plugins\Malphite.cs" />
     <Compile Include="Plugins\Nasus.cs" />

@@ -37,6 +37,10 @@ namespace ElEasy
                 case "Darius":
                     Plugins.Darius.Load();
                     break;
+
+                case "Katarina":
+                    Plugins.Katarina.Load();
+                    break;
             }
         }
     }
