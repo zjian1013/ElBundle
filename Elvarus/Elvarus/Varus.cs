@@ -373,7 +373,7 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                if (spells[Spells.Q].GetDamage(target) > target.Health || GetStacksOn(target) >= stackCount) //|| spells[Spells.W].Level == 0
+                if (spells[Spells.Q].GetDamage(target) > target.Health || GetStacksOn(target) >= stackCount || spells[Spells.W].Level == 0) //
                 {
                     var prediction = spells[Spells.Q].GetPrediction(target);
                     var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
