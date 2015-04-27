@@ -132,7 +132,7 @@ namespace Elvarus
                 }
                 else
                 {
-                    if (spells[Spells.Q].Range >= 100)
+                    if (spells[Spells.Q].IsInRange(target))
                     {
                         spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance, true);
                     }
