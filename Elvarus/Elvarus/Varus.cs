@@ -249,15 +249,14 @@ namespace Elvarus
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
-            var qtarget = TargetSelector.GetTarget(spells[Spells.E].ChargedMaxRange, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValidTarget() || qtarget == null || !qtarget.IsValidTarget())
+            if (target == null || !target.IsValidTarget())
                 return;
 
             var harassQ = ElVarusMenu._menu.Item("ElVarus.Harass.Q").GetValue<bool>();
             var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana) //eh
+            if (Player.ManaPercent < minmana)
                 return;
 
             if (harassE && spells[Spells.E].IsReady())
@@ -267,9 +266,14 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && harassQ)
             {
-                if (spells[Spells.Q].IsInRange(qtarget))
+                //CastQ(target);
+
+                var prediction = spells[Spells.Q].GetPrediction(target);
+                var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                if (distance < spells[Spells.Q].RangeSqr)
                 {
-                    CastQ(qtarget);
+                    if (spells[Spells.Q].Cast(prediction.CastPosition))
+                        return;
                 }
             }
         }
@@ -350,9 +354,8 @@ namespace Elvarus
 
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
-            var qtarget = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValidTarget() || qtarget == null || !qtarget.IsValidTarget())
+            var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget())
                 return;
 
             var stackCount = ElVarusMenu._menu.Item("ElVarus.Combo.Stack.Count").GetValue<Slider>().Value;
@@ -368,12 +371,18 @@ namespace Elvarus
                 spells[Spells.E].Cast(target);
             }
 
-
-           if (spells[Spells.Q].IsReady() && comboQ)
+            if (spells[Spells.Q].IsReady() && comboQ)
             {
-                if (spells[Spells.Q].GetDamage(qtarget) > qtarget.Health || GetStacksOn(qtarget) >= stackCount || spells[Spells.W].Level == 0)
+                if (spells[Spells.Q].GetDamage(target) > target.Health || GetStacksOn(target) >= stackCount) //|| spells[Spells.W].Level == 0
                 {
-                    CastQ(qtarget);
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                    if (distance < spells[Spells.Q].RangeSqr)
+                    {
+                        if (spells[Spells.Q].Cast(prediction.CastPosition))
+                            return;
+                    }
+                    //CastQ(target);
                 }
             }
 
