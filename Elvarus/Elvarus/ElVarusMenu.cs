@@ -19,12 +19,10 @@ namespace Elvarus
         {
             _menu = new Menu("ElVarus", "menu", true);
 
-            //ElSinged.Orbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Varus._orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             _menu.AddSubMenu(orbwalkerMenu);
 
-            //ElSinged.TargetSelector
             var targetSelector = new Menu("Target Selector", "TargetSelector");
             TargetSelector.AddToMenu(targetSelector);
             _menu.AddSubMenu(targetSelector);
@@ -53,15 +51,15 @@ namespace Elvarus
             hMenu.AddItem(new MenuItem("ElVarus.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             _menu.AddSubMenu(hMenu);
 
-            var ItemMenu = new Menu("Items", "Items");
-            ItemMenu.AddItem(new MenuItem("ElVarus.Items.Youmuu", "Use Youmuu's Ghostblade").SetValue(true));
-            ItemMenu.AddItem(new MenuItem("ElVarus.Items.Cutlass", "Use Cutlass").SetValue(true));
-            ItemMenu.AddItem(new MenuItem("ElVarus.Items.Blade", "Use Blade of the Ruined King").SetValue(true));
-            ItemMenu.AddItem(new MenuItem("ElVarus.Harasssfsddass.E", ""));
-            ItemMenu.AddItem(new MenuItem("ElVarus.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            ItemMenu.AddItem(new MenuItem("ElVarus.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
+            var itemMenu = new Menu("Items", "Items");
+            itemMenu.AddItem(new MenuItem("ElVarus.Items.Youmuu", "Use Youmuu's Ghostblade").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElVarus.Items.Cutlass", "Use Cutlass").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElVarus.Items.Blade", "Use Blade of the Ruined King").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElVarus.Harasssfsddass.E", ""));
+            itemMenu.AddItem(new MenuItem("ElVarus.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
+            itemMenu.AddItem(new MenuItem("ElVarus.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
 
-            _menu.AddSubMenu(ItemMenu);
+            _menu.AddSubMenu(itemMenu);
 
 
             var lMenu = new Menu("Clear", "Clear");
@@ -83,6 +81,29 @@ namespace Elvarus
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.E", "Draw E").SetValue(new Circle()));
+
+            var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw combo damage").SetValue(true);
+            var drawFill = new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            miscMenu.AddItem(drawFill);
+            miscMenu.AddItem(dmgAfterE);
+
+            DrawDamage.DamageToUnit = Varus.GetComboDamage;
+            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmgAfterE.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };
+
+
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
@@ -92,7 +113,7 @@ namespace Elvarus
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.8"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.9"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

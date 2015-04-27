@@ -70,8 +70,6 @@ namespace Elvarus
             if (ObjectManager.Player.BaseSkinName != "Varus")
                 return;
 
-            Console.WriteLine("Injected");
-
             Notifications.AddNotification("ElVarus by jQuery v1.0.0.8", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
@@ -91,28 +89,27 @@ namespace Elvarus
 
         private static void OnGameUpdate(EventArgs args)
         {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
-
             switch (_orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    Combo(target);
+                    Combo();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
                     JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    Harass(target);
+                    Harass();
                     break;
             }
+
+            var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
 
             if (spells[Spells.R].IsReady() && target.IsValidTarget() && ElVarusMenu._menu.Item("ElVarus.SemiR").GetValue<KeyBind>().Active)
             {
                 spells[Spells.R].CastOnUnit(target);
             }
         }
-
 
         #endregion
 
@@ -127,20 +124,19 @@ namespace Elvarus
             if (target == null)
                 return;
 
-            if (!spells[Spells.Q].IsReady())
-                return;
-
-            if (spells[Spells.Q].IsCharging)
+            if (spells[Spells.Q].IsReady())
             {
-                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                if (spells[Spells.Q].Range >= 100)
+                if (!spells[Spells.Q].IsCharging)
                 {
-                    spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance, true);
+                   spells[Spells.Q].StartCharging();
                 }
-            }
-            else
-            {
-                spells[Spells.Q].StartCharging();
+                else
+                {
+                    if (spells[Spells.Q].Range >= 100)
+                    {
+                        spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance, true);
+                    }
+                }
             }
         }
 
@@ -153,47 +149,45 @@ namespace Elvarus
             var countMinions = ElVarusMenu._menu.Item("ElVarus.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElVarusMenu._menu.Item("ElVarus.Count.Minions.E").GetValue<Slider>().Value;
             var minmana = ElVarusMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            //var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spells[Spells.E].Range, MinionTypes.All);
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
-            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
-
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
             if (minions.Count <= 0)
                 return;
 
             if (spells[Spells.Q].IsReady() && useQ)
             {
-                foreach (var minion in minions.Where(x => x.Health <= spells[Spells.Q].GetDamage(x)))
+                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range);
                 {
-                    var killcount = 0;
-
-                    foreach (var colminion in minions)
+                    foreach (var minion in
+                        allMinions.Where(
+                            minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q)))
                     {
-                        if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
-                        {
-                            killcount++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
 
-                    if (killcount >= countMinions)
-                    {
-                        if (spells[Spells.Q].IsCharging)
+                        var killcount = 0;
+
+                        foreach (var colminion in minions)
                         {
-                            spells[Spells.Q].Cast(minion);
-                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                            if (colminion.Health <= spells[Spells.Q].GetDamage(colminion))
+                            {
+                                killcount++;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                        if (!spells[Spells.Q].IsCharging)
+
+                        if (killcount >= countMinions)
                         {
-                            spells[Spells.Q].StartCharging();
-                            return;
+                            if (minion.IsValidTarget())
+                            {
+                                spells[Spells.Q].Cast(minion);
+                                return;
+                            }
                         }
-                        break;
                     }
                 }
             }
@@ -224,7 +218,7 @@ namespace Elvarus
             var minmana = ElVarusMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 700, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            if (Player.ManaPercentage() >= minmana)
+            if (Player.ManaPercent >= minmana)
             {
                 foreach (var minion in minions)
                 {
@@ -254,8 +248,10 @@ namespace Elvarus
 
         #region Harass
 
-        private static void Harass(Obj_AI_Base target)
+        private static void Harass()
         {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
+
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -263,7 +259,7 @@ namespace Elvarus
             var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() >= minmana)
+            if (Player.ManaPercent >= minmana)
             {
                 if (harassE && spells[Spells.E].IsReady())
                 {
@@ -281,10 +277,10 @@ namespace Elvarus
 
         #region itemusage
 
-        private static void items(Obj_AI_Base target)
+        private static void Items(Obj_AI_Base target)
         {
             var botrk = ItemData.Blade_of_the_Ruined_King.GetItem();
-            var Ghost = ItemData.Youmuus_Ghostblade.GetItem();
+            var ghost = ItemData.Youmuus_Ghostblade.GetItem();
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
             var useYoumuu = ElVarusMenu._menu.Item("ElVarus.Items.Youmuu").GetValue<bool>();
@@ -295,38 +291,53 @@ namespace Elvarus
             var useBladeMhp = ElVarusMenu._menu.Item("ElVarus.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
-            && target.HealthPercentage() <= useBladeEhp
+            && target.HealthPercent <= useBladeEhp
             && useBlade)
 
                 botrk.Cast(target);
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
-                && Player.HealthPercentage() <= useBladeMhp
+                && Player.HealthPercent <= useBladeMhp
                 && useBlade)
 
                 botrk.Cast(target);
 
             if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) &&
-                target.HealthPercentage() <= useBladeEhp
+                target.HealthPercent <= useBladeEhp
                 && useCutlass)
                 cutlass.Cast(target);
 
-            if (Ghost.IsReady() && Ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
+            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
                 && useYoumuu)
-                Ghost.Cast();
+                ghost.Cast();
         }
 
         #endregion
 
         #region GetComboDamage   
 
-        private static float GetComboDamage(Obj_AI_Base enemy)
+        public static float GetComboDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;
 
             if (spells[Spells.Q].IsReady())
             {
                 damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
+            }
+
+            if (spells[Spells.W].IsReady())
+            {
+                damage += enemy.Buffs.Where(buff => buff.Name == "VarusWDebuff").Sum(buff => Player.GetSpellDamage(enemy, SpellSlot.W, 1) * (1 + buff.Count / 3) - 1);
+            }
+
+            if (spells[Spells.E].IsReady())
+            {
+                damage += Player.GetSpellDamage(enemy, SpellSlot.E);
+            }
+
+            if (spells[Spells.R].IsReady())
+            {
+                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
             }
 
             return (float)damage;
@@ -336,9 +347,11 @@ namespace Elvarus
 
         #region Combo
 
-        private static void Combo(Obj_AI_Base target)
+        private static void Combo()
         {
-            if (target == null || !target.IsValidTarget())
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            var qtarget = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget() || qtarget == null || !qtarget.IsValidTarget())
                 return;
 
             var stackCount = ElVarusMenu._menu.Item("ElVarus.Combo.Stack.Count").GetValue<Slider>().Value;
@@ -347,26 +360,19 @@ namespace Elvarus
             var comboE = ElVarusMenu._menu.Item("ElVarus.Combo.E").GetValue<bool>();
             var comboR = ElVarusMenu._menu.Item("ElVarus.Combo.R").GetValue<bool>();
 
-            items(target);
+            Items(target);
 
             if (comboE && spells[Spells.E].IsReady())
             {
                 spells[Spells.E].Cast(target);
             }
 
-            var comboDamage = GetComboDamage(target);
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                if (spells[Spells.Q].IsCharging)
+                if (spells[Spells.Q].GetDamage(qtarget) > qtarget.Health || GetStacksOn(qtarget) >= stackCount || spells[Spells.W].Level == 0)
                 {
-                    spells[Spells.Q].Cast(target);
-                    return;
-                }
-                if (comboDamage > target.Health || !spells[Spells.Q].IsCharging && GetStacksOn(target) >= stackCount || !spells[Spells.Q].IsCharging && spells[Spells.W].Level == 0)
-                {
-                    spells[Spells.Q].StartCharging();
-                    return;
+                    CastQ(qtarget);
                 }
             }
 
