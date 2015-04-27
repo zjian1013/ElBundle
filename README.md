@@ -21,6 +21,7 @@
 - Nasus
 - Malphite
 - Darius
+- Katarina
 
 # ElOthers
 
