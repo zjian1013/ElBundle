@@ -70,7 +70,7 @@ namespace Elvarus
             if (ObjectManager.Player.BaseSkinName != "Varus")
                 return;
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.0.8", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.1.1", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
