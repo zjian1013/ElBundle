@@ -249,24 +249,27 @@ namespace Elvarus
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
-
-            if (target == null || !target.IsValidTarget())
+            var qtarget = TargetSelector.GetTarget(spells[Spells.E].ChargedMaxRange, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget() || qtarget == null || !qtarget.IsValidTarget())
                 return;
 
             var harassQ = ElVarusMenu._menu.Item("ElVarus.Harass.Q").GetValue<bool>();
             var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
-            if (Player.ManaPercent >= minmana)
-            {
-                if (harassE && spells[Spells.E].IsReady())
-                {
-                    spells[Spells.E].CastOnBestTarget();
-                }
+            if (Player.ManaPercentage() < minmana) //eh
+                return;
 
-                if (harassQ && spells[Spells.Q].IsReady())
+            if (harassE && spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].CastOnBestTarget();
+            }
+
+            if (spells[Spells.Q].IsReady() && harassQ)
+            {
+                if (spells[Spells.Q].IsInRange(qtarget))
                 {
-                    CastQ(target);
+                    CastQ(qtarget);
                 }
             }
         }
@@ -366,7 +369,7 @@ namespace Elvarus
             }
 
 
-            if (spells[Spells.Q].IsReady() && comboQ)
+           if (spells[Spells.Q].IsReady() && comboQ)
             {
                 if (spells[Spells.Q].GetDamage(qtarget) > qtarget.Health || GetStacksOn(qtarget) >= stackCount || spells[Spells.W].Level == 0)
                 {
