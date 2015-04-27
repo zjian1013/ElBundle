@@ -224,15 +224,13 @@ namespace Elvarus
                 {
                     if (spells[Spells.Q].IsReady() && useQ)
                     {
-                        if (spells[Spells.Q].IsCharging)
-                        {
-                            spells[Spells.Q].Cast(minion, true);
-                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                        }
                         if (!spells[Spells.Q].IsCharging)
                         {
                             spells[Spells.Q].StartCharging();
-                            return;
+                        }
+                        else
+                        {
+                            spells[Spells.Q].CastOnUnit(minion);
                         }
                     }
 
