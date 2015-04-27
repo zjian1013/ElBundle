@@ -923,8 +923,6 @@ namespace ElEasy.Plugins
                 DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
             };
 
-        
-
             _menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
