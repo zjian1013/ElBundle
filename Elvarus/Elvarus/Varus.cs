@@ -134,7 +134,7 @@ namespace Elvarus
                 {
                     if (spells[Spells.Q].IsInRange(target))
                     {
-                        spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance, true);
+                        spells[Spells.Q].Cast(target);
                     }
                 }
             }
