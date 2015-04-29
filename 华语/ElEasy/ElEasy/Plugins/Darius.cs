@@ -307,7 +307,7 @@ namespace ElEasy.Plugins
             clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Darius.LaneClear.W", "使用 W").SetValue(true));
             clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Darius.JungleClear.Q", "使用Use Q").SetValue(true));
             clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Darius.JungleClear.W", "使用 W").SetValue(true));
-            clearMenu.AddItem(new MenuItem("ElEasy.Darius.Clear.Player.Mana", "最低 魔 for clear").SetValue(new Slider(55)));
+            clearMenu.AddItem(new MenuItem("ElEasy.Darius.Clear.Player.Mana", "清线 最低魔").SetValue(new Slider(55)));
 
             _menu.AddSubMenu(clearMenu);
             
