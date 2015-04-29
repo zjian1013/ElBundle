@@ -286,54 +286,54 @@ namespace ElEasy.Plugins
             TargetSelector.AddToMenu(targetSelector);
             _menu.AddSubMenu(targetSelector);
 
-            var cMenu = new Menu("Combo", "Combo");
-            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Q", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.W", "Use W").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.E", "Use E").SetValue(true));
-            cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R", "Use SlamDUNK").SetValue(true));
+            var cMenu = new Menu("连招 设置", "Combo");
+            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Q", "使用 Q").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.W", "使用 W").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.E", "使用 E").SetValue(true));
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R", "使用 灌篮").SetValue(true));
             //cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R.Mode", "Mode ").SetValue(new StringList(new[] { "E->Q", "Q->E" })));
-            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Ignite", "Use Ignite").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Ignite", "使用 引燃").SetValue(true));
 
             _menu.AddSubMenu(cMenu);
 
-            var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("ElEasy.Darius.Harass.Q", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Darius.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
+            var hMenu = new Menu("骚扰 设置", "Harass");
+            hMenu.AddItem(new MenuItem("ElEasy.Darius.Harass.Q", "使用 Q").SetValue(true));
+            hMenu.AddItem(new MenuItem("ElEasy.Darius.Harass.Player.Mana", "最低 魔量").SetValue(new Slider(55)));
 
             _menu.AddSubMenu(hMenu);
 
-            var clearMenu = new Menu("Clear", "Clear");
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Darius.LaneClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Darius.LaneClear.W", "Use W").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Darius.JungleClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Darius.JungleClear.W", "Use W").SetValue(true));
-            clearMenu.AddItem(new MenuItem("ElEasy.Darius.Clear.Player.Mana", "Minimum Mana for clear").SetValue(new Slider(55)));
+            var clearMenu = new Menu("清线 设置", "Clear");
+            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Darius.LaneClear.Q", "使用 Q").SetValue(true));
+            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Darius.LaneClear.W", "使用 W").SetValue(true));
+            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Darius.JungleClear.Q", "使用Use Q").SetValue(true));
+            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Darius.JungleClear.W", "使用 W").SetValue(true));
+            clearMenu.AddItem(new MenuItem("ElEasy.Darius.Clear.Player.Mana", "清线 最低魔").SetValue(new Slider(55)));
 
             _menu.AddSubMenu(clearMenu);
             
-            var interruptMenu = new Menu("Settings", "Settings");
-            interruptMenu.AddItem(new MenuItem("ElEasy.Darius.Interrupt.Activated", "Interrupt spells").SetValue(true));
-            interruptMenu.AddItem(new MenuItem("ElEasy.Darius.Notifications", "Show notifications").SetValue(true));
+            var interruptMenu = new Menu("中断 设置", "Settings");
+            interruptMenu.AddItem(new MenuItem("ElEasy.Darius.Interrupt.Activated", "中断 法术").SetValue(true));
+            interruptMenu.AddItem(new MenuItem("ElEasy.Darius.Notifications", "显示 通知").SetValue(true));
             _menu.AddSubMenu(interruptMenu);
 
-            var itemMenu = new Menu("Items", "Items");
-            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Youmuu", "Use Youmuu's Ghostblade").SetValue(true));
-            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Cutlass", "Use Cutlass").SetValue(true));
-            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade", "Use Blade of the Ruined King").SetValue(true));
+            var itemMenu = new Menu("物 品", "Items");
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Youmuu", "使用幽梦").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Cutlass", "使用弯刀").SetValue(true));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade", "使用破败").SetValue(true));
             itemMenu.AddItem(new MenuItem("ElEasy.Darius.Harasssfsddass.E", ""));
-            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade.EnemyEHP", "Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade.EnemyMHP", "My HP Percentage").SetValue(new Slider(80, 100, 0)));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade.EnemyEHP", "使用破败丨敌人血量").SetValue(new Slider(80, 100, 0)));
+            itemMenu.AddItem(new MenuItem("ElEasy.Darius.Items.Blade.EnemyMHP", "使用破败时丨自己血量").SetValue(new Slider(80, 100, 0)));
 
             _menu.AddSubMenu(itemMenu);
 
-            var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.off", "Turn drawings off").SetValue(false));
-            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.Q", "Draw Q").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.E", "Draw E").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.R", "Draw R").SetValue(new Circle()));
+            var miscMenu = new Menu("杂 项", "Misc");
+            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.off", "关 范围").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.Q", "Q 范围").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.E", "E 范围").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElEasy.Darius.Draw.R", "R 范围").SetValue(new Circle()));
 
-            var dmgAfterE = new MenuItem("ElEasy.Darius.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill = new MenuItem("ElEasy.Darius.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            var dmgAfterE = new MenuItem("ElEasy.Darius.DrawComboDamage", "显示连招伤害").SetValue(true);
+            var drawFill = new MenuItem("ElEasy.Darius.DrawColour", "颜色", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
             miscMenu.AddItem(drawFill);
             miscMenu.AddItem(dmgAfterE);
 
@@ -357,7 +357,7 @@ namespace ElEasy.Plugins
 
             //Here comes the moneyyy, money, money, moneyyyy
             var credits = _menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElEasy.Paypal", "if you would like to donate via paypal:"));
+            credits.AddItem(new MenuItem("ElEasy.Paypal", "如果你想如果你想捐献 via paypal:"));
             credits.AddItem(new MenuItem("ElEasy.Email", "info@zavox.nl"));
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
