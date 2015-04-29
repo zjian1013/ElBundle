@@ -357,7 +357,7 @@ namespace ElEasy.Plugins
 
             //Here comes the moneyyy, money, money, moneyyyy
             var credits = _menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElEasy.Paypal", "如果你想如果你想捐献via paypal:"));
+            credits.AddItem(new MenuItem("ElEasy.Paypal", "如果你想如果你想捐献 via paypal:"));
             credits.AddItem(new MenuItem("ElEasy.Email", "info@zavox.nl"));
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
