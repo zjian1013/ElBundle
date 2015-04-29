@@ -22,6 +22,7 @@
 - Malphite
 - Darius
 - Katarina
+- Ryze
 
 # ElOthers
 
