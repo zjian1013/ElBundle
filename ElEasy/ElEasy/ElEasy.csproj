@@ -62,6 +62,7 @@
     <Compile Include="Plugins\Leona.cs" />
     <Compile Include="Plugins\Malphite.cs" />
     <Compile Include="Plugins\Nasus.cs" />
+    <Compile Include="Plugins\Ryze.cs" />
     <Compile Include="Plugins\Sona.cs" />
     <Compile Include="Plugins\Taric.cs" />
     <Compile Include="Program.cs" />

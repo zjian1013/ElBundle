@@ -41,6 +41,10 @@ namespace ElEasy
                 case "Katarina":
                     Plugins.Katarina.Load();
                     break;
+
+                case "Ryze":
+                    Plugins.Ryze.Load();
+                    break;
             }
         }
     }
