@@ -162,7 +162,7 @@ namespace ElXerath
             {
                 foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget() && (float) Player.GetSpellDamage(h, SpellSlot.R) * 3 > h.Health))
                 {
-                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
+                    ShowNotification(enemy.ChampionName + ": 杀得了", Color.White, 4000);
                     lastNotification = Environment.TickCount;
                 }
             }
