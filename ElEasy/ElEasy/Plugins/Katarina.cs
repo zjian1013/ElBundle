@@ -474,6 +474,32 @@ namespace ElEasy.Plugins
 
             var rdmg = spells[Spells.R].GetDamage(target, 1);
 
+            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && !spells[Spells.Q].IsReady() && !spells[Spells.W].IsReady() && !spells[Spells.E].IsReady())
+            {
+                if (HeroManager.Enemies.Any(x => x.IsValidTarget(spells[Spells.R].Range)) &&
+                       spells[Spells.R].Instance.Name == "KatarinaR")
+                {
+                    if (target.Health - rdmg < 0 && rSort.SelectedIndex == 1 && !spells[Spells.E].IsReady())
+                    {
+                        Orbwalker.SetMovement(false);
+                        Orbwalker.SetAttack(false);
+                        spells[Spells.R].Cast();
+                        _rStart = Environment.TickCount;
+                    }
+                    else if (rSort.SelectedIndex == 0 && !spells[Spells.E].IsReady() ||
+                             forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
+                    {
+                        Orbwalker.SetMovement(false);
+                        Orbwalker.SetAttack(false);
+                        spells[Spells.R].Cast();
+                        _rStart = Environment.TickCount;
+                    }
+                }
+            }
+
+            if (spells[Spells.R].Instance.Name != "KatarinaR")
+                return;
+
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
                 spells[Spells.Q].Cast(target);
@@ -488,27 +514,6 @@ namespace ElEasy.Plugins
             {
                 spells[Spells.W].Cast();
                 return;
-            }
-
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target))
-            {  
-                if (target.Health - rdmg < 0 && rSort.SelectedIndex == 1 && !spells[Spells.E].IsReady())
-                {
-                    Orbwalker.SetMovement(false);
-                    Orbwalker.SetAttack(false);
-
-                    spells[Spells.R].Cast();
-                    _rStart = Environment.TickCount;
-                }
-                else if (rSort.SelectedIndex == 0 && !spells[Spells.E].IsReady() ||
-                         forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
-                {
-                    Orbwalker.SetMovement(false);
-                    Orbwalker.SetAttack(false);
-
-                    spells[Spells.R].Cast();
-                    _rStart = Environment.TickCount;
-                }
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
@@ -743,7 +748,6 @@ namespace ElEasy.Plugins
         #endregion
 
         #region GetComboDamage   
-
         private static float GetComboDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;

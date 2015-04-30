@@ -31,10 +31,18 @@ namespace ElEasy.Plugins
             Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
+            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
+
             //Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
         }
 
         #region Onupdate
+
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.W].IsReady() || Player.Distance(args.Target) >= 700);
+        }
 
         private static void OnUpdate(EventArgs args)
         {
