@@ -32,16 +32,30 @@ namespace ElEasy.Plugins
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
             Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
-
-            //Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
         }
+
+        #region Gapcloser
+
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            var gapCloserActive = _menu.Item("ElEasy.Ryze.Interrupt.Activated").GetValue<bool>();
+
+            if (gapCloserActive && spells[Spells.W].IsReady() &&
+                gapcloser.Sender.Distance(Player) < spells[Spells.W].Range)
+            {
+                spells[Spells.W].CastOnUnit(gapcloser.Sender);
+            }
+        }
+
+        #endregion
 
         #region Onupdate
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.W].IsReady() || Player.Distance(args.Target) >= 700);
+                args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.W].IsReady() || Player.Distance(args.Target) >= 900);
         }
 
         private static void OnUpdate(EventArgs args)
@@ -301,7 +315,7 @@ namespace ElEasy.Plugins
             var rHp = _menu.Item("ElEasy.Ryze.Combo.R.HP").GetValue<Slider>().Value;
             var useI = _menu.Item("ElEasy.Ryze.Combo.Ignite").GetValue<bool>();
 
-            if (useR && spells[Spells.R].IsReady() && Player.HealthPercent < rHp)
+            if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
             {
                 spells[Spells.R].Cast(Player);
             }
@@ -452,6 +466,9 @@ namespace ElEasy.Plugins
                 DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
                 DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
             };
+
+            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.GapCloser.Activated", "Anti gapcloser").SetValue(true));
+
 
             _menu.AddSubMenu(miscMenu);
 

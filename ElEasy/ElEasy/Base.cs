@@ -45,6 +45,10 @@ namespace ElEasy
                 case "Ryze":
                     Plugins.Ryze.Load();
                     break;
+
+                case "Cassiopeia":
+                    Plugins._Cassiopeia.Load();
+                    break;
             }
         }
     }

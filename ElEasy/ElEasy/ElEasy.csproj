@@ -65,6 +65,7 @@
     <Compile Include="Plugins\Ryze.cs" />
     <Compile Include="Plugins\Sona.cs" />
     <Compile Include="Plugins\Taric.cs" />
+    <Compile Include="Plugins\_Cassiopeia.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Standards.cs" />
