@@ -256,24 +256,30 @@ namespace Elvarus
             var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
-            if (Player.ManaPercent < minmana)
-                return;
-
-            if (harassE && spells[Spells.E].IsReady())
+            if (Player.ManaPercent > minmana)
             {
-                spells[Spells.E].CastOnBestTarget();
-            }
-
-            if (spells[Spells.Q].IsReady() && harassQ)
-            {
-                //CastQ(target);
-
-                var prediction = spells[Spells.Q].GetPrediction(target);
-                var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                if (distance < spells[Spells.Q].RangeSqr)
+                if (harassE && spells[Spells.E].IsReady())
                 {
-                    if (spells[Spells.Q].Cast(prediction.CastPosition))
-                        return;
+                    spells[Spells.E].CastOnBestTarget();
+                }
+
+                if (!spells[Spells.Q].IsCharging)
+                {
+                    spells[Spells.Q].StartCharging();
+                    return;
+                }
+                else
+                {
+                    if (spells[Spells.Q].IsReady() && harassQ)
+                    {
+                        var prediction = spells[Spells.Q].GetPrediction(target);
+                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                        if (distance < spells[Spells.Q].RangeSqr)
+                        {
+                            if (spells[Spells.Q].Cast(prediction.CastPosition))
+                                return;
+                        }
+                    }
                 }
             }
         }
@@ -373,16 +379,23 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                if (spells[Spells.Q].GetDamage(target) > target.Health || GetStacksOn(target) >= stackCount || spells[Spells.W].Level == 0) //
+                if (!spells[Spells.Q].IsCharging)
                 {
-                    var prediction = spells[Spells.Q].GetPrediction(target);
-                    var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                    if (distance < spells[Spells.Q].RangeSqr)
+                    spells[Spells.Q].StartCharging();
+                    return;
+                }
+                else
+                {
+                    if (spells[Spells.Q].GetDamage(target) > target.Health || GetStacksOn(target) >= stackCount || spells[Spells.W].Level == 0) //
                     {
-                        if (spells[Spells.Q].Cast(prediction.CastPosition))
-                            return;
+                        var prediction = spells[Spells.Q].GetPrediction(target);
+                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                        if (distance < spells[Spells.Q].RangeSqr)
+                        {
+                            if (spells[Spells.Q].Cast(prediction.CastPosition))
+                                return;
+                        }
                     }
-                    //CastQ(target);
                 }
             }
 
