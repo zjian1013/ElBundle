@@ -70,7 +70,7 @@ namespace Elvarus
             if (ObjectManager.Player.BaseSkinName != "Varus")
                 return;
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.1.1", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.1.3", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
@@ -379,23 +379,21 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                if (!spells[Spells.Q].IsCharging)
+                // || spells[Spells.Q].GetDamage(target) > target.Health
+                if (spells[Spells.Q].IsCharging)
                 {
-                    spells[Spells.Q].StartCharging();
-                    return;
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                    if (distance < spells[Spells.Q].RangeSqr)
+                    {
+                        if (spells[Spells.Q].Cast(prediction.CastPosition))
+                            return;
+                    }
                 }
                 else
-                {
-                    if (spells[Spells.Q].GetDamage(target) > target.Health || GetStacksOn(target) >= stackCount || spells[Spells.W].Level == 0) //
-                    {
-                        var prediction = spells[Spells.Q].GetPrediction(target);
-                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                        if (distance < spells[Spells.Q].RangeSqr)
-                        {
-                            if (spells[Spells.Q].Cast(prediction.CastPosition))
-                                return;
-                        }
-                    }
+                {   
+                    if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                        spells[Spells.Q].StartCharging();
                 }
             }
 
