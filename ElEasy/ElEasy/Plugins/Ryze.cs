@@ -139,18 +139,20 @@ namespace ElEasy.Plugins
 
             if (Player.Mana < mana)
                 return;
+
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range);
             if (minions.Count <= 0)
                 return;
 
             if (useQ && spells[Spells.Q].IsReady())
             {
-                spells[Spells.Q].Cast(minions[0]);
+                var qtarget = minions.Where(x => x.Distance(Player) < spells[Spells.Q].Range && spells[Spells.Q].GetPrediction(x).Hitchance >= HitChance.High &&  (x.Health < Player.GetSpellDamage(x, SpellSlot.Q) && !(x.Health < Player.GetAutoAttackDamage(x)))).OrderByDescending(x => x.Health).FirstOrDefault();
+                if (HealthPrediction.GetHealthPrediction(qtarget, (int) 0.25) <= Player.GetSpellDamage(qtarget, SpellSlot.Q))
+                    spells[Spells.Q].Cast(qtarget);
             }
 
             if (useW && spells[Spells.W].IsReady())
             {
-                //spells[Spells.W].Cast(minions[0]);
                 spells[Spells.W].CastOnUnit(minions[0]);
             }
 
@@ -247,20 +249,15 @@ namespace ElEasy.Plugins
             var useW = _menu.Item("ElEasy.Ryze.Lasthit.W").GetValue<bool>();
             var useE = _menu.Item("ElEasy.Ryze.Lasthit.E").GetValue<bool>();
 
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range);
+            if (minions.Count <= 0)
+                return;
+
             if (spells[Spells.Q].IsReady() && useQ)
             {
-                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range);
-                {
-                    foreach (var minion in
-                        allMinions.Where(
-                            minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q)))
-                    {
-                        if (minion.IsValidTarget())
-                        {
-                            spells[Spells.Q].Cast(minion);
-                        }
-                    }
-                }
+                var qtarget = minions.Where(x => x.Distance(Player) < spells[Spells.Q].Range && spells[Spells.Q].GetPrediction(x).Hitchance >= HitChance.High && (x.Health < Player.GetSpellDamage(x, SpellSlot.Q) && !(x.Health < Player.GetAutoAttackDamage(x)))).OrderByDescending(x => x.Health).FirstOrDefault();
+                if (HealthPrediction.GetHealthPrediction(qtarget, (int)0.25) <= Player.GetSpellDamage(qtarget, SpellSlot.Q))
+                    spells[Spells.Q].Cast(qtarget);
             }
 
             if (spells[Spells.W].IsReady() && useW)
