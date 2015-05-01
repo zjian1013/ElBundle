@@ -30,17 +30,9 @@ namespace ElEasy.Plugins
         {
             _ignite = Player.GetSpellSlot("summonerdot");
 
-            //WIP still need to add correct data :x
-            spells[Spells.Q].SetSkillshot(
-                spells[Spells.Q].Instance.SData.SpellCastTime, spells[Spells.Q].Instance.SData.LineWidth,
-                spells[Spells.Q].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotCircle);
-            spells[Spells.W].SetSkillshot(
-                spells[Spells.W].Instance.SData.SpellCastTime, spells[Spells.W].Instance.SData.LineWidth,
-                spells[Spells.W].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotLine);
-            spells[Spells.R].SetSkillshot(
-                spells[Spells.R].Instance.SData.SpellCastTime, spells[Spells.R].Instance.SData.LineWidth,
-                spells[Spells.R].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotCone);
-
+            spells[Spells.Q].SetSkillshot(0.6f, 75f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            spells[Spells.W].SetSkillshot(0.5f, 90f, 2500, false, SkillshotType.SkillshotCircle);
+            spells[Spells.R].SetSkillshot(0.3f, (float)(80 * Math.PI / 180), float.MaxValue, false, SkillshotType.SkillshotCone);
             spells[Spells.E].SetTargetted(0.25f, float.MaxValue);
 
             Initialize();
@@ -306,7 +298,7 @@ namespace ElEasy.Plugins
             if (useQ && spells[Spells.Q].IsReady())
             {
                 var prediction = spells[Spells.Q].GetPrediction(target);
-                if ((Player.ServerPosition.Distance(prediction.CastPosition) < spells[Spells.Q].Range))
+                if ((Player.ServerPosition.Distance(prediction.CastPosition) < spells[Spells.Q].Range) && target.IsVisible && !target.IsDead)
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
                     _lastQ = Environment.TickCount;
