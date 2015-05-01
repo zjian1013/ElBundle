@@ -55,7 +55,7 @@ namespace ElEasy.Plugins
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.W].IsReady() || Player.Distance(args.Target) >= 900);
+                args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.E].IsReady() || Player.Distance(args.Target) >= 900);
         }
 
         private static void OnUpdate(EventArgs args)

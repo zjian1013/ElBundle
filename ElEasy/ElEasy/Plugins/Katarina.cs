@@ -596,6 +596,7 @@ namespace ElEasy.Plugins
                     var qdmg = spells[Spells.Q].GetDamage(hero);
                     var wdmg = spells[Spells.W].GetDamage(hero);
                     var edmg = spells[Spells.E].GetDamage(hero);
+
                     var markDmg = Player.CalcDamage(
                         hero, Damage.DamageType.Magical, Player.FlatMagicDamageMod * 0.15 + Player.Level * 15);
                     float ignitedmg;
