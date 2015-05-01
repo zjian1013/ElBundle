@@ -558,7 +558,7 @@ namespace ElEasy.Plugins
 
         private static void Initialize()
         {
-            _menu = new Menu("ElCassiopeia BETA 1", "menu", true);
+            _menu = new Menu("ElCassiopeia || Beta 1.0", "menu", true);
 
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
