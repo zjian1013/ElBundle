@@ -205,7 +205,6 @@ namespace ElEasy.Plugins
             var useQ = _menu.Item("ElEasy.Cassio.JungleClear.Q").GetValue<bool>();
             var useW = _menu.Item("ElEasy.Cassio.JungleClear.E").GetValue<bool>();
             var useE = _menu.Item("ElEasy.Cassio.JungleClear.W").GetValue<bool>();
-            var wMinions = _menu.Item("ElEasy.Cassio.LaneClear.MinionsHit").GetValue<Slider>().Value;
 
             if (useQ && spells[Spells.Q].IsReady())
             {
@@ -307,9 +306,9 @@ namespace ElEasy.Plugins
             if (useQ && spells[Spells.Q].IsReady())
             {
                 var prediction = spells[Spells.Q].GetPrediction(target);
-                if (prediction.Hitchance >= CustomHitChance && (Player.ServerPosition.Distance(prediction.CastPosition) < spells[Spells.Q].Range))
+                if ((Player.ServerPosition.Distance(prediction.CastPosition) < spells[Spells.Q].Range))
                 {
-                    spells[Spells.Q].Cast(target);
+                    spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
                     _lastQ = Environment.TickCount;
                 }   
             }
@@ -340,13 +339,13 @@ namespace ElEasy.Plugins
             if (useW && spells[Spells.W].IsReady() && Environment.TickCount > _lastQ + spells[Spells.Q].Delay * 1000)
             {
                 var prediction = spells[Spells.W].GetPrediction(target);
-                if (prediction.Hitchance >= CustomHitChance &&
-                    (Player.ServerPosition.Distance(prediction.CastPosition) <
+                if ((Player.ServerPosition.Distance(prediction.CastPosition) <
                      spells[Spells.W].Range))
                 {
-                    spells[Spells.W].Cast(target);
+                    spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
+
                 }
-     
+
             }
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(rtarget))
@@ -390,12 +389,9 @@ namespace ElEasy.Plugins
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
-                var prediction = spells[Spells.Q].GetPrediction(target);
-                var cast = (target.ServerPosition.To2D() + prediction.UnitPosition.To2D()) / 2;
-
-                if (prediction.Hitchance >= CustomHitChance && (Player.ServerPosition.Distance(spells[Spells.Q].GetPrediction(target, true).CastPosition) < spells[Spells.Q].Range))
+                if ((Player.ServerPosition.Distance(spells[Spells.Q].GetPrediction(target, true).CastPosition) < spells[Spells.Q].Range))
                 {
-                    spells[Spells.Q].Cast(cast);
+                    spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
                 }
             }
 
@@ -411,12 +407,9 @@ namespace ElEasy.Plugins
 
             if (useW && spells[Spells.W].IsReady())
             {
-                var prediction = spells[Spells.W].GetPrediction(target);
-                var cast = (target.ServerPosition.To2D() + prediction.UnitPosition.To2D()) / 2;
-
-                if (prediction.Hitchance >= CustomHitChance && (Player.ServerPosition.Distance(spells[Spells.W].GetPrediction(target, true).CastPosition) < spells[Spells.W].Range))
+                if ((Player.ServerPosition.Distance(spells[Spells.W].GetPrediction(target, true).CastPosition) < spells[Spells.W].Range))
                 {
-                    spells[Spells.W].Cast(cast);
+                    spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
                 }
             }
         }
