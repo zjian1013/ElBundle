@@ -337,7 +337,6 @@ namespace ElEasy.Plugins
                     spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
 
                 }
-
             }
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(rtarget))
