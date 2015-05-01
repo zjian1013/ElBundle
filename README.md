@@ -23,6 +23,7 @@
 - Darius
 - Katarina
 - Ryze
+- Cassiopeia
 
 # ElOthers
 
