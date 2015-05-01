@@ -12,7 +12,7 @@ namespace ElEasy.Plugins
         #region Spells
 
         private static int _lastQ;
-        private static long _lastE;
+        private static int _lastE;
 
         private static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
         {
