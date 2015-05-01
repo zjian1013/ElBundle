@@ -11,6 +11,9 @@ namespace ElEasy.Plugins
     {
         #region Spells
 
+        private static int _lastQ;
+        private static long _lastE;
+
         private static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
         {
             { Spells.Q, new Spell(SpellSlot.Q, 850) },
@@ -307,6 +310,7 @@ namespace ElEasy.Plugins
                 if (prediction.Hitchance >= CustomHitChance && (Player.ServerPosition.Distance(prediction.CastPosition) < spells[Spells.Q].Range))
                 {
                     spells[Spells.Q].Cast(target);
+                    _lastQ = Environment.TickCount;
                 }   
             }
 
@@ -315,10 +319,25 @@ namespace ElEasy.Plugins
                 if (!target.HasBuffOfType(BuffType.Poison))
                     return;
 
-                spells[Spells.E].Cast(target);
+                var playLegit = _menu.Item("ElEasy.Cassio.E.Legit").GetValue<bool>();
+                var legitCastDelay = _menu.Item("ElEasy.Cassio.E.Delay").GetValue<Slider>().Value;
+
+                if (playLegit)
+                {
+                    if (Environment.TickCount > _lastE + legitCastDelay)
+                    {
+                        spells[Spells.E].CastOnUnit(target);
+                        _lastE = Environment.TickCount;
+                    }
+                }
+                else
+                {
+                    spells[Spells.E].Cast(target);
+                    _lastE = Environment.TickCount;
+                }
             }
 
-            if (useW && spells[Spells.W].IsReady())
+            if (useW && spells[Spells.W].IsReady() && Environment.TickCount > _lastQ + spells[Spells.Q].Delay * 1000)
             {
                 var prediction = spells[Spells.W].GetPrediction(target);
                 if (prediction.Hitchance >= CustomHitChance &&
@@ -572,6 +591,9 @@ namespace ElEasy.Plugins
             cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Cassio.Combo.R", "Use R").SetValue(true));
             cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Cassio.Combo.R.Count", "Enemies for R").SetValue(new Slider(2, 1, 5)));
             cMenu.AddItem(new MenuItem("ElEasy.Cassio.Combo.Ignite", "Use Ignite").SetValue(true));
+            cMenu.SubMenu("E").AddItem(new MenuItem("ElEasy.Cassio.E.Legit", "Legit E").SetValue(false));
+            cMenu.SubMenu("E").AddItem(new MenuItem("ElEasy.Cassio.E.Delay", "E Delay").SetValue(new Slider(1000, 0, 2000)));
+
 
             _menu.AddSubMenu(cMenu);
 
