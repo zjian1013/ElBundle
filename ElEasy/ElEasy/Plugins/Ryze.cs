@@ -54,8 +54,16 @@ namespace ElEasy.Plugins
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.E].IsReady() || Player.Distance(args.Target) >= 900);
+            var autoattack = _menu.Item("ElEasy.Ryze.AA").GetValue<bool>();
+            if (autoattack)
+            {
+                args.Process = false;
+            }
+            else
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                    args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.E].IsReady() || Player.Distance(args.Target) >= 1000);
+            }
         }
 
         private static void OnUpdate(EventArgs args)
@@ -81,6 +89,25 @@ namespace ElEasy.Plugins
                 case Orbwalking.OrbwalkingMode.Mixed:
                     OnHarass();
                     break;
+            }
+
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                if (Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
+                {
+                    var muramana = ItemData.Muramana.GetItem();
+                    if(muramana.IsOwned(Player))
+                        muramana.Cast();
+                }
+            }
+            else
+            {
+                if (Player.Buffs.Count(buf => buf.Name == "Muramana") != 0)
+                {
+                    var muramana = ItemData.Muramana.GetItem();
+                    if (muramana.IsOwned(Player))
+                        muramana.Cast();
+                }
             }
 
             var autoHarass = _menu.Item("ElEasy.Ryze.AutoHarass.Activated", true).GetValue<KeyBind>().Active;
@@ -144,6 +171,11 @@ namespace ElEasy.Plugins
             if (minions.Count <= 0)
                 return;
 
+            if (useW && spells[Spells.W].IsReady())
+            {
+                spells[Spells.W].CastOnUnit(minions[0]);
+            }
+
             if (useQ && spells[Spells.Q].IsReady())
             {
                 var qtarget = minions.Where(x => x.Distance(Player) < spells[Spells.Q].Range && spells[Spells.Q].GetPrediction(x).Hitchance >= HitChance.High &&  (x.Health < Player.GetSpellDamage(x, SpellSlot.Q) && !(x.Health < Player.GetAutoAttackDamage(x)))).OrderByDescending(x => x.Health).FirstOrDefault();
@@ -151,10 +183,6 @@ namespace ElEasy.Plugins
                     spells[Spells.Q].Cast(qtarget);
             }
 
-            if (useW && spells[Spells.W].IsReady())
-            {
-                spells[Spells.W].CastOnUnit(minions[0]);
-            }
 
             if (useE && spells[Spells.E].IsReady())
             {
@@ -465,6 +493,8 @@ namespace ElEasy.Plugins
             };
 
             miscMenu.AddItem(new MenuItem("ElEasy.Ryze.GapCloser.Activated", "Anti gapcloser").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.AA", "Don't use AA in combo").SetValue(false));
+
 
 
             _menu.AddSubMenu(miscMenu);
@@ -514,6 +544,8 @@ namespace ElEasy.Plugins
         #endregion
 
 
+
+
         #region Ignite
         private static float IgniteDamage(Obj_AI_Hero target)
         {
@@ -528,3 +560,4 @@ namespace ElEasy.Plugins
 
     }
 }
+ 
