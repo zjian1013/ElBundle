@@ -55,7 +55,7 @@ namespace ElEasy.Plugins
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             var autoattack = _menu.Item("ElEasy.Ryze.AA").GetValue<bool>();
-            if (autoattack)
+            if (autoattack && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 args.Process = false;
             }

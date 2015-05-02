@@ -67,6 +67,7 @@ namespace ElEasy.Plugins
                     OnLaneclear();
                     OnJungleclear();
                     break;
+
             }
 
             var showNotifications = _menu.Item("ElEasy.Cassio.Notifications").GetValue<bool>();
