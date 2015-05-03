@@ -115,7 +115,7 @@ namespace ElKalista
                     break;
             }
 
-            //KsMode();
+            KsMode();
             //JungleStealMode();
             //AutoHarassMode(target);
 
@@ -271,7 +271,7 @@ namespace ElKalista
             }
         }
 
-        /*private static void KsMode()
+        private static void KsMode()
         {
             var useKs = ElKalistaMenu._menu.Item("ElKalista.misc.ks").GetValue<bool>();
             if (!useKs)
@@ -289,12 +289,7 @@ namespace ElKalista
             {
                 spells[Spells.E].Cast();
             }
-
-            if (spells[Spells.Q].IsReady() && spells[Spells.Q].CanCast(target))
-            {
-                spells[Spells.Q].Cast();
-            }
-        }*/
+        }
 
        /* private static void JungleStealMode()
         {
