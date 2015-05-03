@@ -191,8 +191,7 @@ namespace ElKalista
                     spells[Spells.E].Cast(true);
                 }
             }
-            else if (target.ServerPosition.Distance(Player.ServerPosition, true) >
-              Math.Pow(spells[Spells.E].Range * 0.8, 2) || getEstacks.EndTime - Game.Time < 0.3)
+            else if (getEstacks.EndTime - Game.Time < 0.3)
             {
                 spells[Spells.E].Cast(true);
             }
