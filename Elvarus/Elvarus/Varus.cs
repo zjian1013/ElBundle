@@ -369,6 +369,7 @@ namespace Elvarus
             var comboQ = ElVarusMenu._menu.Item("ElVarus.Combo.Q").GetValue<bool>();
             var comboE = ElVarusMenu._menu.Item("ElVarus.Combo.E").GetValue<bool>();
             var comboR = ElVarusMenu._menu.Item("ElVarus.Combo.R").GetValue<bool>();
+            var alwaysQ = ElVarusMenu._menu.Item("ElVarus.combo.always.Q").GetValue<bool>();
 
             Items(target);
 
@@ -392,8 +393,15 @@ namespace Elvarus
                 }
                 else
                 {   
-                    if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                    if (alwaysQ)
+                    {
                         spells[Spells.Q].StartCharging();
+                    }
+                    else
+                    {
+                        if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                            spells[Spells.Q].StartCharging();
+                    }
                 }
             }
 
