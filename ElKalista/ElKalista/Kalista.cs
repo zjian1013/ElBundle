@@ -400,10 +400,6 @@ namespace ElKalista
 
                 if (spells[Spells.Q].CanCast(qtarget) && spells[Spells.Q].GetPrediction(qtarget).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
                     spells[Spells.Q].Cast(qtarget);
-
-                /*var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
-                if (prediction >= CustomHitChance)
-                    spells[Spells.Q].Cast(target.ServerPosition);*/
             }
 
             var getEstacks =
@@ -428,8 +424,7 @@ namespace ElKalista
                 }
                 else
                 {
-                    if (target.ServerPosition.Distance(Player.ServerPosition, true) >
-                        Math.Pow(spells[Spells.E].Range * 0.8, 2) || getEstacks.EndTime - Game.Time < 0.3)
+                    if (getEstacks.EndTime - Game.Time < 0.3)
                     {
                         spells[Spells.E].Cast(true);
                     }
