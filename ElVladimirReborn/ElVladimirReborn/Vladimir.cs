@@ -64,7 +64,7 @@ namespace ElVladimirReborn
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    onCombo();
+                    OnCombo();
                     break;
 
                 case Orbwalking.OrbwalkingMode.Mixed:
@@ -72,7 +72,7 @@ namespace ElVladimirReborn
                     break;
 
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    onLaneClear();
+                    OnLaneClear();
                     onJungleClear();
                     break;
             }
@@ -90,11 +90,11 @@ namespace ElVladimirReborn
 
             var autoHarass = ElVladimirMenu._menu.Item("ElVladimir.AutoHarass.Activated", true).GetValue<KeyBind>().Active;
             if (autoHarass)
-                onAutoHarass();
+                OnAutoHarass();
 
             var autoStack = ElVladimirMenu._menu.Item("ElVladimir.Settings.Stack.E", true).GetValue<KeyBind>().Active;
             if (autoStack)
-                onAutoStack();
+                OnAutoStack();
         }
 
         #endregion
@@ -142,7 +142,7 @@ namespace ElVladimirReborn
 
         #region LaneClear
 
-        private static void onLaneClear()
+        private static void OnLaneClear()
         {
             var useQ = ElVladimirMenu._menu.Item("ElVladimir.WaveClear.Q").GetValue<bool>();
             var useE = ElVladimirMenu._menu.Item("ElVladimir.WaveClear.E").GetValue<bool>();
@@ -184,7 +184,7 @@ namespace ElVladimirReborn
 
         #region AutoStack
 
-        private static void onAutoStack()
+        private static void OnAutoStack()
         {
             if (Player.IsRecalling() || Player.InFountain())
                 return;
@@ -200,7 +200,7 @@ namespace ElVladimirReborn
 
         #region AutoHarass
 
-        private static void onAutoHarass()
+        private static void OnAutoHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
@@ -225,7 +225,7 @@ namespace ElVladimirReborn
 
         #region Combo
 
-        private static void onCombo()
+        private static void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
@@ -278,7 +278,7 @@ namespace ElVladimirReborn
                         spells[Spells.Q].Cast();
                         spells[Spells.E].Cast(target);
                     }
-                    else if (spells[Spells.R].IsReady() && spells[Spells.R].GetDamage(target) >= target.Health)
+                    else if (spells[Spells.R].IsReady() && GetComboDamage(target) >= target.Health)
                     {
                         spells[Spells.R].Cast(target);
                     }
@@ -353,8 +353,12 @@ namespace ElVladimirReborn
             {
                 damage += Player.GetSpellDamage(enemy, SpellSlot.R);
             }
+            else if (enemy.HasBuff("vladimirhemoplaguedebuff", true))
+            {
+                damage += damage * 1.12;
+            }
 
-            return (float)damage;
+            return (float)(damage + Player.GetAutoAttackDamage(enemy));
         }
 
         #endregion
@@ -385,7 +389,7 @@ namespace ElVladimirReborn
         {
             var gapCloserActive = ElVladimirMenu._menu.Item("ElVladimir.Settings.AntiGapCloser.Active").GetValue<bool>();
 
-            if (gapCloserActive && spells[Spells.W].IsReady() && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range)
+            if (gapCloserActive && spells[Spells.W].IsReady() && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range && Player.CountEnemiesInRange(spells[Spells.Q].Range) >= 1) 
                 spells[Spells.W].Cast(Player);
         }
         #endregion
