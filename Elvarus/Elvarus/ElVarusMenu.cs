@@ -28,7 +28,9 @@ namespace Elvarus
             _menu.AddSubMenu(targetSelector);
 
             var cMenu = new Menu("Combo", "Combo");
+            
             cMenu.AddItem(new MenuItem("ElVarus.Combo.Q", "Use Q").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElVarus.combo.always.Q", "always Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.R", "Use R").SetValue(true));
             cMenu.AddItem(new MenuItem("ElVarus.sssss", ""));
