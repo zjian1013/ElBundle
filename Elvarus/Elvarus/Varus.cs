@@ -399,8 +399,15 @@ namespace Elvarus
                     }
                     else
                     {
-                        if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                        if(Player.AttackRange+180>Player.Distance(target))
+                        {
+                            if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount  ||spells[Spells.Q].GetDamage(target) > target.Health)
                             spells[Spells.Q].StartCharging();
+                        }
+                        else
+                        {
+                          spells[Spells.Q].StartCharging();
+                        }
                     }
                 }
             }
