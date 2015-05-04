@@ -73,7 +73,7 @@ namespace ElVladimirReborn
 
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     OnLaneClear();
-                    onJungleClear();
+                    OnJungleClear();
                     break;
             }
 
@@ -101,7 +101,7 @@ namespace ElVladimirReborn
 
         #region JungleClear
 
-        private static void onJungleClear()
+        private static void OnJungleClear()
         {
             var useQ = ElVladimirMenu._menu.Item("ElVladimir.JungleClear.Q").GetValue<bool>();
             var useE = ElVladimirMenu._menu.Item("ElVladimir.JungleClear.E").GetValue<bool>();
