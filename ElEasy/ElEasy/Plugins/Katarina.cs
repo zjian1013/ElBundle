@@ -415,7 +415,6 @@ namespace ElEasy.Plugins
             var useQ = _menu.Item("ElEasy.Katarina.Harass.Q").GetValue<bool>();
             var useW = _menu.Item("ElEasy.Katarina.Harass.W").GetValue<bool>();
             var useE = _menu.Item("ElEasy.Katarina.Harass.E").GetValue<bool>();
-
             var hMode = _menu.Item("ElEasy.Katarina.Harass.Mode").GetValue<StringList>().SelectedIndex;
 
             switch (hMode)
@@ -428,10 +427,14 @@ namespace ElEasy.Plugins
                     break;
 
                 case 1:
-                    if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
+                    if (useQ && useW)
                     {
-                        spells[Spells.Q].Cast(target);
-                        if (spells[Spells.W].IsInRange(target))
+                        if (spells[Spells.Q].IsReady())
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        
+                        if (spells[Spells.W].IsInRange(target) && spells[Spells.W].IsReady())
                         {
                             spells[Spells.W].Cast();
                         }
@@ -439,12 +442,22 @@ namespace ElEasy.Plugins
                     break;
 
                 case 2:
-                    if (useQ && useW && useE && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() &&
-                        spells[Spells.E].IsReady())
+                    if (useQ && useW && useE)
                     {
-                        spells[Spells.Q].Cast(target);
-                        CastE(target);
-                        spells[Spells.W].Cast();
+                        if (spells[Spells.Q].IsReady())
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+
+                        if (spells[Spells.E].IsReady()) //&& !target.UnderTurret(true) -- need to create a on/off for this
+                        {
+                            CastE(target);
+                        }
+
+                        if (spells[Spells.W].IsReady())
+                        {
+                            spells[Spells.W].Cast();
+                        }                        
                     }
                     break;
             }
@@ -770,7 +783,7 @@ namespace ElEasy.Plugins
 
             if (spells[Spells.R].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
+                damage += Player.GetSpellDamage(enemy, SpellSlot.R) * 8;
             }
 
             return (float)damage;
@@ -861,19 +874,19 @@ namespace ElEasy.Plugins
             hMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.W", "Use W").SetValue(true));
             hMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.E", "Use E").SetValue(true));
 
-            cMenu.SubMenu("Harass")
+            hMenu.SubMenu("Harass")
                 .SubMenu("AutoHarass settings")
                 .AddItem(
                     new MenuItem("ElEasy.Katarina.AutoHarass.Activated", "Auto harass", true).SetValue(
                         new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
-            cMenu.SubMenu("Harass")
+            hMenu.SubMenu("Harass")
                 .SubMenu("AutoHarass settings")
                 .AddItem(new MenuItem("ElEasy.Katarina.AutoHarass.Q", "Use Q").SetValue(true));
-            cMenu.SubMenu("Harass")
+            hMenu.SubMenu("Harass")
                 .SubMenu("AutoHarass settings")
                 .AddItem(new MenuItem("ElEasy.Katarina.AutoHarass.W", "Use W").SetValue(true));
 
-            cMenu.SubMenu("Harass")
+            hMenu.SubMenu("Harass")
                 .AddItem(
                     new MenuItem("ElEasy.Katarina.Harass.Mode", "Harass mode:").SetValue(
                         new StringList(new[] { "Q", "Q - W", "Q - E - W" })));
