@@ -80,7 +80,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.1.8", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.1.9", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -409,7 +409,7 @@ namespace ElKalista
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
-                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable() || getEstacks.Count >= useEStacks))
+                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()))
                 {
                     if (target.IsRendKillable())
                     {
@@ -418,7 +418,7 @@ namespace ElKalista
                 }
                 else
                 {
-                    if (getEstacks.EndTime - Game.Time < 0.3)
+                    if (getEstacks.EndTime - Game.Time < 0.3 || getEstacks.Count >= useEStacks)
                     {
                         spells[Spells.E].Cast(true);
                     }
