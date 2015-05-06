@@ -71,7 +71,6 @@ namespace ElEasy.Plugins
                 case Orbwalking.OrbwalkingMode.LastHit:
                     OnLasthit();
                     break;
-
             }
 
             var showNotifications = _menu.Item("ElEasy.Cassio.Notifications").GetValue<bool>();
