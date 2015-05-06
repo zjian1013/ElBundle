@@ -68,6 +68,10 @@ namespace ElEasy.Plugins
                     OnJungleclear();
                     break;
 
+                case Orbwalking.OrbwalkingMode.LastHit:
+                    OnLasthit();
+                    break;
+
             }
 
             var showNotifications = _menu.Item("ElEasy.Cassio.Notifications").GetValue<bool>();
@@ -173,7 +177,27 @@ namespace ElEasy.Plugins
 
         #region OnLasthit
 
-        private static void OnLasthit() {}
+        private static void OnLasthit()
+        {
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
+            if (minions.Count <= 0)
+            {
+                return;
+            }
+
+            var useE = _menu.Item("ElEasy.Cassio.LastHit.E").GetValue<bool>();
+
+            if (useE && spells[Spells.E].IsReady())
+            {
+                var etarget =
+                    minions.Where(x => x.Distance(Player) < spells[Spells.E].Range && x.Health <= ObjectManager.Player.GetSpellDamage(x, SpellSlot.E)
+                    && x.HasBuffOfType(BuffType.Poison))
+                        .OrderByDescending(x => x.Health)
+                        .FirstOrDefault(y => y.HPRegenRate + y.Health <= spells[Spells.E].GetDamage(y) && HealthPrediction.GetHealthPrediction(y, (int)spells[Spells.E].Delay, (int)spells[Spells.E].Speed) <= spells[Spells.E].GetDamage(y));
+
+                spells[Spells.E].Cast(etarget);
+            }
+        }
 
         #endregion
 
@@ -579,7 +603,6 @@ namespace ElEasy.Plugins
             cMenu.SubMenu("E").AddItem(new MenuItem("ElEasy.Cassio.E.Legit", "Legit E").SetValue(false));
             cMenu.SubMenu("E").AddItem(new MenuItem("ElEasy.Cassio.E.Delay", "E Delay").SetValue(new Slider(1000, 0, 2000)));
 
-
             _menu.AddSubMenu(cMenu);
 
             var hMenu = new Menu("Harass", "harass");
@@ -596,6 +619,8 @@ namespace ElEasy.Plugins
             _menu.AddSubMenu(hMenu);
 
             var clearMenu = new Menu("Clear", "Clear");
+            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Cassio.LastHit.E", "Use E").SetValue(true));
+
             clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.Q", "Use Q").SetValue(true));
             clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.W", "Use W").SetValue(true));
             clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.E", "Use E").SetValue(true));
