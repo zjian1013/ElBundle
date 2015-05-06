@@ -46,6 +46,7 @@ namespace ElEasy
                     Plugins.Ryze.Load();
                     break;
 
+
                 case "Cassiopeia":
                     Plugins.Cassiopeia.Load();
                     break;
