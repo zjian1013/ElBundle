@@ -42,7 +42,7 @@ namespace ElEasy.Plugins
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    //OnCombo();
+                    OnCombo();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     //OnHarass();
@@ -57,6 +57,23 @@ namespace ElEasy.Plugins
                     //OnLasthit();
                     break;
             }
+        }
+
+        #endregion
+
+        #region OnCombo
+        private static void OnCombo()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValid)
+                return;
+
+            var useQ = _menu.Item("ElEasy.Syndra.Combo.Q").GetValue<bool>();
+            var useW = _menu.Item("ElEasy.Syndra.Combo.W").GetValue<bool>();
+            var useE = _menu.Item("ElEasy.Syndra.Combo.E").GetValue<bool>();
+            var useR = _menu.Item("ElEasy.Syndra.Combo.R").GetValue<bool>();
+
+
         }
 
         #endregion
