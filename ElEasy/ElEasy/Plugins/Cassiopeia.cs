@@ -7,7 +7,7 @@ using LeagueSharp.Common;
 
 namespace ElEasy.Plugins
 {
-    public class _Cassiopeia : Standards
+    public class Cassiopeia : Standards
     {
         #region Spells
 
@@ -168,7 +168,7 @@ namespace ElEasy.Plugins
                 if (prediction.Hitchance >= CustomHitChance && (Player.ServerPosition.Distance(spells[Spells.W].GetPrediction(target, true).CastPosition) < spells[Spells.W].Range))
                 {
                     spells[Spells.W].Cast(target);
-                }            
+                }
             }
         }
 
@@ -281,10 +281,10 @@ namespace ElEasy.Plugins
             if (useE && spells[Spells.E].IsReady())
             {
                 var etarget =
-                    minions.Where(x => x.Distance(Player) < spells[Spells.E].Range && x.Health <= ObjectManager.Player.GetSpellDamage(x, SpellSlot.E) 
+                    minions.Where(x => x.Distance(Player) < spells[Spells.E].Range && x.Health <= ObjectManager.Player.GetSpellDamage(x, SpellSlot.E)
                     && x.HasBuffOfType(BuffType.Poison))
                         .OrderByDescending(x => x.Health)
-                        .FirstOrDefault(y => y.HPRegenRate + y.Health <= spells[Spells.E].GetDamage(y) && HealthPrediction.GetHealthPrediction(y, (int) spells[Spells.E].Delay, (int) spells[Spells.E].Speed) <= spells[Spells.E].GetDamage(y));
+                        .FirstOrDefault(y => y.HPRegenRate + y.Health <= spells[Spells.E].GetDamage(y) && HealthPrediction.GetHealthPrediction(y, (int)spells[Spells.E].Delay, (int)spells[Spells.E].Speed) <= spells[Spells.E].GetDamage(y));
 
                 spells[Spells.E].Cast(etarget);
             }
@@ -326,7 +326,7 @@ namespace ElEasy.Plugins
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
                     _lastQ = Environment.TickCount;
-                }   
+                }
             }
 
             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
@@ -439,7 +439,7 @@ namespace ElEasy.Plugins
             {
                 return 0f;
             }
-            return (float) Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
         #endregion
@@ -520,7 +520,7 @@ namespace ElEasy.Plugins
                 damage += Player.GetSpellDamage(enemy, SpellSlot.R);
             }
 
-            return (float) damage;
+            return (float)damage;
         }
 
         #endregion
@@ -582,7 +582,7 @@ namespace ElEasy.Plugins
 
         private static void Initialize()
         {
-            _menu = new Menu("ElCassiopeia || Beta 1.0", "menu", true);
+            _menu = new Menu("ElCassiopeia", "menu", true);
 
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
@@ -623,7 +623,7 @@ namespace ElEasy.Plugins
             clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.Q", "Use Q").SetValue(true));
             clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.W", "Use W").SetValue(true));
             clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.E", "Use E").SetValue(true));
-            clearMenu.SubMenu("Lane clear").AddItem( new MenuItem("ElEasy.Cassio.LaneClear.MinionsHit", "W minions hit").SetValue(new Slider(2, 1, 5)));
+            clearMenu.SubMenu("Lane clear").AddItem(new MenuItem("ElEasy.Cassio.LaneClear.MinionsHit", "W minions hit").SetValue(new Slider(2, 1, 5)));
 
             clearMenu.SubMenu("Jungle clear").AddItem(new MenuItem("ElEasy.Cassio.JungleClear.Q", "Use Q").SetValue(true));
             clearMenu.SubMenu("Jungle clear").AddItem(new MenuItem("ElEasy.Cassio.JungleClear.W", "Use W").SetValue(true));
@@ -657,12 +657,12 @@ namespace ElEasy.Plugins
             DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
 
             dmgAfterE.ValueChanged +=
-                delegate(object sender, OnValueChangeEventArgs eventArgs)
+                delegate (object sender, OnValueChangeEventArgs eventArgs)
                 {
                     DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
                 };
 
-            drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
             {
                 DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
                 DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
@@ -714,4 +714,3 @@ namespace ElEasy.Plugins
         #endregion
     }
 }
- 

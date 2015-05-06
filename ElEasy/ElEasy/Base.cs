@@ -47,11 +47,7 @@ namespace ElEasy
                     break;
 
                 case "Cassiopeia":
-                    Plugins._Cassiopeia.Load();
-                    break;
-
-                case "Syndra":
-                    Plugins._Syndra.Load();
+                    Plugins.Cassiopeia.Load();
                     break;
             }
         }
