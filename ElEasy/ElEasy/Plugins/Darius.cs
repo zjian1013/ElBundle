@@ -102,15 +102,15 @@ namespace ElEasy.Plugins
 
             if (useW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].Cast(Player);
+                spells[Spells.W].Cast();
             }
 
             if (useQ && spells[Spells.Q].IsReady())
             {
                 if (minions.Count > 1)
                 {
-                    var farmLocation = spells[Spells.Q].GetCircularFarmLocation(minions);
-                    spells[Spells.Q].Cast(farmLocation.Position);
+                    //var farmLocation = spells[Spells.Q].GetCircularFarmLocation(minions);
+                    spells[Spells.Q].Cast();
                 }
             }
         }
@@ -133,7 +133,7 @@ namespace ElEasy.Plugins
 
             if (useW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].Cast(Player);
+                spells[Spells.W].Cast();
             }
 
             if (useQ && spells[Spells.Q].IsReady())
@@ -211,7 +211,7 @@ namespace ElEasy.Plugins
 
             if (useW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].CastOnUnit(Player);
+                spells[Spells.W].Cast();
             }
 
             // && spells[Spells.R].GetDamage(target) >= target.Health
