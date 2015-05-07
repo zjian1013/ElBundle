@@ -253,6 +253,9 @@ namespace ElKalista
 
         private static void JungleStealMode()
         {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Player.IsRecalling())
+                return;
+
             var useJsm = ElKalistaMenu._menu.Item("ElKalista.misc.junglesteal").GetValue<bool>();
 
             if (!useJsm)
