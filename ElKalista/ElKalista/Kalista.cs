@@ -117,9 +117,7 @@ namespace ElKalista
             }
 
             KsMode();
-            //JungleStealMode();
-            //AutoHarassMode(target);
-
+            JungleStealMode();
             SaveMode();
             SemiUltMode();
             AutoCastEMode();
@@ -127,45 +125,7 @@ namespace ElKalista
 
         #endregion
 
-        public static float GetComboDamage(Obj_AI_Base enemy)
-        {
-            float damage = 0;
-
-            if (spells[Spells.E].IsReady())
-            {
-                damage += spells[Spells.E].GetDamage(enemy);
-            }
-
-            return damage;
-        }
-
         #region SuperSeCrEtSeTtInGs
-
-       /* private static void AutoHarassMode(Obj_AI_Base target)
-        {
-            if (target == null || !target.IsValidTarget())
-            {
-                return;
-            }
-
-            if (ElKalistaMenu._menu.Item("ElKalista.AutoHarass").GetValue<KeyBind>().Active)
-            {
-                if (Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.harass.mana").GetValue<Slider>().Value)
-                {
-                    return;
-                }
-
-                var q = ElKalistaMenu._menu.Item("ElKalista.UseQAutoHarass").GetValue<bool>();
-
-                if (q && spells[Spells.Q].IsReady() && Player.Distance(target) <= 1000 &&
-                    !Player.IsDashing() && !Player.IsWindingUp)
-                {
-                    var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
-                    if (prediction >= CustomHitChance)
-                        spells[Spells.Q].Cast(target);
-                }
-            }
-        }*/
 
         private static void AutoCastEMode()
         {
@@ -291,25 +251,26 @@ namespace ElKalista
             }
         }
 
-       /* private static void JungleStealMode()
+        private static void JungleStealMode()
         {
             var useJsm = ElKalistaMenu._menu.Item("ElKalista.misc.junglesteal").GetValue<bool>();
 
             if (!useJsm)
-            {
                 return;
-            }
 
-            var jMob =
-                MinionManager.GetMinions(
-                    Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.All,
-                    MinionOrderTypes.MaxHealth).FirstOrDefault(x => spells[Spells.E].GetDamage(x) > x.Health);
+            var jungleCreep = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+            if (jungleCreep.Count == 0)
+                return;
 
-            if (spells[Spells.E].CanCast(jMob))
+            var eCreep = jungleCreep.First();
+            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate / 2))
+                return;
+
+            if (spells[Spells.E].CanCast(eCreep))
             {
-                spells[Spells.E].Cast(jMob);
+                spells[Spells.E].Cast(eCreep);
             }
-        }*/
+        }
 
         #endregion
 
