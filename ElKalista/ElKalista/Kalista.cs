@@ -80,13 +80,14 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.0", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.2.1", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
             ElKalistaMenu.Initialize();
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
+            Spellbook.OnCastSpell += OnCastSpell;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
@@ -539,5 +540,11 @@ namespace ElKalista
         }
 
         #endregion
+        
+        private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
+        {
+            if (sender.Owner.IsMe && player.IsDashing() && args.Slot == SpellSlot.Q)
+                args.Process = false;
+        }
     }
 }
