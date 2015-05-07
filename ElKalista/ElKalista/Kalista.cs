@@ -543,7 +543,7 @@ namespace ElKalista
         
         private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
-            if (sender.Owner.IsMe && player.IsDashing() && args.Slot == SpellSlot.Q)
+            if (sender.Owner.IsMe && Player.IsDashing() && args.Slot == SpellSlot.Q)
                 args.Process = false;
         }
     }
