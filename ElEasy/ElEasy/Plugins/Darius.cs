@@ -423,8 +423,8 @@ namespace ElEasy.Plugins
 
         private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
-            var useR = _menu.Item("ElEasy.Darius.Interrupt.Activated").GetValue<bool>();
-            if (!useR)
+            var useInterrupt = _menu.Item("ElEasy.Darius.Interrupt.Activated").GetValue<bool>();
+            if (!useInterrupt)
                 return;
 
             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.E].Range)
