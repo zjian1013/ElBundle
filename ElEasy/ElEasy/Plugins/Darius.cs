@@ -80,7 +80,7 @@ namespace ElEasy.Plugins
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
-                spells[Spells.Q].Cast(target);
+                spells[Spells.Q].Cast();
             }
         }
 
@@ -93,7 +93,7 @@ namespace ElEasy.Plugins
             var useW = _menu.Item("ElEasy.Darius.LaneClear.W").GetValue<bool>();
             var playerMana = _menu.Item("ElEasy.Darius.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < playerMana)
+            if (Player.ManaPercent < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
@@ -109,7 +109,6 @@ namespace ElEasy.Plugins
             {
                 if (minions.Count > 1)
                 {
-                    //var farmLocation = spells[Spells.Q].GetCircularFarmLocation(minions);
                     spells[Spells.Q].Cast();
                 }
             }
@@ -124,7 +123,7 @@ namespace ElEasy.Plugins
             var useW = _menu.Item("ElEasy.Darius.JungleClear.W").GetValue<bool>();
             var playerMana = _menu.Item("ElEasy.Darius.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < playerMana)
+            if (Player.ManaPercent < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
@@ -140,8 +139,7 @@ namespace ElEasy.Plugins
             {
                 if (minions.Count > 1)
                 {
-                    var farmLocation = spells[Spells.Q].GetCircularFarmLocation(minions);
-                    spells[Spells.Q].Cast(farmLocation.Position);
+                    spells[Spells.Q].Cast();
                 }
             }
         }
@@ -161,37 +159,7 @@ namespace ElEasy.Plugins
             var useE = _menu.Item("ElEasy.Darius.Combo.E").GetValue<bool>();
             var useR = _menu.Item("ElEasy.Darius.Combo.R").GetValue<bool>();
             var useI = _menu.Item("ElEasy.Darius.Combo.Ignite").GetValue<bool>();
-            //var ultType = _menu.Item("ElEasy.Malphite.Combo.R.Mode").GetValue<StringList>().SelectedIndex;
 
-            /*switch (ultType)
-            {
-                case 0:
-                    if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                    {
-                        spells[Spells.E].Cast(target);
-                    }
-
-                    if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
-
-
-                    break;
-
-                case 1:
-                    if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
-
-                    if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                    {
-                        spells[Spells.E].Cast(target);
-                    }
-
-                    break;
-            }*/
 
             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target) &&
                 !target.HasBuff("BlackShield") ||
@@ -204,7 +172,7 @@ namespace ElEasy.Plugins
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
-                spells[Spells.Q].Cast(target);
+                spells[Spells.Q].Cast();
             }
 
             Items(target);
@@ -291,7 +259,6 @@ namespace ElEasy.Plugins
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.E", "Use E").SetValue(true));
             cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R", "Use SlamDUNK").SetValue(true));
-            //cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Darius.Combo.R.Mode", "Mode ").SetValue(new StringList(new[] { "E->Q", "Q->E" })));
             cMenu.AddItem(new MenuItem("ElEasy.Darius.Combo.Ignite", "Use Ignite").SetValue(true));
 
             _menu.AddSubMenu(cMenu);
