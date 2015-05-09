@@ -80,7 +80,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.1", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.2.3", 5000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -229,6 +229,14 @@ namespace ElKalista
                     }
                 }
             }
+
+            if (sender.IsMe)
+            {
+                if (args.SData.Name == "KalistaExpungeWrapper")
+                {
+                    Utility.DelayAction.Add(250, Orbwalking.ResetAutoAttackTimer);
+                }
+            }
         }
 
         private static void KsMode()
@@ -352,7 +360,8 @@ namespace ElKalista
 
             var comboQ = ElKalistaMenu._menu.Item("ElKalista.Combo.Q").GetValue<bool>();
             var comboE = ElKalistaMenu._menu.Item("ElKalista.Combo.E").GetValue<bool>();
-
+            var comboEDisable = ElKalistaMenu._menu.Item("ElKalista.Combo.Disable.E").GetValue<bool>();
+  
             if (comboQ && spells[Spells.Q].IsReady())
             {
                 var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
@@ -361,9 +370,7 @@ namespace ElKalista
                     spells[Spells.Q].Cast(qtarget);
             }
 
-            var getEstacks =
-                target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
-
+            var getEstacks = target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
             if (getEstacks == null)
             {
                 return;
@@ -383,9 +390,12 @@ namespace ElKalista
                 }
                 else
                 {
-                    if (getEstacks.EndTime - Game.Time < 0.3 || getEstacks.Count >= useEStacks)
+                    if (comboEDisable)
                     {
-                        spells[Spells.E].Cast(true);
+                        if (getEstacks.EndTime - Game.Time < 0.3 || getEstacks.Count >= useEStacks)
+                        {
+                            spells[Spells.E].Cast(true);
+                        }
                     }
                 }
             }
@@ -508,7 +518,9 @@ namespace ElKalista
         private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
             if (sender.Owner.IsMe && Player.IsDashing() && args.Slot == SpellSlot.Q)
+            {
                 args.Process = false;
+            }         
         }
     }
 }

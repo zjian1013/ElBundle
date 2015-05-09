@@ -34,7 +34,7 @@ namespace ElKalista
             cMenu.AddItem(new MenuItem("ElKalista.sssssssss", ""));
             cMenu.AddItem(new MenuItem("ElKalista.ComboE.Auto", "Use stacked E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.ssssddsdssssss", ""));
-
+            cMenu.AddItem(new MenuItem("ElKalista.Combo.Disable.E", "Only cast E when killable in combo").SetValue(false));
             cMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
             cMenu.AddItem(new MenuItem("ElKalista.SemiR", "Semi-manual R").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
@@ -126,7 +126,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.2"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.3"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
