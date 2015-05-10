@@ -80,7 +80,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.3", 5000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.2.4", 8000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -147,15 +147,15 @@ namespace ElKalista
 
             if (spells[Spells.E].IsReady() && useE && getEstacks.Count >= useEStacks)
             {
-                if (spells[Spells.E].GetDamage(target) > target.Health)
+                if (target.IsRendKillable())
                 {
                     spells[Spells.E].Cast(true);
                 }
             }
-            else if (getEstacks.EndTime - Game.Time < 0.3)
+            /*else if (getEstacks.EndTime - Game.Time < 0.3)
             {
                 spells[Spells.E].Cast(true);
-            }
+            }*/
         }
 
         private static void SemiUltMode()
@@ -392,7 +392,7 @@ namespace ElKalista
                 {
                     if (comboEDisable)
                     {
-                        if (getEstacks.EndTime - Game.Time < 0.3 || getEstacks.Count >= useEStacks)
+                        if (getEstacks.Count >= useEStacks) //getEstacks.EndTime - Game.Time < 0.3 || 
                         {
                             spells[Spells.E].Cast(true);
                         }
