@@ -394,7 +394,10 @@ namespace ElKalista
                     {
                         if (getEstacks.Count >= useEStacks) //getEstacks.EndTime - Game.Time < 0.3 || 
                         {
-                            spells[Spells.E].Cast(true);
+                            if (target.IsRendKillable())
+                            {
+                                spells[Spells.E].Cast(true);
+                            }
                         }
                     }
                 }
