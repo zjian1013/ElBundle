@@ -53,6 +53,7 @@ namespace ElDiana
 
     internal static class Diana
     {
+        public static String ScriptVersion { get { return typeof(Diana).Assembly.GetName().Version.ToString(); } }
         private static Obj_AI_Hero Player
         {
             get { return ObjectManager.Player; }
@@ -102,7 +103,7 @@ namespace ElDiana
             if (ObjectManager.Player.BaseSkinName != "Diana")
                 return;
 
-            Notifications.AddNotification("ElDiana by jQuery v1.0.0.2", 1000);
+            Notifications.AddNotification(String.Format("ElDiana by jQuery v{0}", ScriptVersion), 1000);
             spells[Spells.Q].SetSkillshot(0.35f, 180f, 1800f, false, SkillshotType.SkillshotCircle);
             _ignite = Player.GetSpellSlot("summonerdot");
 
@@ -134,10 +135,10 @@ namespace ElDiana
                             MisayaCombo();
                             break;
                     }
-                    
+
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                     LaneClear();
+                    LaneClear();
                     JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
@@ -260,24 +261,38 @@ namespace ElDiana
             var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
             var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
             var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
+            var distToTarget = Player.Distance(target, false);
+            var misayaMinRange = ElDianaMenu._menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
 
-            if (useQ && useR && Player.Distance(target) <= spells[Spells.Q].Range && spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+            // Can use R, R is ready but player too far from the target => do nothing
+            if (useR && spells[Spells.R].IsReady() && distToTarget > spells[Spells.R].Range) return;
+
+            // Prerequisites for Misaya Combo : If target is too close, won't work
+            if (useQ && useR && spells[Spells.Q].IsReady() && spells[Spells.R].IsReady() && distToTarget >= misayaMinRange )
             {
-                if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance)
-                {
                     spells[Spells.R].Cast(target);
-                    spells[Spells.Q].CastIfHitchanceEquals(target, HitChance.High, true);
+                    // No need to check the hitchance since R is a targeted dash.
+                    spells[Spells.Q].Cast(target);
+                
 
-                }
             }
 
-            /*if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target) && !spells[Spells.R].IsReady())
+            // Misaya Combo is not possible, classic mode then
+
+            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
                 var pred = spells[Spells.Q].GetPrediction(target);
                 if (pred.Hitchance >= CustomHitChance)
                     spells[Spells.Q].Cast(target);
-            }*/
+            }
 
+            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
+                target.HasBuff("dianamoonlight", true))
+            {
+                spells[Spells.R].Cast(target);
+            }
+
+            //TODO watch if enemy could cast a dangerous interruptible spell (ex. nunu ult, kata ult)
             if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
             {
                 spells[Spells.W].Cast();
@@ -348,7 +363,7 @@ namespace ElDiana
                  }
              }
              */
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
+            if (Player.Distance(target, false) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
             {
                 Player.Spellbook.CastSpell(_ignite, target);
             }
@@ -412,10 +427,10 @@ namespace ElDiana
                 }
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
+            if (Player.Distance(target, false) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
             {
                 Player.Spellbook.CastSpell(_ignite, target);
-            }     
+            }
         }
 
         #endregion
@@ -433,7 +448,7 @@ namespace ElDiana
             var useE = ElDianaMenu._menu.Item("ElDiana.Harass.E").GetValue<bool>();
             var checkMana = ElDianaMenu._menu.Item("ElDiana.Harass.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < checkMana)
+            if (Player.ManaPercent < checkMana)
                 return;
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
@@ -491,7 +506,7 @@ namespace ElDiana
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && Player.Distance(qMinion) < 200 && spells[Spells.E].GetCircularFarmLocation(minions).MinionsHit >= countE)
+            if (useE && spells[Spells.E].IsReady() && Player.Distance(qMinion, false) < 200 && spells[Spells.E].GetCircularFarmLocation(minions).MinionsHit >= countE)
             {
                 spells[Spells.E].Cast();
             }
@@ -502,7 +517,7 @@ namespace ElDiana
             if (useR && spells[Spells.R].IsReady())
             {
                 //find Mob with moonlight buff
-                var moonlightMob = minionsR.FindAll(x => x.HasBuff("dianamoonlight", true)).OrderBy(x => minion.HealthPercentage());
+                var moonlightMob = minionsR.FindAll(x => x.HasBuff("dianamoonlight", true)).OrderBy(x => minion.HealthPercent);
                 if (moonlightMob.Any())
                 {
                     //only cast when killable
@@ -536,9 +551,9 @@ namespace ElDiana
             var qMinion = qMinions.Find(
                         minion => minion.IsValidTarget());
 
-            if (useQ && spells[Spells.Q].IsReady() )
+            if (useQ && spells[Spells.Q].IsReady())
             {
-                if(qMinion.IsValidTarget())
+                if (qMinion.IsValidTarget())
                     spells[Spells.Q].Cast(qMinion);
             }
 
@@ -548,7 +563,7 @@ namespace ElDiana
             }
 
             //hmmpff
-            if (useE && spells[Spells.E].IsReady() && Player.Distance(qMinion) < 200)
+            if (useE && spells[Spells.E].IsReady() && Player.Distance(qMinion, false) < 200)
             {
                 spells[Spells.E].Cast();
             }
@@ -556,7 +571,7 @@ namespace ElDiana
             if (useR && spells[Spells.R].IsReady())
             {
                 //find Mob with moonlight buff
-                var moonlightMob = minions.FindAll(minion => minion.HasBuff("dianamoonlight", true)).OrderBy(minion => minion.HealthPercentage());
+                var moonlightMob = minions.FindAll(minion => minion.HasBuff("dianamoonlight", true)).OrderBy(minion => minion.HealthPercent);
                 if (moonlightMob.Any())
                 {
                     //only cast when killable
@@ -568,7 +583,7 @@ namespace ElDiana
                     {
                         spells[Spells.R].Cast(canBeKilled);
                     }
-                }        
+                }
             }
         }
 
@@ -587,7 +602,7 @@ namespace ElDiana
 
         #endregion
 
-        #region Notifications 
+        #region Notifications
 
         private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
         {
