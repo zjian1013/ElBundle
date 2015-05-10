@@ -32,6 +32,7 @@ namespace ElDiana
             var cMenu = new Menu("Combo", "Combo");
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.Mode", "Mode").SetValue(new StringList(new[] { "Normal (Q->R)", "Misaya Combo (R->Q)" })));
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R", "Use R").SetValue(true));
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.MisayaMinRange", "R Minimum Range for Misaya ").SetValue(new Slider(Convert.ToInt32(Diana.spells[Spells.R].Range*0.8),0,Convert.ToInt32(Diana.spells[Spells.R].Range))));
 
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Q", "Use Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.W", "Use W").SetValue(true));
@@ -113,7 +114,7 @@ namespace ElDiana
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", String.Format("Version: {0}",Diana.ScriptVersion)));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
