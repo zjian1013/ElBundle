@@ -80,7 +80,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.4", 8000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.2.5", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -115,7 +115,6 @@ namespace ElKalista
                     Harass(target);
                     break;
             }
-
             KsMode();
             JungleStealMode();
             SaveMode();
@@ -241,11 +240,11 @@ namespace ElKalista
 
         private static void KsMode()
         {
-            var useKs = ElKalistaMenu._menu.Item("ElKalista.misc.ks").GetValue<bool>();
+            /*var useKs = ElKalistaMenu._menu.Item("ElKalista.misc.ks").GetValue<bool>();
             if (!useKs)
             {
                 return;
-            }
+            }*/
 
             var target =
                 HeroManager.Enemies.FirstOrDefault(
@@ -255,7 +254,10 @@ namespace ElKalista
 
             if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(target))
             {
-                spells[Spells.E].Cast();
+                if (target.IsRendKillable())
+                {
+                    spells[Spells.E].Cast(true);
+                }
             }
         }
 

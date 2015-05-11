@@ -82,7 +82,7 @@ namespace ElKalista
             setMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
             setMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(10, 1, 20)));
             setMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
-            setMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
+            //setMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
             setMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
             _menu.AddSubMenu(setMenu);
@@ -126,7 +126,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.4"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.5"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
