@@ -254,10 +254,11 @@ namespace ElKalista
 
             if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(target))
             {
-                if (target.IsRendKillable())
+                spells[Spells.E].Cast(true);
+               /* if (target.IsRendKillable())
                 {
                     spells[Spells.E].Cast(true);
-                }
+                }*/
             }
         }
 
