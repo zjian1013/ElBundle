@@ -317,7 +317,7 @@ namespace ElDiana
 
             if(secondR)
             { 
-                var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range).Count;
+                var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range*2).Count;
 
                 if (closeEnemies <= useSecondRLimitation && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
                 {
@@ -389,7 +389,7 @@ namespace ElDiana
 
             if (secondR)
             {
-                var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range).Count;
+                var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range*2).Count;
 
                 if (closeEnemies <= useSecondRLimitation && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
                 {

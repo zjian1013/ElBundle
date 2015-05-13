@@ -38,7 +38,7 @@ namespace ElDiana
             cMenu.AddItem(new MenuItem("ElDiana.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Secure", "Use R to secure kill").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElDiana.Combo.UseSecondRLimitation", "Max close enemies for secure kill with R").SetValue(new Slider(1, 1, 5)));
+            cMenu.AddItem(new MenuItem("ElDiana.Combo.UseSecondRLimitation", "Max close enemies for secure kill with R").SetValue(new Slider(5, 1, 5)));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Ignite", "Use Ignite").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.ssssssssssss", ""));
             cMenu.AddItem(new MenuItem("ElDiana.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
