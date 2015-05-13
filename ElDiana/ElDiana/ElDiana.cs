@@ -125,6 +125,11 @@ namespace ElDiana
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     var ultType = ElDianaMenu._menu.Item("ElDiana.Combo.R.Mode").GetValue<StringList>().SelectedIndex;
+                    if (ElDianaMenu._menu.Item("ElDiana.Hotkey.ToggleComboMode").GetValue<KeyBind>().Active)
+                    {
+                        //Crappy, I know. 
+                        ultType = (ultType + 1) % 2;
+                    }
                     switch (ultType)
                     {
                         case 0:
@@ -247,6 +252,10 @@ namespace ElDiana
 
         #endregion
 
+
+
+
+
         #region MisayaCombo
 
         private static void MisayaCombo()
@@ -263,7 +272,8 @@ namespace ElDiana
             var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
             var distToTarget = Player.Distance(target, false);
             var misayaMinRange = ElDianaMenu._menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
-
+            var useSecondRLimitation = ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
+            
             // Can use R, R is ready but player too far from the target => do nothing
             if (useR && spells[Spells.R].IsReady() && distToTarget > spells[Spells.R].Range) return;
 
@@ -305,69 +315,34 @@ namespace ElDiana
                     spells[Spells.E].Cast();
             }
 
-            if (secondR && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
-            {
-                if (target.Health < spells[Spells.R].GetDamage(target))
+            if(secondR)
+            { 
+                var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range).Count;
+
+                if (closeEnemies <= useSecondRLimitation && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
                 {
-                    spells[Spells.R].Cast(target);
+                    if (target.Health < spells[Spells.R].GetDamage(target))
+                    {
+                        spells[Spells.R].Cast(target);
+                    }
                 }
-            }
 
-            if (secondR && spells[Spells.R].IsReady())
-            {
-                if (target.Health < spells[Spells.R].GetDamage(target))
+                if (closeEnemies <= useSecondRLimitation && spells[Spells.R].IsReady())
                 {
-                    spells[Spells.R].Cast(target);
+                    if (target.Health < spells[Spells.R].GetDamage(target))
+                    {
+                        spells[Spells.R].Cast(target);
+                    }
                 }
+
             }
-
-
-            /* if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-             {
-                 var pred = spells[Spells.Q].GetPrediction(target);
-                 if (pred.Hitchance >= CustomHitChance)
-                     spells[Spells.Q].Cast(target);
-             }
-
-             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
-                 target.HasBuff("dianamoonlight", true))
-             {
-                 spells[Spells.R].Cast(target);
-             }
-
-             if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-             {
-                 spells[Spells.W].Cast();
-             }
-
-             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-             {
-                 var pred = spells[Spells.E].GetPrediction(target);
-                 if (pred.Hitchance >= CustomHitChance)
-                     spells[Spells.E].Cast();
-             }
-
-             if (secondR && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
-             {
-                 if (target.Health < spells[Spells.R].GetDamage(target))
-                 {
-                     spells[Spells.R].Cast(target);
-                 }
-             }
-
-             if (secondR && spells[Spells.R].IsReady())
-             {
-                 if (target.Health < spells[Spells.R].GetDamage(target))
-                 {
-                     spells[Spells.R].Cast(target);
-                 }
-             }
-             */
+  
             if (Player.Distance(target, false) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
             {
                 Player.Spellbook.CastSpell(_ignite, target);
             }
         }
+
 
         #endregion
 
@@ -385,6 +360,7 @@ namespace ElDiana
             var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
             var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
             var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
+            var useSecondRLimitation = ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
@@ -411,20 +387,26 @@ namespace ElDiana
                     spells[Spells.E].Cast();
             }
 
-            if (secondR && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+            if (secondR)
             {
-                if (target.Health < spells[Spells.R].GetDamage(target))
-                {
-                    spells[Spells.R].Cast(target);
-                }
-            }
+                var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range).Count;
 
-            if (secondR && spells[Spells.R].IsReady())
-            {
-                if (target.Health < spells[Spells.R].GetDamage(target))
+                if (closeEnemies <= useSecondRLimitation && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
                 {
-                    spells[Spells.R].Cast(target);
+                    if (target.Health < spells[Spells.R].GetDamage(target))
+                    {
+                        spells[Spells.R].Cast(target);
+                    }
                 }
+
+                if (closeEnemies <= useSecondRLimitation && spells[Spells.R].IsReady())
+                {
+                    if (target.Health < spells[Spells.R].GetDamage(target))
+                    {
+                        spells[Spells.R].Cast(target);
+                    }
+                }
+
             }
 
             if (Player.Distance(target, false) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)

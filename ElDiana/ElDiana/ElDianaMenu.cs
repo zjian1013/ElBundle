@@ -32,12 +32,13 @@ namespace ElDiana
             var cMenu = new Menu("Combo", "Combo");
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.Mode", "Mode").SetValue(new StringList(new[] { "Normal (Q->R)", "Misaya Combo (R->Q)" })));
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R", "Use R").SetValue(true));
-            cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.MisayaMinRange", "R Minimum Range for Misaya ").SetValue(new Slider(Convert.ToInt32(Diana.spells[Spells.R].Range*0.8),0,Convert.ToInt32(Diana.spells[Spells.R].Range))));
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.MisayaMinRange", "R Minimum Range for Misaya ").SetValue(new Slider(Convert.ToInt32(Diana.spells[Spells.R].Range * 0.8), 0, Convert.ToInt32(Diana.spells[Spells.R].Range))));
 
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Q", "Use Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.W", "Use W").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Secure", "Use R to secure kill").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElDiana.Combo.UseSecondRLimitation", "Max close enemies for secure kill with R").SetValue(new Slider(1, 1, 5)));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Ignite", "Use Ignite").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.ssssssssssss", ""));
             cMenu.AddItem(new MenuItem("ElDiana.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
@@ -81,8 +82,21 @@ namespace ElDiana
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.R", "Draw R").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElDiana.Draw.RMisaya", "Draw Misaya Combo Range").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.Text", "Draw Text").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElDiana.misc.Notifications", "Use Notifications").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ezeazeezaze", ""));
+
+            var switchComboMenu = new MenuItem("ElDiana.Hotkey.ToggleComboMode", "Toggle Combo Mode Hotkey").SetValue(new KeyBind(84, KeyBindType.Press));
+            miscMenu.AddItem(switchComboMenu);
+            switchComboMenu.ValueChanged += (sender, eventArgs) =>
+            {
+                if (eventArgs.GetNewValue<KeyBind>().Active)
+                    Diana.Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.Combo;
+                else
+                    Diana.Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.None;
+
+            };
 
             var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw combo damage").SetValue(true);
             var drawFill = new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
