@@ -370,8 +370,8 @@ namespace ElKalista
             if (useE && comboE && spells[Spells.E].IsReady())
             {
                 if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()) 
-                  && !x.HasBuffOfType(BuffType.Invulnerability) 
-                  && !x.HasBuffOfType(BuffType.SpellShield))
+                  && !target.HasBuffOfType(BuffType.Invulnerability) 
+                  && !target.HasBuffOfType(BuffType.SpellShield))
                 {
                     if (target.IsRendKillable())
                     {
