@@ -18,6 +18,8 @@ namespace ElDiana
             var drawW = ElDianaMenu._menu.Item("ElDiana.Draw.W").GetValue<Circle>();
             var drawE = ElDianaMenu._menu.Item("ElDiana.Draw.E").GetValue<Circle>();
             var drawR = ElDianaMenu._menu.Item("ElDiana.Draw.R").GetValue<Circle>();
+            var drawRMisaya = ElDianaMenu._menu.Item("ElDiana.Draw.RMisaya").GetValue<Circle>();
+            var misayaRange = ElDianaMenu._menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
 
             if (drawOff)
                 return;
@@ -37,6 +39,10 @@ namespace ElDiana
             if (drawR.Active)
                 if (Diana.spells[Spells.R].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Diana.spells[Spells.R].Range, Color.White);
+
+            if (drawRMisaya.Active)
+                if (Diana.spells[Spells.R].Level > 0)
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, misayaRange, Color.White);
         }
     }
 }
