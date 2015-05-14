@@ -42,6 +42,7 @@ namespace ElKalista
 
             var hMenu = new Menu("Harass", "Harass");
             hMenu.AddItem(new MenuItem("ElKalista.Harass.Q", "Use Q").SetValue(true));
+            hMenu.AddItem(new MenuItem("ElKalista.Harass.E", "E when target has rand and minion can be killed").SetValue(false));
             hMenu.AddItem(new MenuItem("ElKalista.minmanaharass", "Harass mana")).SetValue(new Slider(55));
             hMenu.AddItem(new MenuItem("ElKalista.hitChance", "Hitchance Q").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
 
@@ -75,14 +76,14 @@ namespace ElKalista
             _menu.AddSubMenu(itemMenu);
 
 
-            var setMenu = new Menu("Secret Settings", "SSS");
+            var setMenu = new Menu("Misc", "SSS");
             setMenu.AddItem(new MenuItem("ElKalista.misc.save", "Save ally with R").SetValue(true));
             setMenu.AddItem(new MenuItem("ElKalista.misc.allyhp", "Ally HP Percentage").SetValue(new Slider(25, 100, 0)));
             setMenu.AddItem(new MenuItem("useEFarmddsddsasfsasdsdsaadsd", ""));
             setMenu.AddItem(new MenuItem("ElKalista.E.Auto", "Auto use E").SetValue(true));
             setMenu.AddItem(new MenuItem("ElKalista.E.Stacks", "Stacks for E usage >=").SetValue(new Slider(10, 1, 20)));
             setMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
-            setMenu.AddItem(new MenuItem("ElKalista.misc.ks", "Killsteal mode").SetValue(false));
+            setMenu.AddItem(new MenuItem("ElKalista.misc.lasthithelper", "E lasthit assist").SetValue(false));
             setMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
 
             _menu.AddSubMenu(setMenu);
@@ -126,7 +127,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.4"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.7"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

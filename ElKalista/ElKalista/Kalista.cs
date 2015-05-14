@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,8 +35,6 @@ namespace ElKalista
         {
             get { return _incomingDamage.Sum(e => e.Value) + _instantDamage.Sum(e => e.Value); }
         }
-
-
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
@@ -80,7 +78,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.4", 8000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.2.7", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -88,6 +86,7 @@ namespace ElKalista
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
             Spellbook.OnCastSpell += OnCastSpell;
+            Orbwalking.OnNonKillableMinion += Orbwalking_OnNonKillableMinion;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
@@ -115,7 +114,7 @@ namespace ElKalista
                     Harass(target);
                     break;
             }
-
+          
             KsMode();
             JungleStealMode();
             SaveMode();
@@ -149,13 +148,9 @@ namespace ElKalista
             {
                 if (target.IsRendKillable())
                 {
-                    spells[Spells.E].Cast(true);
+                    spells[Spells.E].Cast();
                 }
             }
-            /*else if (getEstacks.EndTime - Game.Time < 0.3)
-            {
-                spells[Spells.E].Cast(true);
-            }*/
         }
 
         private static void SemiUltMode()
@@ -188,7 +183,6 @@ namespace ElKalista
                 }
                 else
                 {
-                    // || IncomingDamage > ConnectedAlly.Health
                     if (ConnectedAlly.HealthPercent < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0)
                     {
                         spells[Spells.R].Cast();
@@ -241,21 +235,16 @@ namespace ElKalista
 
         private static void KsMode()
         {
-            var useKs = ElKalistaMenu._menu.Item("ElKalista.misc.ks").GetValue<bool>();
-            if (!useKs)
-            {
-                return;
-            }
-
             var target =
                 HeroManager.Enemies.FirstOrDefault(
                     x =>
-                        !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) &&
-                        spells[Spells.E].CanCast(x) && (x.Health + (x.HPRegenRate / 2)) <= spells[Spells.E].GetDamage(x));
+                        !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) && !x.HasBuff("Undying Rage") &&
+                        spells[Spells.E].CanCast(x) && (x.Health + (x.HPRegenRate / 2)) 
+                        <= spells[Spells.E].GetDamage(x));
 
             if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(target))
             {
-                spells[Spells.E].Cast();
+                spells[Spells.E].Cast(true);
             }
         }
 
@@ -330,20 +319,32 @@ namespace ElKalista
 
         private static void Harass(Obj_AI_Base target)
         {
-            if (target == null || !target.IsValidTarget())
-                return;
-
-            if (Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
+            if (target == null || !target.IsValidTarget()|| !Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
                 return;
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
+            var harassE = ElKalistaMenu._menu.Item("ElKalista.Harass.E").GetValue<bool>();
 
             if (harassQ && spells[Spells.Q].IsReady())
             {
-                if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance)
+                if (spells[Spells.Q].GetPrediction(target).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
                 {
                     spells[Spells.Q].Cast(target);
                 }
+            }
+
+            if (!harassE || !spells[Spells.E].IsReady())
+            {
+                return;
+            }
+            var etarget = HeroManager.Enemies.Where(x => x.HasRendBuff()).OrderBy(x => x.Distance(Player, true)).FirstOrDefault();
+            if (etarget == null || !(target.Distance(Player, true) < Math.Pow(spells[Spells.E].Range + 200, 2)))
+            {
+                return;
+            }
+            if (ObjectManager.Get<Obj_AI_Minion>().Any(m => m.IsRendKillable() && spells[Spells.E].IsInRange(m)))
+            {
+                spells[Spells.E].Cast();
             }
         }
 
@@ -353,7 +354,7 @@ namespace ElKalista
 
         private static void Combo(Obj_AI_Base target)
         {
-            if (target == null || !target.IsValidTarget())
+            if (target == null || !target.IsValidTarget() || !Orbwalking.CanMove(1))
                 return;
 
             Items(target);
@@ -381,7 +382,10 @@ namespace ElKalista
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
-                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()))
+                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()) 
+                  && !target.HasBuffOfType(BuffType.Invulnerability) 
+                  && !target.HasBuffOfType(BuffType.SpellShield)
+                  && !target.HasBuff("Undying Rage"))  
                 {
                     if (target.IsRendKillable())
                     {
@@ -392,9 +396,14 @@ namespace ElKalista
                 {
                     if (comboEDisable)
                     {
-                        if (getEstacks.Count >= useEStacks) //getEstacks.EndTime - Game.Time < 0.3 || 
+                        if (getEstacks.Count >= useEStacks) 
                         {
-                            spells[Spells.E].Cast(true);
+                            if (target.IsRendKillable() 
+                            && !target.HasBuffOfType(BuffType.Invulnerability) 
+                            && !target.HasBuffOfType(BuffType.SpellShield))
+                            {
+                                spells[Spells.E].Cast(true);
+                            }
                         }
                     }
                 }
@@ -407,7 +416,7 @@ namespace ElKalista
 
         private static void JungleClear()
         {
-            if (Player.ManaPercent < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
+            if (!Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
                 return;
 
             var useQ = ElKalistaMenu._menu.Item("useQFarmJungle").GetValue<bool>();
@@ -422,7 +431,7 @@ namespace ElKalista
 
             foreach (var minion in minions)
             {
-                if (spells[Spells.Q].IsReady() && useQ)
+                if (spells[Spells.Q].IsReady() && useQ && !Player.IsDashing())
                 {
                     spells[Spells.Q].Cast(minion.ServerPosition);
                 }
@@ -446,11 +455,7 @@ namespace ElKalista
             };
 
             input.CollisionObjects[0] = CollisionableObjects.Minions;
-
-            return
-                Collision.GetCollision(new List<Vector3> { targetposition }, input)
-                    .OrderBy(obj => obj.Distance(source, false))
-                    .ToList();
+            return Collision.GetCollision(new List<Vector3> { targetposition }, input).OrderBy(obj => obj.Distance(source, false)).ToList();
         }
 
         private static void LaneClear()
@@ -460,7 +465,7 @@ namespace ElKalista
             var countMinions = ElKalistaMenu._menu.Item("ElKalista.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElKalistaMenu._menu.Item("ElKalista.Count.Minions.E").GetValue<Slider>().Value;
 
-            if (Player.ManaPercent < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
+            if (!Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("minmanaclear").GetValue<Slider>().Value)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
@@ -491,9 +496,9 @@ namespace ElKalista
                         }
                     }
 
-                    if (killcount >= countMinions && (!Player.IsWindingUp && !Player.IsDashing()))
+                    if (killcount >= countMinions && !Player.IsWindingUp && !Player.IsDashing() && !Player.IsWindingUp)
                     {
-                        spells[Spells.Q].Cast(minion.ServerPosition);
+                        spells[Spells.Q].Cast(minion.ServerPosition); 
                         break;
                     }
                 }
@@ -504,8 +509,7 @@ namespace ElKalista
                 return;
             }
 
-            var minionkillcount =
-                minions.Count(x => spells[Spells.E].CanCast(x) && x.Health <= spells[Spells.E].GetDamage(x));
+            var minionkillcount = minions.Count(x => spells[Spells.E].CanCast(x) && x.Health <= spells[Spells.E].GetDamage(x));
 
             if (minionkillcount >= countMinionsE)
             {
@@ -514,7 +518,21 @@ namespace ElKalista
         }
 
         #endregion
-        
+
+        #region OnNonKillableMinion
+        static void Orbwalking_OnNonKillableMinion(AttackableUnit minion)
+        {
+            var useE = ElKalistaMenu._menu.Item("ElKalista.misc.lasthithelper").GetValue<bool>();
+
+            var minions = minion as Obj_AI_Base;
+            if (useE && minions.IsRendKillable() && minions != null)
+            {
+                spells[Spells.E].Cast();
+            }
+        }
+        #endregion
+
+        #region OnCastSpell
         private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
             if (sender.Owner.IsMe && Player.IsDashing() && args.Slot == SpellSlot.Q)
@@ -522,5 +540,6 @@ namespace ElKalista
                 args.Process = false;
             }         
         }
+        #endregion
     }
 }
