@@ -237,7 +237,7 @@ namespace ElKalista
             var target =
                 HeroManager.Enemies.FirstOrDefault(
                     x =>
-                        !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) &&
+                        !x.HasBuffOfType(BuffType.Invulnerability) && !x.HasBuffOfType(BuffType.SpellShield) && !x.HasBuff("Undying Rage") &&
                         spells[Spells.E].CanCast(x) && (x.Health + (x.HPRegenRate / 2)) 
                         <= spells[Spells.E].GetDamage(x));
 
@@ -371,7 +371,8 @@ namespace ElKalista
             {
                 if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()) 
                   && !target.HasBuffOfType(BuffType.Invulnerability) 
-                  && !target.HasBuffOfType(BuffType.SpellShield))
+                  && !target.HasBuffOfType(BuffType.SpellShield)
+                  && !target.HasBuff("Undying Rage"))  
                 {
                     if (target.IsRendKillable())
                     {
