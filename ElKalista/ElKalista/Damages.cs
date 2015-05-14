@@ -30,6 +30,16 @@ namespace ElKalista
             return ((float)player.CalcDamage(target, Damage.DamageType.Physical, GetRawRendDamage(target, customStacks)) - 20 * 0.98f);
         }
 
+        public static bool HasRendBuff(this Obj_AI_Base target)
+        {
+            return target.GetRendBuff() != null;
+        }
+
+        public static BuffInstance GetRendBuff(this Obj_AI_Base target)
+        {
+            return target.Buffs.Find(b => b.Caster.IsMe && b.IsValidBuff() && b.DisplayName == "KalistaExpungeMarker");
+        }
+
         public static float GetRawRendDamage(Obj_AI_Base target, int customStacks = -1)
         {
             var buff =

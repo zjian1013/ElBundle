@@ -78,7 +78,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.6", 10000);
+            Notifications.AddNotification("ElKalista by jQuery v1.0.2.7", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
@@ -86,6 +86,7 @@ namespace ElKalista
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
             Spellbook.OnCastSpell += OnCastSpell;
+            Orbwalking.OnNonKillableMinion += Orbwalking_OnNonKillableMinion;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
@@ -318,13 +319,11 @@ namespace ElKalista
 
         private static void Harass(Obj_AI_Base target)
         {
-            if (target == null || !target.IsValidTarget()|| !Orbwalking.CanMove(1))
-                return;
-
-            if (Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
+            if (target == null || !target.IsValidTarget()|| !Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
                 return;
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
+            var harassE = ElKalistaMenu._menu.Item("ElKalista.Harass.E").GetValue<bool>();
 
             if (harassQ && spells[Spells.Q].IsReady())
             {
@@ -332,6 +331,20 @@ namespace ElKalista
                 {
                     spells[Spells.Q].Cast(target);
                 }
+            }
+
+            if (!harassE || !spells[Spells.E].IsReady())
+            {
+                return;
+            }
+            var etarget = HeroManager.Enemies.Where(x => x.HasRendBuff()).OrderBy(x => x.Distance(Player, true)).FirstOrDefault();
+            if (etarget == null || !(target.Distance(Player, true) < Math.Pow(spells[Spells.E].Range + 200, 2)))
+            {
+                return;
+            }
+            if (ObjectManager.Get<Obj_AI_Minion>().Any(m => m.IsRendKillable() && spells[Spells.E].IsInRange(m)))
+            {
+                spells[Spells.E].Cast();
             }
         }
 
@@ -505,7 +518,20 @@ namespace ElKalista
         }
 
         #endregion
-        
+
+        #region OnNonKillableMinion
+        static void Orbwalking_OnNonKillableMinion(AttackableUnit minion)
+        {
+            var useE = ElKalistaMenu._menu.Item("ElKalista.misc.lasthithelper").GetValue<bool>();
+
+            var minions = minion as Obj_AI_Base;
+            if (useE && minions.IsRendKillable() && minions != null)
+            {
+                spells[Spells.E].Cast();
+            }
+        }
+        #endregion
+
         #region OnCastSpell
         private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
