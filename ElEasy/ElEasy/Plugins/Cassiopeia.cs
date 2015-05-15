@@ -264,8 +264,8 @@ namespace ElEasy.Plugins
             }
 
             var useQ = _menu.Item("ElEasy.Cassio.LaneClear.Q").GetValue<bool>();
-            var useW = _menu.Item("ElEasy.Cassio.LaneClear.E").GetValue<bool>();
-            var useE = _menu.Item("ElEasy.Cassio.LaneClear.W").GetValue<bool>();
+            var useW = _menu.Item("ElEasy.Cassio.LaneClear.W").GetValue<bool>();
+            var useE = _menu.Item("ElEasy.Cassio.LaneClear.E").GetValue<bool>();
 
             if (useQ && spells[Spells.Q].IsReady())
             {
