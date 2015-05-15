@@ -111,7 +111,7 @@ namespace ElAlistarReborn
             var allyHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.HP").GetValue<Slider>().Value;
   
             //self heal
-            if ((Player.Health / Player.MaxHealth) * 100 <= playerHp)
+            if (useHeal && (Player.Health / Player.MaxHealth) * 100 <= playerHp)
             {
                 spells[Spells.E].Cast(Player);
             }
@@ -119,7 +119,7 @@ namespace ElAlistarReborn
             //ally
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe))
             {
-                if ((hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
+                if (useHealAlly && (hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
                 {
                     spells[Spells.E].Cast(Player);
                 }
