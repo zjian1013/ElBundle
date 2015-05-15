@@ -104,7 +104,7 @@ namespace ElAlistarReborn
             var useHealAlly = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.Activated").GetValue<bool>();
             var playerMana = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.HasBuff("Recall") || Player.InFountain() || !useHeal || !useHealAlly || Player.ManaPercent < playerMana || !spells[Spells.E].IsReady())
+            if (Player.HasBuff("Recall") || Player.InFountain() || Player.ManaPercent < playerMana || !spells[Spells.E].IsReady())
                 return;
 
             var playerHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.HP").GetValue<Slider>().Value;
