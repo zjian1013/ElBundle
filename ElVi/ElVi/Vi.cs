@@ -148,7 +148,7 @@ namespace ElVi
             if (ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
             {
                 if (Spells[ElVi.Spells.Q].IsReady() &&
-                gapcloser.Sender.Distance(Player) < spells[Spells.Q].Range)
+                gapcloser.Sender.Distance(Player) < spells[ElVi.Spells.Q].Range)
                 {
                     if (!Spells[ElVi.Spells.Q].IsCharging)
                     {
@@ -169,7 +169,7 @@ namespace ElVi
             if(!swag)
                 return;
                 
-             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.Q].Range)
+             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[ElVi.Spells.Q].Range)
                 return;
 
             if (Spells[ElVi.Spells.Q].IsReady())
@@ -200,7 +200,7 @@ namespace ElVi
             var useE = ElViMenu._menu.Item("ElVi.JungleClear.E").GetValue<bool>();
             var playerMana = ElViMenu._menu.Item("ElVi.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < playerMana)
+            if (Player.ManaPercent < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(
@@ -248,7 +248,7 @@ namespace ElVi
             var useE = ElViMenu._menu.Item("ElVi.LaneClear.E").GetValue<bool>();
             var playerMana = ElViMenu._menu.Item("ElVi.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < playerMana)
+            if (Player.ManaPercent < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, Spells[ElVi.Spells.Q].Range);
@@ -474,7 +474,7 @@ namespace ElVi
 
             //Console.WriteLine("Player healt {0}", Player.HealthPercentage());
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target) && useBlade &&
-                Player.HealthPercentage() < useBladeMhp)
+                Player.HealthPercent < useBladeMhp)
             {
                 botrk.Cast(target);
             }
@@ -482,7 +482,7 @@ namespace ElVi
 
             //Console.WriteLine("Target healt {0}", target.HealthPercentage());
             if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) && useCutlass &&
-                target.HealthPercentage() < useBladeEhp)
+                target.HealthPercent < useBladeEhp)
             {
                 cutlass.Cast(target);
             }
