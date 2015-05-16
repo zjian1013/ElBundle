@@ -166,26 +166,24 @@ namespace ElVi
         private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (!ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>())
+            if (ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>())
             {
-                return;
-            }
-
-            if (Spells[ElVi.Spells.Q].IsReady())
-            {
-                if (!Spells[ElVi.Spells.Q].IsCharging)
+                if (Spells[ElVi.Spells.Q].IsReady())
                 {
-                    Spells[ElVi.Spells.Q].StartCharging();
+                    if (!Spells[ElVi.Spells.Q].IsCharging)
+                    {
+                        Spells[ElVi.Spells.Q].StartCharging();
+                    }
+                    else
+                    {
+                        Spells[ElVi.Spells.Q].Cast(sender);
+                    }
                 }
-                else
+    
+                if (Spells[ElVi.Spells.R].CanCast(sender) && args.DangerLevel >= Interrupter2.DangerLevel.High)
                 {
-                    Spells[ElVi.Spells.Q].Cast(sender);
+                    Spells[ElVi.Spells.R].Cast(sender);
                 }
-            }
-
-            if (Spells[ElVi.Spells.R].CanCast(sender) && args.DangerLevel >= Interrupter2.DangerLevel.High)
-            {
-                Spells[ElVi.Spells.R].Cast(sender);
             }
         }
 
