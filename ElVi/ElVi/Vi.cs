@@ -147,7 +147,8 @@ namespace ElVi
         {
             if (ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
             {
-                if (Spells[ElVi.Spells.Q].IsReady())
+                if (Spells[ElVi.Spells.Q].IsReady() &&
+                gapcloser.Sender.Distance(Player) < spells[Spells.Q].Range)
                 {
                     if (!Spells[ElVi.Spells.Q].IsCharging)
                     {
