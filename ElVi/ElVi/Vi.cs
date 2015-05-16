@@ -47,7 +47,7 @@ namespace ElVi
                 return;
             }
 
-            Notifications.AddNotification("ElVi by jQuery v1.0.0.0", 5000);
+            Notifications.AddNotification("ElVi by jQuery v1.0.0.1", 5000);
             _ignite = Player.GetSpellSlot("summonerdot");
             _flash = Player.GetSpellSlot("SummonerFlash");
 
