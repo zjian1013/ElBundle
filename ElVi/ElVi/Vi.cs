@@ -145,20 +145,18 @@ namespace ElVi
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (!ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
+            if (ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
             {
-                return;
-            }
-
-            if (Spells[ElVi.Spells.Q].IsReady())
-            {
-                if (!Spells[ElVi.Spells.Q].IsCharging)
+                if (Spells[ElVi.Spells.Q].IsReady())
                 {
-                    Spells[ElVi.Spells.Q].StartCharging();
-                }
-                else
-                {
-                    Spells[ElVi.Spells.Q].Cast(gapcloser.Sender);
+                    if (!Spells[ElVi.Spells.Q].IsCharging)
+                    {
+                        Spells[ElVi.Spells.Q].StartCharging();
+                    }
+                    else
+                    {
+                        Spells[ElVi.Spells.Q].Cast(gapcloser.Sender);
+                    }
                 }
             }
         }
