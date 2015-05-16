@@ -148,7 +148,7 @@ namespace ElVi
             if (ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
             {
                 if (Spells[ElVi.Spells.Q].IsReady() &&
-                gapcloser.Sender.Distance(Player) < spells[ElVi.Spells.Q].Range)
+                gapcloser.Sender.Distance(Player) < Spells[ElVi.Spells.Q].Range)
                 {
                     if (!Spells[ElVi.Spells.Q].IsCharging)
                     {
@@ -165,11 +165,11 @@ namespace ElVi
         private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
-            var swag = ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>();
-            if(!swag)
+            var useInterrupter = ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>();
+            if(!useInterrupter)
                 return;
                 
-             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[ElVi.Spells.Q].Range)
+             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > Spells[ElVi.Spells.Q].Range)
                 return;
 
             if (Spells[ElVi.Spells.Q].IsReady())
