@@ -366,7 +366,7 @@ namespace ElEasy.Plugins
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(rtarget))
             {
                 var prediction = spells[Spells.R].GetPrediction(rtarget);
-                if (prediction.Hitchance >= CustomHitChance &&
+                if (prediction.Hitchance >= HitChance.VeryHigh &&
                     Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
                 {
                     spells[Spells.R].Cast(rtarget);
