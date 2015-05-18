@@ -102,7 +102,7 @@ namespace ElNamiBurrito
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("sep2", ""));
-            _menu.AddItem(new MenuItem("sep3", "Version: 1.0.0.1"));
+            _menu.AddItem(new MenuItem("sep3", "Version: 1.0.0.2"));
             _menu.AddItem(new MenuItem("sep4", "Made By jQuery"));
 
             _menu.AddToMainMenu();
