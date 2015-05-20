@@ -13,6 +13,8 @@ namespace ElCorki
 
     public class ElCorkiMenu
     {
+        public static String ScriptVersion { get { return typeof(Corki).Assembly.GetName().Version.ToString(); } }
+
         public static Menu _menu;
 
         public static void Initialize()
@@ -105,7 +107,8 @@ namespace ElCorki
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.7"));
+
+            _menu.AddItem(new MenuItem("422442fsaafsf", (string.Format("ElCorki by jQuery v{0}", ScriptVersion))));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
