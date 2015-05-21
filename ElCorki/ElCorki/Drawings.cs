@@ -21,7 +21,6 @@ namespace ElCorki
             var drawText = ElCorkiMenu._menu.Item("ElCorki.Draw.Text").GetValue<bool>();
             var rBool = ElCorkiMenu._menu.Item("ElCorki.AutoHarass").GetValue<KeyBind>().Active;
 
-
             if (drawOff)
                 return;
 
