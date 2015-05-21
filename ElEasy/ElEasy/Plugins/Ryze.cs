@@ -472,7 +472,7 @@ namespace ElEasy.Plugins
             miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.E", "Draw E").SetValue(new Circle()));
 
             var dmgAfterE = new MenuItem("ElEasy.Ryze.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill = new MenuItem("ElEasy.Ryze.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+            var drawFill = new MenuItem("ElEasy.Ryze.DrawColour", "Fill colour", true).SetValue(new Circle(true, Color.FromArgb(0xcc, 0xcc, 0x0, 0x0)));
             miscMenu.AddItem(drawFill);
             miscMenu.AddItem(dmgAfterE);
 
