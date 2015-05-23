@@ -381,11 +381,11 @@ namespace ElKalista
             }
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.ComboE.Auto").GetValue<bool>();
-            var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
+           // var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
-                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()) 
+                if (spells[Spells.E].IsInRange(target)
                   && !target.HasBuffOfType(BuffType.Invulnerability) 
                   && !target.HasBuffOfType(BuffType.SpellShield)
                   && !target.HasBuff("Undying Rage"))  
@@ -399,15 +399,15 @@ namespace ElKalista
                 {
                     if (comboEDisable)
                     {
-                        if (getEstacks.Count >= useEStacks) 
+                        /*if (getEstacks.Count >= useEStacks)
                         {
-                            if (target.IsRendKillable() 
-                            && !target.HasBuffOfType(BuffType.Invulnerability) 
-                            && !target.HasBuffOfType(BuffType.SpellShield))
-                            {
-                                spells[Spells.E].Cast(true);
-                            }
-                        }
+                        }*/
+                        if (target.IsRendKillable() 
+                        && !target.HasBuffOfType(BuffType.Invulnerability) 
+                        && !target.HasBuffOfType(BuffType.SpellShield))
+                        {
+                            spells[Spells.E].Cast(true);
+                        }               
                     }
                 }
             }
