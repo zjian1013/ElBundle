@@ -102,7 +102,7 @@ namespace ElVladimirReborn
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            var autoattack = _menu.Item("ElEasy.Vlad.AA").GetValue<bool>();
+            var autoattack = _menu.Item("ElEasy.ElVladimir.AA").GetValue<bool>();
             if (autoattack && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 args.Process = false;
