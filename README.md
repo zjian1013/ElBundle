@@ -12,6 +12,7 @@
 - Alistar:Reborn
 - Katarina
 - Vi
+- Ekko
 
 # ElEasy AiO
 
