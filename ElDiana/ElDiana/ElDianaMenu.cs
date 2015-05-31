@@ -76,6 +76,12 @@ namespace ElDiana
 
             _menu.AddSubMenu(jMenu);
 
+            var interruptMenu = new Menu("Interrupt", "Interrupt");
+            interruptMenu.AddItem(new MenuItem("ElDiana.Interrupt.UseEInterrupt", "Use E to interrupt").SetValue(true));
+            interruptMenu.AddItem(new MenuItem("ElDiana.Interrupt.UseEDashes", "Use E to interrupt dashes").SetValue(true));
+
+            _menu.AddSubMenu(interruptMenu);
+
             var miscMenu = new Menu("Misc", "Misc");
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.Q", "Draw Q").SetValue(new Circle()));
