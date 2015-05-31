@@ -53,6 +53,7 @@ namespace ElVladimirReborn
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += Drawings.OnDraw;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
         }
 
         #endregion
@@ -99,6 +100,19 @@ namespace ElVladimirReborn
 
         #endregion
 
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            var autoattack = _menu.Item("ElEasy.Vlad.AA").GetValue<bool>();
+            if (autoattack && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                args.Process = false;
+            }
+            else
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                    args.Process = !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.E].IsReady() || Player.Distance(args.Target) >= 1000);
+            }
+        }
         #region JungleClear
 
         private static void OnJungleClear()
