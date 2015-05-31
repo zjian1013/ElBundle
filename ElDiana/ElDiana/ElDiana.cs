@@ -110,6 +110,35 @@ namespace ElDiana
             ElDianaMenu.Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
+
+            Interrupter2.OnInterruptableTarget += (source, eventArgs) =>
+            {
+                var eSlot = spells[Spells.E];
+                if(ElDianaMenu._menu.Item("ElDiana.Interrupt.UseEInterrupt").GetValue<bool>()
+                    && eSlot.IsReady()
+                    && eSlot.Range >= Player.Distance(source,false))
+                {
+                    eSlot.Cast();
+                }
+            };
+
+            CustomEvents.Unit.OnDash += (source, eventArgs) =>
+            {
+                if (!source.IsEnemy) return;
+                var eSlot = spells[Spells.E];
+                var dis = Player.Distance(source, false);
+                Console.WriteLine(source.Name+" > " + eSlot.Range + " : " + dis);
+                if (!eventArgs.IsBlink
+                    && ElDianaMenu._menu.Item("ElDiana.Interrupt.UseEDashes").GetValue<bool>()
+                    && eSlot.IsReady()
+                    && eSlot.Range >= dis)
+                {
+                    Console.WriteLine("Cast !");
+                    eSlot.Cast();
+                }
+            };
+
+
         }
 
         #endregion
@@ -297,7 +326,7 @@ namespace ElDiana
             }
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
-                target.HasBuff("dianamoonlight", true))
+                target.HasBuff("dianamoonlight"))
             {
                 spells[Spells.R].Cast(target);
             }
@@ -370,7 +399,7 @@ namespace ElDiana
             }
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
-                target.HasBuff("dianamoonlight", true))
+                target.HasBuff("dianamoonlight"))
             {
                 spells[Spells.R].Cast(target);
             }
@@ -499,7 +528,7 @@ namespace ElDiana
             if (useR && spells[Spells.R].IsReady())
             {
                 //find Mob with moonlight buff
-                var moonlightMob = minionsR.FindAll(x => x.HasBuff("dianamoonlight", true)).OrderBy(x => minion.HealthPercent);
+                var moonlightMob = minionsR.FindAll(x => x.HasBuff("dianamoonlight")).OrderBy(x => minion.HealthPercent);
                 if (moonlightMob.Any())
                 {
                     //only cast when killable
@@ -553,7 +582,7 @@ namespace ElDiana
             if (useR && spells[Spells.R].IsReady())
             {
                 //find Mob with moonlight buff
-                var moonlightMob = minions.FindAll(minion => minion.HasBuff("dianamoonlight", true)).OrderBy(minion => minion.HealthPercent);
+                var moonlightMob = minions.FindAll(minion => minion.HasBuff("dianamoonlight")).OrderBy(minion => minion.HealthPercent);
                 if (moonlightMob.Any())
                 {
                     //only cast when killable
