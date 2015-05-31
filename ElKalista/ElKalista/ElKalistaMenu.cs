@@ -12,6 +12,8 @@ namespace ElKalista
     public class ElKalistaMenu
     {
         public static Menu _menu;
+        public static String ScriptVersion { get { return typeof(Kalista).Assembly.GetName().Version.ToString(); } }
+
 
         public static void Initialize()
         {
@@ -29,6 +31,7 @@ namespace ElKalista
 
             var cMenu = new Menu("Combo", "Combo");
             cMenu.AddItem(new MenuItem("ElKalista.Combo.Q", "Use Q").SetValue(true));
+            cMenu.AddItem(new MenuItem("ElKalista.Combo.Q.Mana", "Minimum mana for Q")).SetValue(new Slider(20));
             cMenu.AddItem(new MenuItem("ElKalista.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.Combo.R", "Use R").SetValue(true));
             cMenu.AddItem(new MenuItem("ElKalista.sssssssss", ""));
@@ -127,7 +130,7 @@ namespace ElKalista
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.7"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", (string.Format("ElKalista by jQuery v{0}", ScriptVersion))));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

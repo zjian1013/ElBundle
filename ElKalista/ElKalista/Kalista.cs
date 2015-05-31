@@ -27,6 +27,7 @@ namespace ElKalista
             get { return ObjectManager.Player; }
         }
 
+        public static String ScriptVersion { get { return typeof(Kalista).Assembly.GetName().Version.ToString(); } }
         public static Orbwalking.Orbwalker Orbwalker;
         private static Obj_AI_Hero ConnectedAlly;
         private static Dictionary<float, float> _incomingDamage = new Dictionary<float, float>();
@@ -78,8 +79,7 @@ namespace ElKalista
            
             Console.WriteLine("Injected");
 
-            Notifications.AddNotification("ElKalista by jQuery v1.0.2.7", 10000);
-
+            Notifications.AddNotification(String.Format("ElKalista by jQuery v{0}", ScriptVersion), 10000);
             spells[Spells.Q].SetSkillshot(0.25f, 30f, 1700f, true, SkillshotType.SkillshotLine);
 
             ElKalistaMenu.Initialize();
@@ -362,9 +362,12 @@ namespace ElKalista
             var comboQ = ElKalistaMenu._menu.Item("ElKalista.Combo.Q").GetValue<bool>();
             var comboE = ElKalistaMenu._menu.Item("ElKalista.Combo.E").GetValue<bool>();
             var comboEDisable = ElKalistaMenu._menu.Item("ElKalista.Combo.Disable.E").GetValue<bool>();
-  
+            var comboQmana = ElKalistaMenu._menu.Item("ElKalista.Combo.Q.Mana").GetValue<Slider>().Value;
+
             if (comboQ && spells[Spells.Q].IsReady())
             {
+                if (Player.Mana < comboQmana) return;
+
                 var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
                 if (spells[Spells.Q].CanCast(qtarget) && spells[Spells.Q].GetPrediction(qtarget).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
@@ -378,11 +381,11 @@ namespace ElKalista
             }
 
             var useE = ElKalistaMenu._menu.Item("ElKalista.ComboE.Auto").GetValue<bool>();
-            var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
+           // var useEStacks = ElKalistaMenu._menu.Item("ElKalista.E.Stacks").GetValue<Slider>().Value;
 
             if (useE && comboE && spells[Spells.E].IsReady())
             {
-                if (spells[Spells.E].IsInRange(target) && (target.IsRendKillable()) 
+                if (spells[Spells.E].IsInRange(target)
                   && !target.HasBuffOfType(BuffType.Invulnerability) 
                   && !target.HasBuffOfType(BuffType.SpellShield)
                   && !target.HasBuff("Undying Rage"))  
@@ -396,15 +399,15 @@ namespace ElKalista
                 {
                     if (comboEDisable)
                     {
-                        if (getEstacks.Count >= useEStacks) 
+                        /*if (getEstacks.Count >= useEStacks)
                         {
-                            if (target.IsRendKillable() 
-                            && !target.HasBuffOfType(BuffType.Invulnerability) 
-                            && !target.HasBuffOfType(BuffType.SpellShield))
-                            {
-                                spells[Spells.E].Cast(true);
-                            }
-                        }
+                        }*/
+                        if (target.IsRendKillable() 
+                        && !target.HasBuffOfType(BuffType.Invulnerability) 
+                        && !target.HasBuffOfType(BuffType.SpellShield))
+                        {
+                            spells[Spells.E].Cast(true);
+                        }               
                     }
                 }
             }

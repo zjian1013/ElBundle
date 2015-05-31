@@ -47,7 +47,7 @@ namespace ElVi
                 return;
             }
 
-            Notifications.AddNotification("ElVi by jQuery v1.0.0.0", 5000);
+            Notifications.AddNotification("ElVi by jQuery v1.0.0.1", 5000);
             _ignite = Player.GetSpellSlot("summonerdot");
             _flash = Player.GetSpellSlot("SummonerFlash");
 
@@ -145,20 +145,19 @@ namespace ElVi
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (!ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
+            if (ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
             {
-                return;
-            }
-
-            if (Spells[ElVi.Spells.Q].IsReady())
-            {
-                if (!Spells[ElVi.Spells.Q].IsCharging)
+                if (Spells[ElVi.Spells.Q].IsReady() &&
+                gapcloser.Sender.Distance(Player) < Spells[ElVi.Spells.Q].Range)
                 {
-                    Spells[ElVi.Spells.Q].StartCharging();
-                }
-                else
-                {
-                    Spells[ElVi.Spells.Q].Cast(gapcloser.Sender);
+                    if (!Spells[ElVi.Spells.Q].IsCharging)
+                    {
+                        Spells[ElVi.Spells.Q].StartCharging();
+                    }
+                    else
+                    {
+                        Spells[ElVi.Spells.Q].Cast(gapcloser.Sender);
+                    }
                 }
             }
         }
@@ -166,10 +165,12 @@ namespace ElVi
         private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (!ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>())
-            {
+            var useInterrupter = ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>();
+            if(!useInterrupter)
                 return;
-            }
+                
+             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > Spells[ElVi.Spells.Q].Range)
+                return;
 
             if (Spells[ElVi.Spells.Q].IsReady())
             {
@@ -199,7 +200,7 @@ namespace ElVi
             var useE = ElViMenu._menu.Item("ElVi.JungleClear.E").GetValue<bool>();
             var playerMana = ElViMenu._menu.Item("ElVi.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < playerMana)
+            if (Player.ManaPercent < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(
@@ -247,7 +248,7 @@ namespace ElVi
             var useE = ElViMenu._menu.Item("ElVi.LaneClear.E").GetValue<bool>();
             var playerMana = ElViMenu._menu.Item("ElVi.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < playerMana)
+            if (Player.ManaPercent < playerMana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, Spells[ElVi.Spells.Q].Range);
@@ -473,7 +474,7 @@ namespace ElVi
 
             //Console.WriteLine("Player healt {0}", Player.HealthPercentage());
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target) && useBlade &&
-                Player.HealthPercentage() < useBladeMhp)
+                Player.HealthPercent < useBladeMhp)
             {
                 botrk.Cast(target);
             }
@@ -481,7 +482,7 @@ namespace ElVi
 
             //Console.WriteLine("Target healt {0}", target.HealthPercentage());
             if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) && useCutlass &&
-                target.HealthPercentage() < useBladeEhp)
+                target.HealthPercent < useBladeEhp)
             {
                 cutlass.Cast(target);
             }

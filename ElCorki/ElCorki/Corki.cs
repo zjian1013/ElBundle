@@ -22,6 +22,7 @@ namespace ElCorki
 
     internal static class Corki
     {
+        public static String ScriptVersion { get { return typeof(Corki).Assembly.GetName().Version.ToString(); } }
         private static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Orbwalking.Orbwalker Orbwalker;
         private static SpellSlot _ignite;
@@ -69,8 +70,7 @@ namespace ElCorki
                 return;
 
             Console.WriteLine("Injected");
-
-            Notifications.AddNotification("ElCorki by jQuery v1.0.0.7", 5000);
+            Notifications.AddNotification(String.Format("ElCorki by jQuery v{0}", ScriptVersion), 8000);
 
             spells[Spells.Q].SetSkillshot(0.35f, 250f, 1000f, false, SkillshotType.SkillshotCircle);
             spells[Spells.E].SetSkillshot(0f, (float)(45 * Math.PI / 180), 1500, false, SkillshotType.SkillshotCone);
@@ -169,12 +169,15 @@ namespace ElCorki
             var rStacks = ElCorkiMenu._menu.Item("ElCorki.Combo.RStacks").GetValue<Slider>().Value;
             var rTarget = TargetSelector.GetTarget(spells[Spells.R1].Range, TargetSelector.DamageType.Magical);
 
-
             Items(target);
 
             if (comboQ && spells[Spells.Q].IsReady())
             {
-                spells[Spells.Q].Cast(target);
+                var pred = spells[Spells.Q].GetPrediction(target);
+                if (pred.Hitchance >= HitChance.VeryHigh)
+                {
+                    spells[Spells.Q].Cast(target);
+                }    
             }
 
             if (comboE && spells[Spells.E].IsReady())
@@ -190,11 +193,19 @@ namespace ElCorki
                 if (_target != null)
                 if (bigR)
                 {
-                    spells[Spells.R2].CastIfHitchanceEquals(_target, CustomHitChance);
+                    var pred = spells[Spells.R2].GetPrediction(target);
+                    if (pred.Hitchance >= CustomHitChance)
+                    {
+                        spells[Spells.R2].Cast(target);
+                    }
                 }
                 else
                 {
-                    spells[Spells.R1].CastIfHitchanceEquals(_target, CustomHitChance);
+                    var pred = spells[Spells.R1].GetPrediction(target);
+                    if (pred.Hitchance >= CustomHitChance)
+                    {
+                        spells[Spells.R1].Cast(target);
+                    }
                 }
             }
 
@@ -261,7 +272,7 @@ namespace ElCorki
             {
                 foreach (var minion in minions.Where(x => x.Health <= spells[Spells.E].GetDamage(x)))
                 {
-                    spells[Spells.E].Cast(); // gotta test this
+                    spells[Spells.E].Cast();
                 }
             }
 
@@ -318,7 +329,6 @@ namespace ElCorki
 
         private static void Harass(Obj_AI_Base target)
         {
-
             if (target == null || !target.IsValidTarget())
                  return;
         

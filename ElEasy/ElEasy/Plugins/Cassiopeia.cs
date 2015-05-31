@@ -11,8 +11,8 @@ namespace ElEasy.Plugins
     {
         #region Spells
 
-        private static int _lastQ;
-        private static int _lastE;
+        private static int lastQ;
+        private static int lastE;
 
         private static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
         {
@@ -118,15 +118,14 @@ namespace ElEasy.Plugins
                         }
                     }
 
-                    if (target.Health - wDamage < 0 && spells[Spells.W].IsReady())
+                    if (target.Health - wDamage < 0 && spells[Spells.W].IsReady() && spells[Spells.W].IsReady())
                     {
-                        if (spells[Spells.W].IsReady())
+                        var prediction = spells[Spells.W].GetPrediction(target);
+                        if (prediction.Hitchance >= CustomHitChance
+                            && (Player.ServerPosition.Distance(
+                                spells[Spells.W].GetPrediction(target, true).CastPosition) < spells[Spells.W].Range))
                         {
-                            var prediction = spells[Spells.W].GetPrediction(target);
-                            if (prediction.Hitchance >= CustomHitChance && (Player.ServerPosition.Distance(spells[Spells.W].GetPrediction(target, true).CastPosition) < spells[Spells.W].Range))
-                            {
-                                spells[Spells.W].Cast(target);
-                            }
+                            spells[Spells.W].Cast(target);
                         }
                     }
                 }
@@ -264,8 +263,8 @@ namespace ElEasy.Plugins
             }
 
             var useQ = _menu.Item("ElEasy.Cassio.LaneClear.Q").GetValue<bool>();
-            var useW = _menu.Item("ElEasy.Cassio.LaneClear.E").GetValue<bool>();
-            var useE = _menu.Item("ElEasy.Cassio.LaneClear.W").GetValue<bool>();
+            var useW = _menu.Item("ElEasy.Cassio.LaneClear.W").GetValue<bool>();
+            var useE = _menu.Item("ElEasy.Cassio.LaneClear.E").GetValue<bool>();
 
             if (useQ && spells[Spells.Q].IsReady())
             {
@@ -325,7 +324,7 @@ namespace ElEasy.Plugins
                 if ((Player.ServerPosition.Distance(prediction.CastPosition) < spells[Spells.Q].Range) && target.IsVisible && !target.IsDead)
                 {
                     spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
-                    _lastQ = Environment.TickCount;
+                    lastQ = Environment.TickCount;
                 }
             }
 
@@ -339,20 +338,20 @@ namespace ElEasy.Plugins
 
                 if (playLegit)
                 {
-                    if (Environment.TickCount > _lastE + legitCastDelay)
+                    if (Environment.TickCount > lastE + legitCastDelay)
                     {
                         spells[Spells.E].CastOnUnit(target);
-                        _lastE = Environment.TickCount;
+                        lastE = Environment.TickCount;
                     }
                 }
                 else
                 {
                     spells[Spells.E].Cast(target);
-                    _lastE = Environment.TickCount;
+                    lastE = Environment.TickCount;
                 }
             }
 
-            if (useW && spells[Spells.W].IsReady() && Environment.TickCount > _lastQ + spells[Spells.Q].Delay * 1000)
+            if (useW && spells[Spells.W].IsReady() && Environment.TickCount > lastQ + spells[Spells.Q].Delay * 1000)
             {
                 var prediction = spells[Spells.W].GetPrediction(target);
                 if ((Player.ServerPosition.Distance(prediction.CastPosition) <
@@ -366,7 +365,7 @@ namespace ElEasy.Plugins
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(rtarget))
             {
                 var prediction = spells[Spells.R].GetPrediction(rtarget);
-                if (prediction.Hitchance >= CustomHitChance &&
+                if (prediction.Hitchance >= HitChance.VeryHigh &&
                     Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
                 {
                     spells[Spells.R].Cast(rtarget);

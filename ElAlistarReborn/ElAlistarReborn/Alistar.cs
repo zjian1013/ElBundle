@@ -104,14 +104,14 @@ namespace ElAlistarReborn
             var useHealAlly = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.Activated").GetValue<bool>();
             var playerMana = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.HasBuff("Recall") || Player.InFountain() || !useHeal || !useHealAlly || Player.ManaPercent < playerMana || !spells[Spells.E].IsReady())
+            if (Player.HasBuff("Recall") || Player.InFountain() || Player.ManaPercent < playerMana || !spells[Spells.E].IsReady())
                 return;
 
             var playerHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.HP").GetValue<Slider>().Value;
             var allyHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.HP").GetValue<Slider>().Value;
   
             //self heal
-            if ((Player.Health / Player.MaxHealth) * 100 <= playerHp)
+            if (useHeal && (Player.Health / Player.MaxHealth) * 100 <= playerHp)
             {
                 spells[Spells.E].Cast(Player);
             }
@@ -119,7 +119,7 @@ namespace ElAlistarReborn
             //ally
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe))
             {
-                if ((hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
+                if (useHealAlly && (hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
                 {
                     spells[Spells.E].Cast(Player);
                 }
