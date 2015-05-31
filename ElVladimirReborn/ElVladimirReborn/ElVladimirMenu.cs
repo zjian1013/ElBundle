@@ -77,6 +77,7 @@ namespace ElVladimirReborn
 
             //ElVladimir.Misc
             var miscMenu = new Menu("Misc", "Misc");
+            miscMenu.AddItem(new MenuItem("ElEasy.ElVladimir.AA", "Don't use AA in combo").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElVladimir.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElVladimir.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElVladimir.Draw.W", "Draw W").SetValue(new Circle()));
@@ -95,7 +96,7 @@ namespace ElVladimirReborn
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.1"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.2"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
