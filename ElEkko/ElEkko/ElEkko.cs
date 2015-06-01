@@ -35,7 +35,7 @@ namespace ElEkko
             { Spells.Q, new Spell(SpellSlot.Q, 950) },
             { Spells.W, new Spell(SpellSlot.W, 1600) },
             { Spells.E, new Spell(SpellSlot.E, 425) },
-            { Spells.R, new Spell(SpellSlot.R, 375) }
+            { Spells.R, new Spell(SpellSlot.R, 400) }
         };
 
         public static GameObject Troy { get; set; }
@@ -54,7 +54,7 @@ namespace ElEkko
                 return;
             }
 
-            Notifications.AddNotification("ElEkko by jQuery 1.0.0.0", 10000);
+            Notifications.AddNotification("ElEkko by jQuery 1.0.0.1", 10000);
             ignite = Player.GetSpellSlot("summonerdot");
 
             spells[Spells.Q].SetSkillshot(0.25f, 60, 1650f, false, SkillshotType.SkillshotLine);
@@ -110,6 +110,7 @@ namespace ElEkko
                 var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
                 if (qtarget == null || !qtarget.IsValid || !Orbwalking.CanMove(1))
                     return;
+
                 if (CountPassive(qtarget) == 2 && qtarget.Distance(Player.Position) <= spells[Spells.Q].Range)
                 {
                     var pred = spells[Spells.Q].GetPrediction(qtarget);
@@ -159,7 +160,7 @@ namespace ElEkko
 
                 if (Player.ManaPercent < mana) return;
 
-                if (spells[Spells.Q].IsReady() && target.Distance(Player.Position) <= spells[Spells.Q].Range && !Player.IsDashing())
+                if (spells[Spells.Q].IsReady() && target.Distance(Player.Position) <= spells[Spells.Q].Range - 50 && !Player.IsDashing())
                 {
                     spells[Spells.Q].Cast(target);
                 }
@@ -341,7 +342,7 @@ namespace ElEkko
             var enemies = ElEkkoMenu._menu.Item("ElEkko.Combo.W.Count").GetValue<Slider>().Value;
             var enemiesRrange = ElEkkoMenu._menu.Item("ElEkko.Combo.R.Enemies").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.Q].IsReady() && target.Distance(Player.Position) <= spells[Spells.Q].Range
+            if (useQ && spells[Spells.Q].IsReady() && target.Distance(Player.Position) <= spells[Spells.Q].Range - 50
                     && !Player.IsDashing())
             {
                 spells[Spells.Q].Cast(target);
