@@ -558,9 +558,12 @@ namespace ElDiana
             var useE = ElDianaMenu._menu.Item("ElDiana.JungleClear.E").GetValue<bool>();
             var useR = ElDianaMenu._menu.Item("ElDiana.JungleClear.R").GetValue<bool>();
 
+
             var qMinions = minions.FindAll(minion => minion.IsValidTarget(spells[Spells.Q].Range));
-            var qMinion = qMinions.Find(
-                        minion => minion.IsValidTarget());
+            var qMinion = qMinions.FirstOrDefault();
+
+            if (qMinion == null) return;
+
 
             if (useQ && spells[Spells.Q].IsReady())
             {
@@ -568,13 +571,12 @@ namespace ElDiana
                     spells[Spells.Q].Cast(qMinion);
             }
 
-            if (useW && spells[Spells.W].IsReady())
+            if (useW && spells[Spells.W].IsReady() && qMinion != null)
             {
                 spells[Spells.W].Cast();
             }
 
-            //hmmpff
-            if (useE && spells[Spells.E].IsReady() && Player.Distance(qMinion, false) < 200)
+            if (useE && spells[Spells.E].IsReady() && qMinions.Count(m => Player.Distance(m, false) < spells[Spells.W].Range) < 1)
             {
                 spells[Spells.E].Cast();
             }
