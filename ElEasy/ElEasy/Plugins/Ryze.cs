@@ -345,6 +345,11 @@ namespace ElEasy.Plugins
                 spells[Spells.R].Cast(Player);
             }
 
+            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            {
+                spells[Spells.E].CastOnUnit(target);
+            }
+            
             if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
             {
                 spells[Spells.W].CastOnUnit(target);
@@ -357,11 +362,6 @@ namespace ElEasy.Plugins
                 {
                     spells[Spells.Q].Cast(target);
                 } 
-            }
-
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-            {
-                spells[Spells.E].CastOnUnit(target);
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
