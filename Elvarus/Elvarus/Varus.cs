@@ -32,10 +32,10 @@ namespace Elvarus
             { Spells.R, new Spell(SpellSlot.R, 1100)}
         };
 
-        private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        /*private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             args.Process = !spells[Spells.Q].IsCharging;
-        }
+        }*/
 
         #region hitchance
 
@@ -70,7 +70,7 @@ namespace Elvarus
             if (ObjectManager.Player.BaseSkinName != "Varus")
                 return;
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.1.4", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.1.5", 10000);
 
             spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
@@ -80,7 +80,7 @@ namespace Elvarus
             ElVarusMenu.Initialize();
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
-            Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
+            //Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
         }
 
         #endregion

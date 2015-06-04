@@ -376,10 +376,10 @@ namespace ElEasy.Plugins
         private static double GetBonusDmg(Obj_AI_Base target)
         {
             double dmgItem = 0;
-            if (Items.HasItem(Sheen) && (Items.CanUseItem(Sheen) || Player.HasBuff("sheen", true)) && Player.BaseAttackDamage > dmgItem)
+            if (Items.HasItem(Sheen) && (Items.CanUseItem(Sheen) || Player.HasBuff("sheen")) && Player.BaseAttackDamage > dmgItem)
                 dmgItem = Player.GetAutoAttackDamage(target);
 
-            if (Items.HasItem(Iceborn) && (Items.CanUseItem(Iceborn) || Player.HasBuff("itemfrozenfist", true)) && Player.BaseAttackDamage * 1.25 > dmgItem)
+            if (Items.HasItem(Iceborn) && (Items.CanUseItem(Iceborn) || Player.HasBuff("itemfrozenfist")) && Player.BaseAttackDamage * 1.25 > dmgItem)
                 dmgItem = Player.GetAutoAttackDamage(target) * 1.25;
 
             return spells[Spells.Q].GetDamage(target) + Player.GetAutoAttackDamage(target) + dmgItem;

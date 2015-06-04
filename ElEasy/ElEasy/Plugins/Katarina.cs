@@ -47,7 +47,7 @@ namespace ElEasy.Plugins
         private static bool HasRBuff()
         {
             return Player.HasBuff("KatarinaR") || Player.IsChannelingImportantSpell() ||
-                   Player.HasBuff("katarinarsound", true);
+                   Player.HasBuff("katarinarsound");
         }
 
         #endregion
@@ -80,7 +80,7 @@ namespace ElEasy.Plugins
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !Player.HasBuff("katarinarsound", true))
+            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !Player.HasBuff("katarinarsound"))
             {
                 return;
             }
