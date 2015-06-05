@@ -257,28 +257,28 @@ namespace Elvarus
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < minmana)
+                return;
+                
+            if (harassE && spells[Spells.E].IsReady())
             {
-                if (harassE && spells[Spells.E].IsReady())
-                {
-                    spells[Spells.E].CastOnBestTarget();
-                }
+                spells[Spells.E].CastOnBestTarget();
+            }
 
-                if (!spells[Spells.Q].IsCharging)
+            if (!spells[Spells.Q].IsCharging)
+            {
+                spells[Spells.Q].StartCharging();
+                return;
+            }
+            else
+            {
+                if (spells[Spells.Q].IsReady() && harassQ)
                 {
-                    spells[Spells.Q].StartCharging();
-                    return;
-                }
-                else
-                {
-                    if (spells[Spells.Q].IsReady() && harassQ)
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
+                    if (distance < spells[Spells.Q].RangeSqr)
                     {
-                        var prediction = spells[Spells.Q].GetPrediction(target);
-                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                        if (distance < spells[Spells.Q].RangeSqr)
-                        {
-                            if (spells[Spells.Q].Cast(prediction.CastPosition))
-                                return;
-                        }
+                        if (spells[Spells.Q].Cast(prediction.CastPosition))
+                            return;
                     }
                 }
             }
