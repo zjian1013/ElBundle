@@ -256,7 +256,7 @@ namespace Elvarus
             var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
-            if (Player.ManaPercent > minmana)
+            if (Player.ManaPercent < minmana)
             {
                 if (harassE && spells[Spells.E].IsReady())
                 {
