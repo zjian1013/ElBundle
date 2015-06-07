@@ -170,6 +170,7 @@ namespace ElKalista
 
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
+            var kaliscrank = ElKalistaMenu._menu.Item("ElKalista.misc.kaliscrank").GetValue<bool>();
 
             if (save)
             {
@@ -186,6 +187,25 @@ namespace ElKalista
                     if (ConnectedAlly.HealthPercent < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0)
                     {
                         spells[Spells.R].Cast();
+                    }
+                    else
+                    {
+                        foreach (var unit in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsEnemy && h.IsHPBarRendered && ConnectedAlly.Distance(h.Position) > 800))
+                        {
+                            // Get buffs
+                            for (int i = 0; i < unit.Buffs.Count(); i++)
+                            {
+                                // Check if the Soulbound is in a good range
+                                var enemy = HeroManager.Enemies.Where(x => ConnectedAlly.Distance(unit.Position) > 800);
+                                // Check if the Soulbound is a Blitzcrank
+                                // Check if the enemy is hooked
+                                // Check if target was far enough for ult
+                                if (ConnectedAlly.ChampionName == "Blitzcrank" && unit.Buffs[i].Name == "rocketgrab2" && unit.Buffs[i].IsActive && enemy.Count() > 0 && kaliscrank)
+                                {
+                                    spells[Spells.R].Cast();
+                                }
+                            }
+                        }
                     }
                 }
             }
