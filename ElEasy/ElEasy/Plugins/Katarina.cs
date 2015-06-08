@@ -184,7 +184,7 @@ namespace ElEasy.Plugins
             {
                 spells[Spells.Q].Cast(target);
             }
-            ;
+            
 
             if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
