@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -340,13 +340,40 @@ namespace ElEasy.Plugins
             var rHp = _menu.Item("ElEasy.Ryze.Combo.R.HP").GetValue<Slider>().Value;
             var useI = _menu.Item("ElEasy.Ryze.Combo.Ignite").GetValue<bool>();
 
-            if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
+            if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
             {
-                spells[Spells.R].Cast(Player);
-            }
+                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                {
+                    spells[Spells.E].CastOnUnit(target);
+                }
 
-           
-            
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                {
+                    var pred = spells[Spells.Q].GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
+                }
+
+                if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
+                {
+                    spells[Spells.R].Cast(Player);
+                }
+
+                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                {
+                    spells[Spells.W].CastOnUnit(target);
+                }
+            }
+            else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
+            {
+                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                {
+                    spells[Spells.W].CastOnUnit(target);
+                }
+
+                      
             if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
             {
                 spells[Spells.W].CastOnUnit(target);
@@ -357,13 +384,45 @@ namespace ElEasy.Plugins
                 spells[Spells.E].CastOnUnit(target);
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-            {
-                var pred = spells[Spells.Q].GetPrediction(target);
-                if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
-                    spells[Spells.Q].Cast(target);
-                } 
+                    var pred = spells[Spells.Q].GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
+                }
+
+                if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
+                {
+                    spells[Spells.R].Cast(Player);
+                }
+
+                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                {
+                    spells[Spells.E].CastOnUnit(target);
+                }
+            }
+            else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
+            {
+                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                {
+                    spells[Spells.W].CastOnUnit(target);
+                }
+
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                {
+                    var pred = spells[Spells.Q].GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
+                }
+
+                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                {
+                    spells[Spells.E].CastOnUnit(target);
+                }
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
@@ -562,4 +621,3 @@ namespace ElEasy.Plugins
 
     }
 }
- 
