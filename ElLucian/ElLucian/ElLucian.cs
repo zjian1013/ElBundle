@@ -34,10 +34,10 @@ namespace ElLucian
         public static Orbwalking.Orbwalker Orbwalker;
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
-            { Spells.Q, new Spell(SpellSlot.Q, 0) },
-            { Spells.W, new Spell(SpellSlot.W, 0) },
-            { Spells.E, new Spell(SpellSlot.E, 0) },
-            { Spells.R, new Spell(SpellSlot.R, 0) }
+            { Spells.Q, new Spell(SpellSlot.Q, 675f) },
+            { Spells.W, new Spell(SpellSlot.W, 1000f) },
+            { Spells.E, new Spell(SpellSlot.E, 425f) },
+            { Spells.R, new Spell(SpellSlot.R, 1400f) }
         };
 
 
