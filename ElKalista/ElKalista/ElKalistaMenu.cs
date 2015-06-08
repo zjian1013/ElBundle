@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -88,6 +88,7 @@ namespace ElKalista
             setMenu.AddItem(new MenuItem("useEFafsdsgdrmddsddsasfsasdsdsaadsd", ""));
             setMenu.AddItem(new MenuItem("ElKalista.misc.lasthithelper", "E lasthit assist").SetValue(false));
             setMenu.AddItem(new MenuItem("ElKalista.misc.junglesteal", "Jungle steal mode").SetValue(true));
+            setMenu.AddItem(new MenuItem("ElKalista.misc.kaliscrank", "Balista").SetValue(true));
 
             _menu.AddSubMenu(setMenu);
 
