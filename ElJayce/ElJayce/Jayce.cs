@@ -18,7 +18,7 @@ namespace ElJayce
         R
     }
 
-    internal static class Diana
+    internal static class Jayce
     {
         private static Obj_AI_Hero Player
         {
