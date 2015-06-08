@@ -164,8 +164,6 @@ namespace ElEasy.Plugins
 
             }
         }
- 
-        }
 
         #endregion
 
