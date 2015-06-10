@@ -137,14 +137,14 @@ namespace ElKalista
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    Combo(target);
+                    Combo();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
                     JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    Harass(target);
+                    Harass();
                     break;
             }
           
@@ -371,9 +371,10 @@ namespace ElKalista
 
         #region Harass
 
-        private static void Harass(Obj_AI_Base target)
+        private static void Harass()
         {
-            if (target == null || !target.IsValidTarget()|| !Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
+            var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget() || !Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
                 return;
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
@@ -406,8 +407,9 @@ namespace ElKalista
 
         #region Combo
 
-        private static void Combo(Obj_AI_Base target)
+        private static void Combo()
         {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
             if (target == null || !target.IsValidTarget() || !Orbwalking.CanMove(1))
                 return;
 
