@@ -44,6 +44,39 @@ namespace ElKalista
             { Spells.E, new Spell(SpellSlot.E, 1000) },
             { Spells.R, new Spell(SpellSlot.R, 1400) }
         };
+        #region autoW
+        private static void AutoW()
+        {
+            var useW = ElKalistaMenu._menu.Item("ElKalista.misc.autow").GetValue<bool>();
+            if (useW)
+            {
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.River.Dragon) <= spells[Spells.W].Range && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.River.Dragon, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.River.Baron) <= spells[Spells.W].Range && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.River.Baron, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Chaos && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Blue_BlueBuff, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Chaos && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Blue_RedBuff, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Order && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Red_BlueBuff, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Order)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Red_RedBuff, true);
+                }
+            }
+        }
+        #endregion
 
         #region hitchance
 
@@ -120,6 +153,7 @@ namespace ElKalista
             SaveMode();
             SemiUltMode();
             AutoCastEMode();
+            AutoW();
         }
 
         #endregion
