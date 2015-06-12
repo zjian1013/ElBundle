@@ -8,7 +8,6 @@ using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-
 namespace ElMinions
 {
     internal static class Main
