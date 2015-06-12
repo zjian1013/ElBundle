@@ -58,10 +58,27 @@ namespace ElMinions
             switch (Player.Team)
             {
                 case GameObjectTeam.Chaos: //red side
+                    DrawMinionsRed();
                     break;
                 case GameObjectTeam.Order: //blue side
+                    DrawMinionsBlue();
                     break;
             }
+        }
+
+        #endregion
+
+        #region DrawMinionsBlue
+        private static void DrawMinionsBlue()
+        {
+            
+        }
+        #endregion
+
+        #region DrawMinionsRed
+        private static void DrawMinionsRed()
+        {
+            
         }
         #endregion
     }
