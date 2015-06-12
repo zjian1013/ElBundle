@@ -7,7 +7,6 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
-using Color = SharpDX.Color;
 
 namespace ElMinions
 {
