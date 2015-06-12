@@ -19,6 +19,21 @@ namespace ElMinions
             Notifications.AddNotification("ElMinions", 10000);
             ElMinionsMenu.Initialize();
             Drawing.OnEndScene += OnEndScene;
+            Game.OnUpdate += OnUpdate;
+        }
+
+        #endregion
+
+        #region OnGameUpdate
+
+        private static void OnUpdate(EventArgs args)
+        {
+            if (ObjectManager.Player.IsDead)
+                return;
+
+            var map = Utility.Map.GetMap();
+            if (map.Type != Utility.Map.MapType.SummonersRift)
+                return;
         }
 
         #endregion
