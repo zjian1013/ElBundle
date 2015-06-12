@@ -21,24 +21,13 @@ namespace ElMinions
         }
 
         #region OnLoad
-        public static void OnLoad(Obj_AI_Minion minion, Vector2 drawmap)
+        public static void OnLoad(EventArgs args)
         {
-            var miniondot = new Render.Sprite("o", new Vector2(0, 0));
-            var minionlocation = minion.ServerPosition;
-            Vector2 v2 = Drawing.WorldToMinimap(minionlocation);
-
             Notifications.AddNotification("ElMinions2", 10000);
             ElMinionsMenu.Initialize();
             Drawing.OnEndScene += OnEndScene;
             Game.OnUpdate += OnUpdate;
-            GameObject.OnCreate += (sender, e) =>
-                {
-                    var minion1 = sender as Obj_AI_Minion;
-                    if (minion1 != null)
-                    {
-                        Drawing.WorldToMinimap(minionlocation);
-                    }
-                };
+            GameObject.OnCreate += Obj_AI_Base_OnCreate;
         }
 
         #endregion
@@ -53,6 +42,14 @@ namespace ElMinions
             var map = Utility.Map.GetMap();
             if (map.Type != Utility.Map.MapType.SummonersRift)
                 return;
+
+        }
+
+        #endregion
+
+        #region OnCreate
+        private static void Obj_AI_Base_OnCreate(GameObject sender, EventArgs args)
+        {
 
         }
 
