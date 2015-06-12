@@ -23,9 +23,10 @@ namespace ElMinions
         #region OnLoad
         public static void OnLoad(EventArgs args)
         {
-           Notifications.AddNotification("ElMinions2", 10000);
+            Notifications.AddNotification("ElMinions", 10000);
             ElMinionsMenu.Initialize();
             Drawing.OnEndScene += OnEndScene;
+            Game.OnUpdate += OnUpdate;
         }
 
 
