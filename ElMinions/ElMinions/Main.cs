@@ -52,16 +52,15 @@ namespace ElMinions
         {
             var isActive = ElMinionsMenu.Menu.Item("ElMinions.Draw.Minions").GetValue<bool>();
 
-            if (isActive)
+            if (!isActive)
+                return;
+
+            switch (Player.Team)
             {
-                
-                switch (Player.Team)
-                {
-                    case GameObjectTeam.Chaos: //red side
-                        break;
-                    case GameObjectTeam.Order: //blue side
-                        break;
-                }
+                case GameObjectTeam.Chaos: //red side
+                    break;
+                case GameObjectTeam.Order: //blue side
+                    break;
             }
         }
         #endregion
