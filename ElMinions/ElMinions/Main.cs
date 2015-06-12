@@ -68,6 +68,13 @@ namespace ElMinions
 
         #endregion
 
+        #region GameTime
+        public static float GameTime()
+        {
+            return Game.Time;
+        }
+        #endregion
+
         #region DrawMinionsBlue
         private static void DrawMinionsBlue()
         {
