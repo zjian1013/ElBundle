@@ -11,17 +11,17 @@ namespace ElMinions
 {
     public static class ElMinionsMenu
     {
-        public static Menu Menu;
+        public static Menu _Menu;
 
         public static void Initialize()
         {
-            Menu = new Menu("ElMinions", "menu", true);
+            _Menu = new Menu("ElMinions", "menu", true);
 
             var drawMenu = new Menu("Drawings", "Drawings");
             drawMenu.AddItem(new MenuItem("ElMinions.Draw.Minions", "Draw minions").SetValue(true));
-            Menu.AddSubMenu(drawMenu);
+            _Menu.AddSubMenu(drawMenu);
 
-            Menu.AddToMainMenu();
+            _Menu.AddToMainMenu();
         }
     }
 }

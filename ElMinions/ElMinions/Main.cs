@@ -50,7 +50,7 @@ namespace ElMinions
 
         private static void OnEndScene(EventArgs args)
         {
-            var isActive = ElMinionsMenu.Menu.Item("ElMinions.Draw.Minions").GetValue<bool>();
+            var isActive = ElMinionsMenu._Menu.Item("ElMinions.Draw.Minions").GetValue<bool>();
 
             if (!isActive)
                 return;
