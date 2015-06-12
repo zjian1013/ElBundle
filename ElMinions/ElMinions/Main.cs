@@ -12,6 +12,14 @@ namespace ElMinions
 {
     internal static class Main
     {
+        public static Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
         #region OnLoad
 
         public static void OnLoad(EventArgs args)
@@ -28,7 +36,7 @@ namespace ElMinions
 
         private static void OnUpdate(EventArgs args)
         {
-            if (ObjectManager.Player.IsDead)
+            if (Player.IsDead)
                 return;
 
             var map = Utility.Map.GetMap();
@@ -46,10 +54,16 @@ namespace ElMinions
 
             if (isActive)
             {
-                // blabla
+                
+                switch (Player.Team)
+                {
+                    case GameObjectTeam.Chaos: //red side
+                        break;
+                    case GameObjectTeam.Order: //blue side
+                        break;
+                }
             }
         }
-
         #endregion
     }
 }
