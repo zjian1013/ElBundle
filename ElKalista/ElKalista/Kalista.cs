@@ -317,7 +317,7 @@ namespace ElKalista
                 return;
 
             var eCreep = jungleCreep.First();
-            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate))
+            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate / 2))
                 return;
 
             if (spells[Spells.E].CanCast(eCreep))
