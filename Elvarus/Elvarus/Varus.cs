@@ -32,11 +32,8 @@ namespace Elvarus
             { Spells.R, new Spell(SpellSlot.R, 1100)}
         };
 
-        /*private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
-        {
-            args.Process = !spells[Spells.Q].IsCharging;
-        }*/
-
+  
+    
         #region hitchance
 
         private static HitChance CustomHitChance
@@ -115,8 +112,14 @@ namespace Elvarus
 
         private static int GetStacksOn(Obj_AI_Base target)
         {
-            var buff = target.Buffs.Find(b => b.Caster.IsMe && b.DisplayName == "VarusWDebuff");
-            return buff != null ? buff.Count : 0;
+            // credits to marksman
+            return
+                target.Buffs.Where(xBuff => xBuff.Name == "varuswdebuff" && target.IsValidTarget(spells[Spells.Q].Range))
+                    .Select(xBuff => xBuff.Count)
+                    .FirstOrDefault();
+
+            /*var buff = target.Buffs.Find(b => b.Caster.IsMe && b.DisplayName == "VarusWDebuff");
+            return buff != null ? buff.Count : 0;*/
         }
 
         private static void CastQ(Obj_AI_Base target)
@@ -380,7 +383,6 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                // || spells[Spells.Q].GetDamage(target) > target.Health
                 if (spells[Spells.Q].IsCharging)
                 {
                     var prediction = spells[Spells.Q].GetPrediction(target);
