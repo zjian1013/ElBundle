@@ -317,7 +317,7 @@ namespace ElKalista
                 return;
 
             var eCreep = jungleCreep.First();
-            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate / 2))
+            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate))
                 return;
 
             if (spells[Spells.E].CanCast(eCreep))
@@ -420,9 +420,8 @@ namespace ElKalista
             var comboEDisable = ElKalistaMenu._menu.Item("ElKalista.Combo.Disable.E").GetValue<bool>();
             var comboQmana = ElKalistaMenu._menu.Item("ElKalista.Combo.Q.Mana").GetValue<Slider>().Value;
 
-            if (comboQ && spells[Spells.Q].IsReady())
+            if (comboQ && spells[Spells.Q].IsReady() && Player.Mana >= comboQmana)
             {
-                if (Player.Mana < comboQmana) return;
 
                 var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
@@ -494,11 +493,19 @@ namespace ElKalista
                 {
                     spells[Spells.Q].Cast(minion.ServerPosition);
                 }
-
+                var mAA = 0;
                 if (spells[Spells.E].IsReady() && useE &&
                     minions[0].Health + minions[0].HPRegenRate / 2 < spells[Spells.E].GetDamage(minion))
                 {
-                    spells[Spells.E].Cast();
+                    mAA = 1;
+                    if (mAA == 1)
+                    {
+                        Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                        mAA = 2;
+                        if (mAA == 2){
+                            spells[Spells.E].Cast();
+                        }
+                    }
                 }
             }
         }
