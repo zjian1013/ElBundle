@@ -61,7 +61,7 @@ namespace ElAlistarReborn
             if (ObjectManager.Player.BaseSkinName != "Alistar")
                 return;
 
-            spells[Spells.R].SetSkillshot(0.25f, 175, 700, false, SkillshotType.SkillshotCircle);
+            spells[Spells.W].SetTargetted(0.5f, float.MaxValue);
 
             Notifications.AddNotification("ElAlistarReborn by jQuery", 5000);
             _ignite = Player.GetSpellSlot("summonerdot");
