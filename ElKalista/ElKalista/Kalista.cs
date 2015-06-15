@@ -420,9 +420,10 @@ namespace ElKalista
             var comboEDisable = ElKalistaMenu._menu.Item("ElKalista.Combo.Disable.E").GetValue<bool>();
             var comboQmana = ElKalistaMenu._menu.Item("ElKalista.Combo.Q.Mana").GetValue<Slider>().Value;
 
-            if (comboQ && spells[Spells.Q].IsReady() && Player.Mana >= comboQmana)
+            if (comboQ && spells[Spells.Q].IsReady())
             {
-
+                if (Player.ManaPercent < comboQmana)
+                    return;
                 var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
                 if (spells[Spells.Q].CanCast(qtarget) && spells[Spells.Q].GetPrediction(qtarget).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
