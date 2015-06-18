@@ -30,14 +30,16 @@ namespace Elvarus
             var cMenu = new Menu("Combo", "Combo");
             
             cMenu.AddItem(new MenuItem("ElVarus.Combo.Q", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElVarus.combo.always.Q", "always Q").SetValue(true));
+            //cMenu.AddItem(new MenuItem("ElVarus.combo.always.Q", "always Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.R", "Use R").SetValue(true));
             cMenu.AddItem(new MenuItem("ElVarus.sssss", ""));
+            cMenu.AddItem(new MenuItem("ElVarus.Q.Min.Charge", "Min. Q Charge").SetValue(new Slider(1000, Varus.spells[Spells.Q].ChargedMinRange, Varus.spells[Spells.Q].ChargedMaxRange)));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.R.Count", "R when enemies >= ")).SetValue(new Slider(1, 1, 5));
             cMenu.AddItem(new MenuItem("ElVarus.Combo.Stack.Count", "Q when stacks >= ")).SetValue(new Slider(3, 1, 3));
             cMenu.AddItem(new MenuItem("ElVarus.sssssssss", ""));
             cMenu.AddItem(new MenuItem("ElVarus.SemiR", "Semi-manual cast R key").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
+            cMenu.AddItem(new MenuItem("ElVarus.Always.Q", "Cast instant Q").SetValue(new KeyBind("J".ToCharArray()[0], KeyBindType.Press)));
 
             //cMenu.AddItem(new MenuItem("ElVarus.SemiR", "Semi-manual cast R key").SetValue(new KeyBind('t', KeyBindType.Press))); 
             cMenu.AddItem(new MenuItem("ElVarus.ssssssssssss", ""));
@@ -63,7 +65,6 @@ namespace Elvarus
 
             _menu.AddSubMenu(itemMenu);
 
-
             var lMenu = new Menu("Clear", "Clear");
             lMenu.AddItem(new MenuItem("useQFarm", "Use Q").SetValue(true));
             lMenu.AddItem(new MenuItem("ElVarus.Count.Minions", "Killable minions with Q >=").SetValue(new Slider(2, 1, 5)));
@@ -77,10 +78,12 @@ namespace Elvarus
 
             _menu.AddSubMenu(lMenu);
 
-            //ElSinged.Misc
+            //ElVarus.Misc
             var miscMenu = new Menu("Drawings", "Misc");
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.Q", "Draw Q").SetValue(new Circle()));
+            miscMenu.AddItem(new MenuItem("ElVarus.Draw.Q.Charge", "Draw Q charge range").SetValue(new Circle()));
+
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.E", "Draw E").SetValue(new Circle()));
 
@@ -109,12 +112,12 @@ namespace Elvarus
 
             //Here comes the moneyyy, money, money, moneyyyy
             var credits = new Menu("Credits", "jQuery");
-            credits.AddItem(new MenuItem("ElSinged.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElSinged.Email", "info@zavox.nl"));
+            credits.AddItem(new MenuItem("ElVarus.Paypal", "if you would like to donate via paypal:"));
+            credits.AddItem(new MenuItem("ElVarus.Email", "info@zavox.nl"));
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.1.6"));
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.1.7"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
