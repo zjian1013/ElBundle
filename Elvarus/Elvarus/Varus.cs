@@ -69,9 +69,10 @@ namespace Elvarus
 
             Notifications.AddNotification("ElVarus by jQuery v1.0.1.5", 10000);
 
-            spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
-            spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
-            spells[Spells.R].SetSkillshot(0.25f, 120, 1950, true, SkillshotType.SkillshotLine);
+            spells[Spells.Q].SetSkillshot(.25f, 70f, 1650f, false, SkillshotType.SkillshotLine);
+            spells[Spells.E].SetSkillshot(.50f, 250f, 1400f, false, SkillshotType.SkillshotCircle);
+            spells[Spells.R].SetSkillshot(.25f, 120f, 1950f, false, SkillshotType.SkillshotLine);
+
             spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1600, 1.2f);
 
             ElVarusMenu.Initialize();
@@ -122,7 +123,7 @@ namespace Elvarus
             return buff != null ? buff.Count : 0;*/
         }
 
-        private static void CastQ(Obj_AI_Base target)
+        private static void CastQ()
         {
             if (target == null)
                 return;
