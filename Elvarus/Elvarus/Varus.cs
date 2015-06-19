@@ -123,7 +123,7 @@ namespace Elvarus
             return buff != null ? buff.Count : 0;*/
         }
 
-        private static void CastQ()
+        /*private static void CastQ()
         {
             if (target == null)
                 return;
@@ -142,7 +142,7 @@ namespace Elvarus
                     }
                 }
             }
-        }
+        }*/
 
         #region Laneclear
 
