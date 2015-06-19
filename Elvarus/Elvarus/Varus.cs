@@ -32,8 +32,8 @@ namespace Elvarus
             { Spells.R, new Spell(SpellSlot.R, 1100)}
         };
 
-  
-    
+
+
         #region hitchance
 
         private static HitChance CustomHitChance
@@ -67,7 +67,7 @@ namespace Elvarus
             if (ObjectManager.Player.BaseSkinName != "Varus")
                 return;
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.1.5", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.1.9", 10000);
 
             spells[Spells.Q].SetSkillshot(.25f, 70f, 1650f, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(.50f, 250f, 1400f, false, SkillshotType.SkillshotCircle);
@@ -107,6 +107,11 @@ namespace Elvarus
             {
                 spells[Spells.R].CastOnUnit(target);
             }
+
+            if (spells[Spells.Q].IsReady() && ElVarusMenu._menu.Item("ElVarus.Always.Q").GetValue<KeyBind>().Active)
+            {
+                CastQ();
+            }
         }
 
         #endregion
@@ -123,26 +128,29 @@ namespace Elvarus
             return buff != null ? buff.Count : 0;*/
         }
 
-        /*private static void CastQ()
+        private static void CastQ()
         {
-            if (target == null)
+            if (!spells[Spells.Q].IsReady())
                 return;
 
-            if (spells[Spells.Q].IsReady())
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget())
+                return;
+
+            var comboQRange = ElVarusMenu._menu.Item("ElVarus.Q.Min.Charge").GetValue<Slider>().Value;
+
+            if (spells[Spells.Q].IsCharging)
             {
-                if (!spells[Spells.Q].IsCharging)
+                if (spells[Spells.Q].Range >= comboQRange)
                 {
-                   spells[Spells.Q].StartCharging();
-                }
-                else
-                {
-                    if (spells[Spells.Q].IsInRange(target))
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
+                    spells[Spells.Q].Cast(target, false, true);
                 }
             }
-        }*/
+            else
+            {
+                spells[Spells.Q].StartCharging();
+            }
+        }
 
         #region Laneclear
 
@@ -184,12 +192,18 @@ namespace Elvarus
                             }
                         }
 
-                        if (killcount >= countMinions)
+                        if (killcount >= countMinions && minion.IsValidTarget())
                         {
-                            if (minion.IsValidTarget())
-                            {
-                                spells[Spells.Q].Cast(minion);
+                            if (!spells[Spells.Q].IsReady())
                                 return;
+
+                            if (spells[Spells.Q].IsCharging)
+                            {
+                                spells[Spells.Q].Cast(minion, false, true);   
+                            }
+                            else
+                            {
+                                spells[Spells.Q].StartCharging();
                             }
                         }
                     }
@@ -242,7 +256,7 @@ namespace Elvarus
                     {
                         spells[Spells.E].CastOnUnit(minion);
                     }
-                }    
+                }
             }
         }
 
@@ -256,34 +270,20 @@ namespace Elvarus
             if (target == null || !target.IsValidTarget())
                 return;
 
-            var harassQ = ElVarusMenu._menu.Item("ElVarus.Harass.Q").GetValue<bool>();
-            var harassE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
+            var useQ = ElVarusMenu._menu.Item("ElVarus.Harass.Q").GetValue<bool>();
+            var useE = ElVarusMenu._menu.Item("ElVarus.Harass.E").GetValue<bool>();
             var minmana = ElVarusMenu._menu.Item("minmanaharass").GetValue<Slider>().Value;
 
             if (Player.ManaPercent > minmana)
             {
-                if (harassE && spells[Spells.E].IsReady())
+                if (useE && spells[Spells.E].IsReady())
                 {
                     spells[Spells.E].CastOnBestTarget();
                 }
 
-                if (!spells[Spells.Q].IsCharging)
+                if (useQ)
                 {
-                    spells[Spells.Q].StartCharging();
-                    return;
-                }
-                else
-                {
-                    if (spells[Spells.Q].IsReady() && harassQ)
-                    {
-                        var prediction = spells[Spells.Q].GetPrediction(target);
-                        var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                        if (distance < spells[Spells.Q].RangeSqr)
-                        {
-                            if (spells[Spells.Q].Cast(prediction.CastPosition))
-                                return;
-                        }
-                    }
+                    CastQ();
                 }
             }
         }
@@ -312,19 +312,21 @@ namespace Elvarus
                 botrk.Cast(target);
 
             if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target)
-                && Player.HealthPercent <= useBladeMhp
-                && useBlade)
-
+                && Player.HealthPercent <= useBladeMhp && useBlade)
+            {
                 botrk.Cast(target);
+            }
 
-            if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) &&
-                target.HealthPercent <= useBladeEhp
-                && useCutlass)
+            if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target)
+                && target.HealthPercent <= useBladeEhp && useCutlass)
+            {
                 cutlass.Cast(target);
+            }
 
-            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range)
-                && useYoumuu)
+            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range) && useYoumuu)
+            {
                 ghost.Cast();
+            }
         }
 
         #endregion
@@ -364,25 +366,53 @@ namespace Elvarus
 
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
             if (target == null || !target.IsValidTarget())
                 return;
 
             var stackCount = ElVarusMenu._menu.Item("ElVarus.Combo.Stack.Count").GetValue<Slider>().Value;
             var rCount = ElVarusMenu._menu.Item("ElVarus.Combo.R.Count").GetValue<Slider>().Value;
-            var comboQ = ElVarusMenu._menu.Item("ElVarus.Combo.Q").GetValue<bool>();
-            var comboE = ElVarusMenu._menu.Item("ElVarus.Combo.E").GetValue<bool>();
-            var comboR = ElVarusMenu._menu.Item("ElVarus.Combo.R").GetValue<bool>();
-            var alwaysQ = ElVarusMenu._menu.Item("ElVarus.combo.always.Q").GetValue<bool>();
+            var useQ = ElVarusMenu._menu.Item("ElVarus.Combo.Q").GetValue<bool>();
+            var useE = ElVarusMenu._menu.Item("ElVarus.Combo.E").GetValue<bool>();
+            var useR = ElVarusMenu._menu.Item("ElVarus.Combo.R").GetValue<bool>();
 
             Items(target);
 
-            if (comboE && spells[Spells.E].IsReady())
+            if (useE && spells[Spells.E].IsReady())
             {
                 spells[Spells.E].Cast(target);
             }
 
-            if (spells[Spells.Q].IsReady() && comboQ)
+            if (useQ)
+            {
+                if (spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                {
+                    CastQ();
+                }
+            }
+
+
+            /*if (spells[Spells.Q].IsReady() && comboQ)
+            {
+                if (spells[Spells.Q].IsCharging)
+                {
+                    if (spells[Spells.Q].Range >= comboQRange)
+                    {
+                        spells[Spells.Q].Cast(target, false, true);
+                    }
+                }
+                else
+                {
+                    if (spells[Spells.W].Level == 0 
+                        || GetStacksOn(target) >= stackCount
+                        || spells[Spells.Q].GetDamage(target) > target.Health)
+                    {
+                        spells[Spells.Q].StartCharging();
+                    }
+                }
+            }*/
+
+            /*if (spells[Spells.Q].IsReady() && comboQ)
             {
                 if (spells[Spells.Q].IsCharging)
                 {
@@ -392,6 +422,11 @@ namespace Elvarus
                     {
                         if (spells[Spells.Q].Cast(prediction.CastPosition))
                             return;
+                    }
+
+                    if (spells[Spells.Q].Range >= comboQRange)
+                    {
+                        spells[Spells.Q].Cast(target, false, true);
                     }
                 }
                 else
@@ -413,9 +448,9 @@ namespace Elvarus
                         }
                     }
                 }
-            }
+            }*/
 
-            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
+            if (useR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
             {
                 spells[Spells.R].CastOnBestTarget();
             }
