@@ -162,7 +162,7 @@ namespace Elvarus
             {
                 if (spells[Spells.Q].Range >= comboQRange)
                 {
-                    spells[Spells.Q].Cast(target, false, true);
+                    spells[Spells.Q].Cast(target);
                 }
             }
             else
