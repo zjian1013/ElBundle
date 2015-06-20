@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,8 +18,7 @@ namespace Elvarus
             var drawW = ElVarusMenu._menu.Item("ElVarus.Draw.W").GetValue<Circle>();
             var drawE = ElVarusMenu._menu.Item("ElVarus.Draw.E").GetValue<Circle>();
             var drawR = ElVarusMenu._menu.Item("ElVarus.Draw.E").GetValue<Circle>();
-            var drawQRange = ElVarusMenu._menu.Item("ElVarus.Draw.Q.Charge").GetValue<Circle>();
-            var qChargeRange = ElVarusMenu._menu.Item("ElVarus.Q.Min.Charge").GetValue<Slider>().Value;
+
 
             if (drawOff)
                 return;
@@ -27,10 +26,6 @@ namespace Elvarus
             if (drawQ.Active)
                 if (Varus.spells[Spells.Q].Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Varus.spells[Spells.Q].Range, Varus.spells[Spells.Q].IsReady() ? Color.Green : Color.Red);
-
-            if (drawQRange.Active)
-                if (Varus.spells[Spells.Q].Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, qChargeRange, Color.Yellow);
 
             if (drawW.Active)
                 if (Varus.spells[Spells.W].Level > 0)
