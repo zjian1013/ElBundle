@@ -117,7 +117,11 @@ namespace Elvarus
             _menu.AddSubMenu(credits);
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
+<<<<<<< HEAD
             _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.1.9"));
+=======
+            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.1.7"));
+>>>>>>> parent of b5813af... Revert "varus fixes"
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();

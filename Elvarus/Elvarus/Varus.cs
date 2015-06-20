@@ -162,7 +162,15 @@ namespace Elvarus
             {
                 if (spells[Spells.Q].Range >= comboQRange)
                 {
+<<<<<<< HEAD
                     spells[Spells.Q].Cast(target);
+=======
+                    spells[Spells.Q].Cast(target, false, true);
+                }
+                else
+                {
+                    spells[Spells.Q].StartCharging();
+>>>>>>> parent of b5813af... Revert "varus fixes"
                 }
             }
             else
@@ -341,11 +349,19 @@ namespace Elvarus
             {
                 cutlass.Cast(target);
             }
+<<<<<<< HEAD
 
             if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range) && useYoumuu)
             {
                 ghost.Cast();
             }
+=======
+                
+            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(spells[Spells.Q].Range) && useYoumuu)
+            {
+                ghost.Cast();
+            }     
+>>>>>>> parent of b5813af... Revert "varus fixes"
         }
 
         #endregion
@@ -409,7 +425,11 @@ namespace Elvarus
                     CastQ();
                 }
             }
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> parent of b5813af... Revert "varus fixes"
 
             /*if (spells[Spells.Q].IsReady() && comboQ)
             {
