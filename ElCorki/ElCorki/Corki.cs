@@ -7,6 +7,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using LeagueSharp.Common.Data;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 
 
 namespace ElCorki
