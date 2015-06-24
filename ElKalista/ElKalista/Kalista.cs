@@ -8,6 +8,7 @@ using LeagueSharp.Common;
 using SharpDX;
 using LeagueSharp.Common.Data;
 using Collision = LeagueSharp.Common.Collision;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 
 
 namespace ElKalista
