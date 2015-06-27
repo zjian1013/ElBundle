@@ -385,36 +385,28 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                if (spells[Spells.Q].IsCharging)
+
+                if (alwaysQ)
                 {
-                    /*var prediction = spells[Spells.Q].GetPrediction(target);
-                    var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                    if (distance < spells[Spells.Q].RangeSqr)
-                    {
-                        if (spells[Spells.Q].Cast(prediction.CastPosition))
-                            return;
-                    }*/
-                    
-                    spells[Spells.Q].Cast(target);
+                    spells[Spells.Q].StartCharging();
                 }
-                else
-                {   
-                    if (alwaysQ)
+                else if (spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                {
+                    spells[Spells.Q].StartCharging();
+                    /*if (Player.AttackRange + 180 > Player.Distance(target))
                     {
-                        spells[Spells.Q].StartCharging();
+                        
+                            spells[Spells.Q].StartCharging();
                     }
                     else
                     {
-                        if(Player.AttackRange + 180 > Player.Distance(target))
-                        {
-                            if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
-                            spells[Spells.Q].StartCharging();
-                        }
-                        else
-                        {
-                          spells[Spells.Q].StartCharging();
-                        }
-                    }
+                        spells[Spells.Q].StartCharging();
+                    }*/
+                }
+
+                if (spells[Spells.Q].IsCharging)
+                {
+                    spells[Spells.Q].Cast(target);
                 }
             }
 
