@@ -103,12 +103,11 @@ namespace ElAlistarReborn
             var useHealAlly = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.Activated").GetValue<bool>();
             var playerMana = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.HasBuff("Recall") || Player.InFountain() || Player.Mana < playerMana || !spells[Spells.E].IsReady() || !useHeal)
-                return;
-
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 return;
-
+                
+            if (Player.HasBuff("Recall") || Player.InFountain() || Player.Mana < playerMana || !spells[Spells.E].IsReady() || !useHeal)
+                return;
 
             var playerHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.HP").GetValue<Slider>().Value;
             var allyHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.HP").GetValue<Slider>().Value;
