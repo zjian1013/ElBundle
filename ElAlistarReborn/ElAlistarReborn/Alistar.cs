@@ -169,10 +169,6 @@ namespace ElAlistarReborn
                 return;
             }
 
-           /* var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValid)
-                return;*/
-
             var useQ = ElAlistarMenu._menu.Item("ElAlistar.Combo.Q").GetValue<bool>();
             var useW = ElAlistarMenu._menu.Item("ElAlistar.Combo.W").GetValue<bool>();
             //var useE = ElAlistarMenu._menu.Item("ElAlistar.Combo.E").GetValue<bool>();
@@ -192,12 +188,6 @@ namespace ElAlistarReborn
 
                 Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
             }
-
-            // check player HP 
-           /* if (useE && spells[Spells.E].IsReady() && (Player.Health / Player.MaxHealth) * 100 >= playerHp)
-            {
-                spells[Spells.E].Cast(Player);
-            }*/
 
             if (useR && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange && (Player.Health / Player.MaxHealth) * 100 >= rHealth)
             {
