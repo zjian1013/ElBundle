@@ -191,7 +191,6 @@ namespace ElAlistarReborn
                 var comboTime = Math.Max(0, Player.Distance(target) - 500) * 10 / 25 + 25;
 
                 Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
-                Utility.DelayAction.Add(1000, () => spells[Spells.E].Cast(Player));
             }
 
             // check player HP 
