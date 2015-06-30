@@ -8,6 +8,7 @@ using LeagueSharp.Common;
 using SharpDX;
 using LeagueSharp.Common.Data;
 using Collision = LeagueSharp.Common.Collision;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 
 
 namespace ElKalista
@@ -44,6 +45,39 @@ namespace ElKalista
             { Spells.E, new Spell(SpellSlot.E, 1000) },
             { Spells.R, new Spell(SpellSlot.R, 1400) }
         };
+        #region autoW
+        private static void AutoW()
+        {
+            var useW = ElKalistaMenu._menu.Item("ElKalista.misc.autow").GetValue<bool>();
+            if (useW)
+            {
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.River.Dragon) <= spells[Spells.W].Range && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.River.Dragon, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.River.Baron) <= spells[Spells.W].Range && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.River.Baron, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Chaos && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Blue_BlueBuff, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Chaos && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Blue_RedBuff, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Order && !Player.IsAttackingPlayer && !Player.IsMoving)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Red_BlueBuff, true);
+                }
+                if (spells[Spells.W].IsReady() && Player.ManaPercent > 80 && ObjectManager.Player.Distance(SummonersRift.Jungle.Blue_BlueBuff) <= spells[Spells.W].Range && Player.Team == GameObjectTeam.Order)
+                {
+                    spells[Spells.W].Cast(SummonersRift.Jungle.Red_RedBuff, true);
+                }
+            }
+        }
+        #endregion
 
         #region hitchance
 
@@ -104,14 +138,14 @@ namespace ElKalista
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    Combo(target);
+                    Combo();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
                     JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    Harass(target);
+                    Harass();
                     break;
             }
           
@@ -120,6 +154,7 @@ namespace ElKalista
             SaveMode();
             SemiUltMode();
             AutoCastEMode();
+            AutoW();
         }
 
         #endregion
@@ -170,6 +205,7 @@ namespace ElKalista
 
             var save = ElKalistaMenu._menu.Item("ElKalista.misc.save").GetValue<bool>();
             var allyHp = ElKalistaMenu._menu.Item("ElKalista.misc.allyhp").GetValue<Slider>().Value;
+            var kaliscrank = ElKalistaMenu._menu.Item("ElKalista.misc.kaliscrank").GetValue<bool>();
 
             if (save)
             {
@@ -186,6 +222,25 @@ namespace ElKalista
                     if (ConnectedAlly.HealthPercent < allyHp && ConnectedAlly.CountEnemiesInRange(500) > 0)
                     {
                         spells[Spells.R].Cast();
+                    }
+                    else
+                    {
+                        foreach (var unit in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsEnemy && h.IsHPBarRendered && ConnectedAlly.Distance(h.Position) > 800))
+                        {
+                            // Get buffs
+                            for (int i = 0; i < unit.Buffs.Count(); i++)
+                            {
+                                // Check if the Soulbound is in a good range
+                                var enemy = HeroManager.Enemies.Where(x => ConnectedAlly.Distance(unit.Position) > 800);
+                                // Check if the Soulbound is a Blitzcrank
+                                // Check if the enemy is hooked
+                                // Check if target was far enough for ult
+                                if (ConnectedAlly.ChampionName == "Blitzcrank" && unit.Buffs[i].Name == "rocketgrab2" && unit.Buffs[i].IsActive && enemy.Count() > 0 && kaliscrank)
+                                {
+                                    spells[Spells.R].Cast();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -263,7 +318,7 @@ namespace ElKalista
                 return;
 
             var eCreep = jungleCreep.First();
-            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate / 2))
+            if (!(spells[Spells.E].GetDamage(eCreep) > eCreep.Health + eCreep.HPRegenRate))
                 return;
 
             if (spells[Spells.E].CanCast(eCreep))
@@ -317,9 +372,10 @@ namespace ElKalista
 
         #region Harass
 
-        private static void Harass(Obj_AI_Base target)
+        private static void Harass()
         {
-            if (target == null || !target.IsValidTarget()|| !Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
+            var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget() || !Orbwalking.CanMove(1) || Player.ManaPercent < ElKalistaMenu._menu.Item("ElKalista.minmanaharass").GetValue<Slider>().Value)
                 return;
 
             var harassQ = ElKalistaMenu._menu.Item("ElKalista.Harass.Q").GetValue<bool>();
@@ -352,8 +408,9 @@ namespace ElKalista
 
         #region Combo
 
-        private static void Combo(Obj_AI_Base target)
+        private static void Combo()
         {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
             if (target == null || !target.IsValidTarget() || !Orbwalking.CanMove(1))
                 return;
 
@@ -366,8 +423,8 @@ namespace ElKalista
 
             if (comboQ && spells[Spells.Q].IsReady())
             {
-                if (Player.Mana < comboQmana) return;
-
+                if (Player.ManaPercent < comboQmana)
+                    return;
                 var qtarget = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
                 if (spells[Spells.Q].CanCast(qtarget) && spells[Spells.Q].GetPrediction(qtarget).Hitchance >= CustomHitChance && !Player.IsWindingUp && !Player.IsDashing())
@@ -438,11 +495,19 @@ namespace ElKalista
                 {
                     spells[Spells.Q].Cast(minion.ServerPosition);
                 }
-
+                var mAA = 0;
                 if (spells[Spells.E].IsReady() && useE &&
                     minions[0].Health + minions[0].HPRegenRate / 2 < spells[Spells.E].GetDamage(minion))
                 {
-                    spells[Spells.E].Cast();
+                    mAA = 1;
+                    if (mAA == 1)
+                    {
+                        Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                        mAA = 2;
+                        if (mAA == 2){
+                            spells[Spells.E].Cast();
+                        }
+                    }
                 }
             }
         }

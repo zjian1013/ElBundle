@@ -1,4 +1,4 @@
-﻿using LeagueSharp;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 //By Hellsing 
@@ -16,9 +16,24 @@ namespace ElKalista
         public static bool IsRendKillable(this Obj_AI_Base target)
         {
             var hero = target as Obj_AI_Hero;
-            return GetRendDamage(target) > target.Health && (hero == null);
+            return GetRendDamage(target) > GetActualHealth(target) && (hero == null);
         }
 
+        /// <summary>
+        ///     Gets the targets health including the shield amount
+        /// </summary>
+        /// <param name="target">
+        ///     The Target
+        /// </param>
+        /// <returns>
+        ///     The targets health
+        /// </returns>
+        public static float GetActualHealth(Obj_AI_Base target)
+        {
+            return target.AttackShield > 0
+                       ? target.Health + target.AttackShield
+                       : target.MagicShield > 0 ? target.Health + target.MagicShield : target.Health;
+        }
 
         public static float GetRendDamage(Obj_AI_Hero target)
         {

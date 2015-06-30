@@ -1,4 +1,4 @@
-﻿using System;
+ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -89,6 +89,27 @@ namespace ElEasy.Plugins
                 OnAutoHarass();
 
             KillSteal();
+            
+            var autor = new int[] { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
+            int qOff = 0, wOff = 0, eOff = 0, rOff = 0;
+
+            int qL = Player.Spellbook.GetSpell(SpellSlot.Q).Level + qOff;
+            int wL = Player.Spellbook.GetSpell(SpellSlot.W).Level + wOff;
+            int eL = Player.Spellbook.GetSpell(SpellSlot.E).Level + eOff;
+            int rL = Player.Spellbook.GetSpell(SpellSlot.R).Level + rOff;
+            if (qL + wL + eL + rL < ObjectManager.Player.Level)
+            {
+                int[] level = new int[] { 0, 0, 0, 0 };
+                for (int i = 0; i < ObjectManager.Player.Level; i++)
+                {
+                    level[autor[i] - 1] = level[autor[i] - 1] + 1;
+                }
+                if (qL < level[0]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.Q);
+                if (wL < level[1]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.W);
+                if (eL < level[2]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.E);
+                if (rL < level[3]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.R);
+
+            }
         }
 
         #endregion
@@ -642,6 +663,7 @@ namespace ElEasy.Plugins
             miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.R", "Draw R").SetValue(new Circle()));
+
 
             var dmgAfterE = new MenuItem("ElEasy.Cassio.DrawComboDamage", "Draw combo damage").SetValue(true);
             var drawFill =

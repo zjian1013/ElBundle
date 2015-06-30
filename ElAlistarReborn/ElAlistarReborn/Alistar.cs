@@ -61,7 +61,7 @@ namespace ElAlistarReborn
             if (ObjectManager.Player.BaseSkinName != "Alistar")
                 return;
 
-            spells[Spells.R].SetSkillshot(0.25f, 175, 700, false, SkillshotType.SkillshotCircle);
+            spells[Spells.W].SetTargetted(0.5f, float.MaxValue);
 
             Notifications.AddNotification("ElAlistarReborn by jQuery", 5000);
             _ignite = Player.GetSpellSlot("summonerdot");
@@ -99,19 +99,21 @@ namespace ElAlistarReborn
 
         private static void HealManager()
         {
-
             var useHeal = ElAlistarMenu._menu.Item("ElAlistar.Heal.Activated").GetValue<bool>();
             var useHealAlly = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.Activated").GetValue<bool>();
             var playerMana = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.HasBuff("Recall") || Player.InFountain() || Player.ManaPercent < playerMana || !spells[Spells.E].IsReady())
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                return;
+                
+            if (Player.HasBuff("Recall") || Player.InFountain() || Player.Mana < playerMana || !spells[Spells.E].IsReady() || !useHeal)
                 return;
 
             var playerHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Player.HP").GetValue<Slider>().Value;
             var allyHp = ElAlistarMenu._menu.Item("ElAlistar.Heal.Ally.HP").GetValue<Slider>().Value;
   
             //self heal
-            if (useHeal && (Player.Health / Player.MaxHealth) * 100 <= playerHp)
+            if (useHeal && (Player.Health / Player.MaxHealth) * 100 < playerHp)
             {
                 spells[Spells.E].Cast(Player);
             }
@@ -132,9 +134,16 @@ namespace ElAlistarReborn
 
         private static void OnHarass()
         {
-            var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValid)
+            var target = TargetSelector.GetSelectedTarget();
+            if (target == null || !target.IsValidTarget())
+            {
+                target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            }
+
+            if (!target.IsValidTarget(spells[Spells.Q].Range))
+            {
                 return;
+            }
 
             var useQ = ElAlistarMenu._menu.Item("ElAlistar.Harass.Q").GetValue<bool>();
 
@@ -149,9 +158,16 @@ namespace ElAlistarReborn
         #region onCombo
         private static void OnCombo()
         {
-            var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValid)
+            var target = TargetSelector.GetSelectedTarget();
+            if (target == null || !target.IsValidTarget())
+            {
+                target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
+            }
+
+            if (!target.IsValidTarget(spells[Spells.W].Range))
+            {
                 return;
+            }
 
             var useQ = ElAlistarMenu._menu.Item("ElAlistar.Combo.Q").GetValue<bool>();
             var useW = ElAlistarMenu._menu.Item("ElAlistar.Combo.W").GetValue<bool>();
@@ -165,20 +181,13 @@ namespace ElAlistarReborn
             SpellDataInst qmana = Player.Spellbook.GetSpell(SpellSlot.Q);
             SpellDataInst wmana = Player.Spellbook.GetSpell(SpellSlot.W);
 
-            if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() && qmana.ManaCost + wmana.ManaCost <= Player.Mana)
+            if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() && Player.Mana > qmana.ManaCost + wmana.ManaCost)
             {
                 spells[Spells.W].Cast(target);
                 var comboTime = Math.Max(0, Player.Distance(target) - 500) * 10 / 25 + 25;
 
                 Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
-                Utility.DelayAction.Add(1000, () => spells[Spells.E].Cast(Player));
             }
-
-            // check player HP 
-           /* if (useE && spells[Spells.E].IsReady() && (Player.Health / Player.MaxHealth) * 100 >= playerHp)
-            {
-                spells[Spells.E].Cast(Player);
-            }*/
 
             if (useR && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange && (Player.Health / Player.MaxHealth) * 100 >= rHealth)
             {

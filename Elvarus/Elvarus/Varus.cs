@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using LeagueSharp.Common.Data;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 
 namespace Elvarus
 {
@@ -32,11 +33,8 @@ namespace Elvarus
             { Spells.R, new Spell(SpellSlot.R, 1100)}
         };
 
-        private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
-        {
-            args.Process = !spells[Spells.Q].IsCharging;
-        }
-
+  
+    
         #region hitchance
 
         private static HitChance CustomHitChance
@@ -70,17 +68,18 @@ namespace Elvarus
             if (ObjectManager.Player.BaseSkinName != "Varus")
                 return;
 
-            Notifications.AddNotification("ElVarus by jQuery v1.0.1.4", 10000);
+            Notifications.AddNotification("ElVarus by jQuery v1.0.1.5", 10000);
 
-            spells[Spells.Q].SetSkillshot(0.25f, 70, 1900, false, SkillshotType.SkillshotLine);
-            spells[Spells.E].SetSkillshot(0.1f, 235, 1500, false, SkillshotType.SkillshotCircle);
-            spells[Spells.R].SetSkillshot(0.25f, 120, 1950, true, SkillshotType.SkillshotLine);
+            spells[Spells.Q].SetSkillshot(.25f, 70f, 1650f, false, SkillshotType.SkillshotLine);
+            spells[Spells.E].SetSkillshot(.50f, 250f, 1400f, false, SkillshotType.SkillshotCircle);
+            spells[Spells.R].SetSkillshot(.25f, 120f, 1950f, false, SkillshotType.SkillshotLine);
+
             spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1600, 1.2f);
 
             ElVarusMenu.Initialize();
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
-            Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
+            //Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
         }
 
         #endregion
@@ -115,11 +114,17 @@ namespace Elvarus
 
         private static int GetStacksOn(Obj_AI_Base target)
         {
-            var buff = target.Buffs.Find(b => b.Caster.IsMe && b.DisplayName == "VarusWDebuff");
-            return buff != null ? buff.Count : 0;
+            // credits to marksman
+            return
+                target.Buffs.Where(xBuff => xBuff.Name == "varuswdebuff" && target.IsValidTarget(spells[Spells.Q].Range))
+                    .Select(xBuff => xBuff.Count)
+                    .FirstOrDefault();
+
+            /*var buff = target.Buffs.Find(b => b.Caster.IsMe && b.DisplayName == "VarusWDebuff");
+            return buff != null ? buff.Count : 0;*/
         }
 
-        private static void CastQ(Obj_AI_Base target)
+        /*private static void CastQ()
         {
             if (target == null)
                 return;
@@ -138,7 +143,7 @@ namespace Elvarus
                     }
                 }
             }
-        }
+        }*/
 
         #region Laneclear
 
@@ -380,35 +385,28 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && comboQ)
             {
-                // || spells[Spells.Q].GetDamage(target) > target.Health
-                if (spells[Spells.Q].IsCharging)
+
+                if (alwaysQ)
                 {
-                    var prediction = spells[Spells.Q].GetPrediction(target);
-                    var distance = Player.ServerPosition.Distance(prediction.UnitPosition + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(), true);
-                    if (distance < spells[Spells.Q].RangeSqr)
-                    {
-                        if (spells[Spells.Q].Cast(prediction.CastPosition))
-                            return;
-                    }
+                    spells[Spells.Q].StartCharging();
                 }
-                else
-                {   
-                    if (alwaysQ)
+                else if (spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
+                {
+                    spells[Spells.Q].StartCharging();
+                    /*if (Player.AttackRange + 180 > Player.Distance(target))
                     {
-                        spells[Spells.Q].StartCharging();
+                        
+                            spells[Spells.Q].StartCharging();
                     }
                     else
                     {
-                        if(Player.AttackRange + 180 > Player.Distance(target))
-                        {
-                            if(spells[Spells.W].Level == 0 || GetStacksOn(target) >= stackCount || spells[Spells.Q].GetDamage(target) > target.Health)
-                            spells[Spells.Q].StartCharging();
-                        }
-                        else
-                        {
-                          spells[Spells.Q].StartCharging();
-                        }
-                    }
+                        spells[Spells.Q].StartCharging();
+                    }*/
+                }
+
+                if (spells[Spells.Q].IsCharging)
+                {
+                    spells[Spells.Q].Cast(target);
                 }
             }
 

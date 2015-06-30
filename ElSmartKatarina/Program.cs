@@ -6,6 +6,7 @@ using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
 using SharpDX;
 using Color = System.Drawing.Color;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 
 namespace ElKatarina
 {
@@ -29,6 +30,7 @@ namespace ElKatarina
         private static Vector3 _lastWardPos;
         private static bool _isChanneling;
         private static float _rStart = 0;
+
 
         private static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {

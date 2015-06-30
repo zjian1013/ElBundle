@@ -165,10 +165,13 @@ namespace ElEasy.Plugins
             {
                 var pred = spells[Spells.E].GetPrediction(target).Hitchance;
                 if(pred >= CustomHitChance)
-                spells[Spells.E].Cast(target);
+                    spells[Spells.E].Cast(target);
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
+            if (useR 
+                && spells[Spells.R].IsReady() 
+                && spells[Spells.R].IsInRange(target) 
+                && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
             {
                 var pred = spells[Spells.R].GetPrediction(target).Hitchance;
                 if(pred >= CustomHitChance)
