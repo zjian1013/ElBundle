@@ -90,7 +90,7 @@ namespace ElAlistarReborn
                     break;
             }
 
-            HealManager();
+            //HealManager();
         }
 
         #endregion
