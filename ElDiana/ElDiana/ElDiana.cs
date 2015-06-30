@@ -100,7 +100,7 @@ namespace ElDiana
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Diana")
+            if (ObjectManager.Player.ChampionName != "Diana")
                 return;
 
             Notifications.AddNotification(String.Format("ElDiana by jQuery v{0}", ScriptVersion), 1000);
@@ -292,13 +292,19 @@ namespace ElDiana
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
                 return;
+           
+            var minHpToDive = ElDianaMenu._menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value;
 
             var useQ = ElDianaMenu._menu.Item("ElDiana.Combo.Q").GetValue<bool>();
             var useW = ElDianaMenu._menu.Item("ElDiana.Combo.W").GetValue<bool>();
             var useE = ElDianaMenu._menu.Item("ElDiana.Combo.E").GetValue<bool>();
-            var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
+            var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>()
+                        && (!target.UnderTurret(true)
+                            || (minHpToDive <= Player.HealthPercent));
             var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
-            var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
+            var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>()
+                        && (!target.UnderTurret(true)
+                            || (minHpToDive <= Player.HealthPercent));
             var distToTarget = Player.Distance(target, false);
             var misayaMinRange = ElDianaMenu._menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
             var useSecondRLimitation = ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
@@ -390,6 +396,7 @@ namespace ElDiana
             var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
             var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
             var useSecondRLimitation = ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
+            var minHpToDive = ElDianaMenu._menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value;
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
@@ -399,7 +406,9 @@ namespace ElDiana
             }
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) &&
-                target.HasBuff("dianamoonlight"))
+                target.HasBuff("dianamoonlight")
+                && (!target.UnderTurret(true)
+                    || (minHpToDive <= Player.HealthPercent)))
             {
                 spells[Spells.R].Cast(target);
             }
@@ -416,13 +425,17 @@ namespace ElDiana
                     spells[Spells.E].Cast();
             }
 
-            if (secondR)
+            if (secondR
+                && (!target.UnderTurret(true)
+                    || (minHpToDive <= Player.HealthPercent)))
             {
                 var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range*2).Count;
 
                 if (closeEnemies <= useSecondRLimitation && useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
                 {
-                    if (target.Health < spells[Spells.R].GetDamage(target))
+                    if (target.Health < spells[Spells.R].GetDamage(target)
+                         && (!target.UnderTurret(true)
+                            || (minHpToDive <= Player.HealthPercent)))
                     {
                         spells[Spells.R].Cast(target);
                     }
