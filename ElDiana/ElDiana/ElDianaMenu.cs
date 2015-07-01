@@ -15,6 +15,8 @@ namespace ElDiana
     {
         public static Menu _menu;
 
+
+
         public static void Initialize()
         {
             _menu = new Menu("ElDiana", "menu", true);
@@ -33,6 +35,7 @@ namespace ElDiana
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.Mode", "Mode").SetValue(new StringList(new[] { "Normal (Q->R)", "Misaya Combo (R->Q)" })));
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R", "Use R").SetValue(true));
             cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.MisayaMinRange", "R Minimum Range for Misaya ").SetValue(new Slider(Convert.ToInt32(Diana.spells[Spells.R].Range * 0.8), 0, Convert.ToInt32(Diana.spells[Spells.R].Range))));
+            cMenu.SubMenu("R").AddItem(new MenuItem("ElDiana.Combo.R.PreventUnderTower", "Don't use ult if HP% <  ").SetValue(new Slider(20)));
 
             cMenu.AddItem(new MenuItem("ElDiana.Combo.Q", "Use Q").SetValue(true));
             cMenu.AddItem(new MenuItem("ElDiana.Combo.W", "Use W").SetValue(true));
