@@ -343,11 +343,6 @@ namespace ElEasy.Plugins
 
             if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
             {
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
-                }
-
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
                     var pred = spells[Spells.Q].GetPrediction(target);
@@ -356,25 +351,25 @@ namespace ElEasy.Plugins
                         spells[Spells.Q].Cast(target);
                     }
                 }
+                
+                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                {
+                    spells[Spells.W].CastOnUnit(target);
+                }
+                
+                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                {
+                    spells[Spells.E].CastOnUnit(target);
+                }
 
                 if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
                 {
                     spells[Spells.R].Cast(Player);
-                }
-
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-                {
-                    spells[Spells.W].CastOnUnit(target);
                 }
             }
             else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
             {
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-                {
-                    spells[Spells.W].CastOnUnit(target);
-                }
-
-                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                     if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
                     var pred = spells[Spells.Q].GetPrediction(target);
                     if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
@@ -382,16 +377,24 @@ namespace ElEasy.Plugins
                         spells[Spells.Q].Cast(target);
                     }
                 }
+                
+                  if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                {
+                    spells[Spells.E].CastOnUnit(target);
+                }
+                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                {
+                    spells[Spells.W].CastOnUnit(target);
+                }
+
+           
 
                 if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
                 {
                     spells[Spells.R].Cast(Player);
                 }
 
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
-                }
+              
             }
             else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
             {
