@@ -352,15 +352,16 @@ namespace ElEasy.Plugins
                     }
                 }
                 
+                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                {
+                    spells[Spells.E].CastOnUnit(target);
+                }
                 if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
                 {
                     spells[Spells.W].CastOnUnit(target);
                 }
                 
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
-                }
+                
 
                 if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
                 {
@@ -369,6 +370,11 @@ namespace ElEasy.Plugins
             }
             else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
             {
+                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                {
+                    spells[Spells.W].CastOnUnit(target);
+                }
+                
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
                     var pred = spells[Spells.Q].GetPrediction(target);
@@ -382,11 +388,16 @@ namespace ElEasy.Plugins
                 {
                     spells[Spells.E].CastOnUnit(target);
                 }
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
-                    spells[Spells.W].CastOnUnit(target);
+                    var pred = spells[Spells.Q].GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
                 }
-
+                
                 if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
                 {
                     spells[Spells.R].Cast(Player);
