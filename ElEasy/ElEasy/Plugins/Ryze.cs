@@ -361,8 +361,6 @@ namespace ElEasy.Plugins
                     spells[Spells.W].CastOnUnit(target);
                 }
                 
-                
-
                 if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
                 {
                     spells[Spells.R].Cast(Player);
