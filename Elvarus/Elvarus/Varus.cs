@@ -65,7 +65,7 @@ namespace Elvarus
 
         public static void Game_OnGameLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Varus")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Varus")
                 return;
 
             Notifications.AddNotification("ElVarus by jQuery v1.0.1.5", 10000);
