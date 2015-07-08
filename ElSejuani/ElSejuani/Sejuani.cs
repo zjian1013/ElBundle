@@ -82,7 +82,7 @@ namespace ElSejuani
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Sejuani")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Sejuani")
                 return;
 
             Console.WriteLine("Injected");
