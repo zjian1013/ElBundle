@@ -48,7 +48,7 @@ namespace ElEkko
         #region OnLoad
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Ekko")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Ekko")
             {
                 return;
             }
