@@ -102,6 +102,25 @@ namespace Elvarus
                     break;
             }
 
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                if (Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
+                {
+                    var muramana = ItemData.Muramana.GetItem();
+                    if(muramana.IsOwned(Player))
+                        muramana.Cast();
+                }
+            }
+            else
+            {
+                if (Player.Buffs.Count(buf => buf.Name == "Muramana") != 0)
+                {
+                    var muramana = ItemData.Muramana.GetItem();
+                    if (muramana.IsOwned(Player))
+                        muramana.Cast();
+                }
+            }
+            
             var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
 
             if (spells[Spells.R].IsReady() && target.IsValidTarget() && ElVarusMenu._menu.Item("ElVarus.SemiR").GetValue<KeyBind>().Active)
