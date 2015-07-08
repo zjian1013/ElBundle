@@ -58,7 +58,7 @@ namespace ElAlistarReborn
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Alistar")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Alistar")
                 return;
 
             spells[Spells.W].SetTargetted(0.5f, float.MaxValue);
