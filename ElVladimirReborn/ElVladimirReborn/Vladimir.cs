@@ -41,7 +41,7 @@ namespace ElVladimirReborn
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Vladimir")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Vladimir")
                 return;
 
             spells[Spells.R].SetSkillshot(0.25f, 175, 700, false, SkillshotType.SkillshotCircle);
