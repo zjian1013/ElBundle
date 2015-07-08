@@ -100,7 +100,7 @@ namespace ElDiana
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.ChampionName != "Diana")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Diana")
                 return;
 
             Notifications.AddNotification(String.Format("ElDiana by jQuery v{0}", ScriptVersion), 1000);
