@@ -43,7 +43,7 @@ namespace ElVi
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Vi")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Vi")
             {
                 return;
             }
