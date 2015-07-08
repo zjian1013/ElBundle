@@ -79,7 +79,7 @@ namespace ElSinged
 
         public static void Game_OnGameLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Singed")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Singed")
              return;
           
             Console.WriteLine("Injected");
