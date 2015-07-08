@@ -102,7 +102,7 @@ namespace Elvarus
                     break;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 if (Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
                 {
