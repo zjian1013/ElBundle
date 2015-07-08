@@ -103,7 +103,7 @@ namespace ElXerath
 
         public static void Game_OnGameLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Xerath")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Xerath")
             {
                 return;
             }
